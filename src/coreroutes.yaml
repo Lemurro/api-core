@@ -1,0 +1,97 @@
+root:
+  path: /
+  controller: '\Lemurro\Api\Core\Version\ControllerGet'
+  methods: [GET, OPTIONS]
+
+jserrors:
+  path: /jserrors
+  controller: '\Lemurro\Api\Core\JSErr\ControllerReciever'
+  methods: [GET, OPTIONS]
+
+# /auth
+
+auth_check:
+  path: /auth/check
+  controller: '\Lemurro\Api\Core\Auth\ControllerCheck'
+  methods: [GET, OPTIONS]
+
+auth_code_get:
+  path: /auth/code
+  controller: '\Lemurro\Api\Core\Auth\Code\ControllerGet'
+  methods: [GET, OPTIONS]
+
+auth_code_check:
+  path: /auth/code
+  controller: '\Lemurro\Api\Core\Auth\Code\ControllerCheck'
+  methods: [POST, OPTIONS]
+
+# /guide
+
+guide_index:
+  path: /guide/{type}
+  controller: '\Lemurro\Api\Core\Guide\ControllerIndex'
+  methods: [GET, OPTIONS]
+
+guide_insert:
+  path: /guide/{type}
+  controller: '\Lemurro\Api\Core\Guide\ControllerInsert'
+  methods: [POST, OPTIONS]
+
+guide_get:
+  path: /guide/{type}/{id}
+  controller: '\Lemurro\Api\Core\Guide\ControllerGet'
+  methods: [GET, OPTIONS]
+  requirements:
+    id: '\d+'
+
+guide_save:
+  path: /guide/{type}/{id}
+  controller: '\Lemurro\Api\Core\Guide\ControllerSave'
+  methods: [POST, OPTIONS]
+  requirements:
+    id: '\d+'
+
+guide_remove:
+  path: /guide/{type}/{id}/remove
+  controller: '\Lemurro\Api\Core\Guide\ControllerRemove'
+  methods: [POST, OPTIONS]
+  requirements:
+    id: '\d+'
+
+# /users
+
+users_index:
+  path: /users
+  controller: '\Lemurro\Api\Core\Users\ControllerIndex'
+  methods: [GET, OPTIONS]
+
+users_insert:
+  path: /users
+  controller: '\Lemurro\Api\Core\Users\ControllerInsert'
+  methods: [POST, OPTIONS]
+
+users_get:
+  path: /users/{id}
+  controller: '\Lemurro\Api\Core\Users\ControllerGet'
+  methods: [GET, OPTIONS]
+  requirements:
+    id: '\d+'
+
+users_save:
+  path: /users/{id}
+  controller: '\Lemurro\Api\Core\Users\ControllerSave'
+  methods: [POST, OPTIONS]
+  requirements:
+    id: '\d+'
+
+users_remove:
+  path: /users/{id}/remove
+  controller: '\Lemurro\Api\Core\Users\ControllerRemove'
+  methods: [POST, OPTIONS]
+  requirements:
+    id: '\d+'
+
+# app routes
+
+app_routes:
+   resource: 'app/routes.yaml'

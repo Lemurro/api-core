@@ -1,0 +1,32 @@
+{
+  "name": "lemurro/api-core",
+  "description": "PHP-ядро для Lemurro API",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Dmitrii Shcherbakov",
+      "email": "info@bestion.ru",
+      "homepage": "http://bestion.ru",
+      "role": "Developer"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Lemurro\\Api\\Core\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=7.0.0",
+    "j4mie/idiorm": "^1.5",
+    "monolog/monolog": "^1.22",
+    "nesbot/carbon": "^1.22",
+    "phpmailer/phpmailer": "^6.0",
+    "pimple/pimple": "^3.0",
+    "symfony/http-foundation": "^4.0",
+    "symfony/http-kernel": "^4.0",
+    "symfony/routing": "^4.0",
+    "symfony/config": "^4.0",
+    "symfony/yaml": "^4.0"
+  }
+}
