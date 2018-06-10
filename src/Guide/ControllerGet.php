@@ -30,15 +30,15 @@ class ControllerGet extends Controller
     public function start()
     {
         $checker_checks = [
-            'auth' => $this->di['session_id'],
+            'auth' => $this->dic['session_id'],
         ];
-        $checker_result = (new Checker($this->di))->run($checker_checks);
+        $checker_result = (new Checker($this->dic))->run($checker_checks);
         if (count($checker_result) > 0) {
             $this->response->setData($checker_result);
         } else {
             if (isset(SettingsGuides::CLASSES[$this->request->get('type')])) {
                 $classname = 'Lemurro\\Api\\App\\Guide\\' . SettingsGuides::CLASSES[$this->request->get('type')] . '\\ActionGet';
-                $result = (new $classname($this->di))->run($this->request->get('id'));
+                $result = (new $classname($this->dic))->run($this->request->get('id'));
                 $this->response->setData($result);
             } else {
                 $this->response = new RedirectResponse(SettingsGeneral::SHORT_ROOT_PATH . 'unknown-guide-type');

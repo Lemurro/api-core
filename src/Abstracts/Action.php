@@ -22,18 +22,18 @@ abstract class Action
      *
      * @var Container
      */
-    protected $di;
+    protected $dic;
 
     /**
      * Конструктор
      *
-     * @param Container $di Контейнер
+     * @param Container $dic Контейнер
      *
      * @version 26.05.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    public function __construct($di)
+    public function __construct($dic)
     {
-        $this->di = $di;
+        $this->dic = $dic;
     }
 }

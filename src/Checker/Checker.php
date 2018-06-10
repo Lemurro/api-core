@@ -33,16 +33,16 @@ class Checker extends Action
             foreach ($checks as $check_type => $check_info) {
                 switch ($check_type) {
                     case 'auth':
-                        $check_result = (new Auth())->run($this->di['session_id']);
+                        $check_result = (new Auth())->run($this->dic['session_id']);
                         break;
 
                     case 'role':
-                        $check_result = (new Role())->run($check_info, $this->di['user']['roles']);
+                        $check_result = (new Role())->run($check_info, $this->dic['user']['roles']);
                         break;
 
                     default:
                         $classname = 'Lemurro\\Api\\App\\Checker\\' . $check_info['class'];
-                        $check_result = (new $classname($this->di))->run($check_info);
+                        $check_result = (new $classname($this->dic))->run($check_info);
                         break;
                 }
 

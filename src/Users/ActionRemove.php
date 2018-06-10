@@ -37,7 +37,7 @@ class ActionRemove extends Action
                 ->where_equal('user_id', $id)
                 ->find_one();
             if (is_object($info)) {
-                $info->deleted_at = $this->di['datetimenow'];
+                $info->deleted_at = $this->dic['datetimenow'];
                 $info->save();
                 if (is_object($info) && isset($info->id)) {
                     \ORM::for_table('auth_codes')
@@ -50,9 +50,9 @@ class ActionRemove extends Action
 
                     $user->delete();
 
-                    $this->di['datachangelog']->insert('users', 'delete', $id);
+                    $this->dic['datachangelog']->insert('users', 'delete', $id);
 
-                    return (new RunAfterRemove($this->di))->run([
+                    return (new RunAfterRemove($this->dic))->run([
                         'id' => $id,
                     ]);
                 } else {

@@ -25,7 +25,7 @@ class ControllerGet extends Controller
      */
     public function start()
     {
-        $result = (new ActionGet($this->di))->run($this->request->get('auth_id'));
+        $result = (new ActionGet($this->dic))->run($this->request->get('auth_id'));
         $this->response->setData($result);
         $this->response->send();
     }

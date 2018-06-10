@@ -25,7 +25,7 @@ class ControllerCheck extends Controller
      */
     public function start()
     {
-        $result = (new ActionCheck($this->di))->run($this->request->get('auth_id'), $this->request->get('auth_code'), $this->request->get('device_info'));
+        $result = (new ActionCheck($this->dic))->run($this->request->get('auth_id'), $this->request->get('auth_code'), $this->request->get('device_info'));
         $this->response->setData($result);
         $this->response->send();
     }

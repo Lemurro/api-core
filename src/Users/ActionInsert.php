@@ -31,7 +31,7 @@ class ActionInsert extends Action
      */
     public function run($data)
     {
-        $data = (new RunBeforeInsert($this->di))->run($data);
+        $data = (new RunBeforeInsert($this->dic))->run($data);
 
         $check_auth_id = \ORM::for_table('users')
             ->select('id')
@@ -51,7 +51,7 @@ class ActionInsert extends Action
 
         $new_user = \ORM::for_table('users')->create();
         $new_user->auth_id = $data['auth_id'];
-        $new_user->created_at = $this->di['datetimenow'];
+        $new_user->created_at = $this->dic['datetimenow'];
         $new_user->save();
         if (is_object($new_user) && isset($new_user->id)) {
             $new_user_info = \ORM::for_table('info_users')->create();
@@ -70,15 +70,15 @@ class ActionInsert extends Action
 
             $new_user_info->user_id = $new_user->id;
             $new_user_info->roles = json_encode($data['roles']);
-            $new_user_info->created_at = $this->di['datetimenow'];
+            $new_user_info->created_at = $this->dic['datetimenow'];
             $new_user_info->save();
             if (is_object($new_user_info) && isset($new_user_info->id)) {
-                $this->di['datachangelog']->insert('users', 'insert', $new_user->id, $data);
+                $this->dic['datachangelog']->insert('users', 'insert', $new_user->id, $data);
 
                 $result_data['id'] = $new_user->id;
                 $result_data['auth_id'] = $data['auth_id'];
 
-                return (new RunAfterInsert($this->di))->run($result_data);
+                return (new RunAfterInsert($this->dic))->run($result_data);
             } else {
                 return [
                     'errors' => [

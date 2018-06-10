@@ -32,7 +32,7 @@ abstract class Controller
     /**
      * @var Container
      */
-    protected $di;
+    protected $dic;
 
     /**
      * Конструктор
@@ -44,11 +44,11 @@ abstract class Controller
      * @version 06.06.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    public function __construct($request, $response, $di)
+    public function __construct($request, $response, $dic)
     {
         $this->request = $request;
         $this->response = $response;
-        $this->di = $di;
+        $this->dic = $dic;
     }
 
     /**

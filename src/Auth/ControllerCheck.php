@@ -27,11 +27,11 @@ class ControllerCheck extends Controller
      */
     public function start()
     {
-        $result_session_check = (new Session())->check($this->di['session_id']);
+        $result_session_check = (new Session())->check($this->dic['session_id']);
         if (isset($result_session_check['errors'])) {
             $this->response->setData($result_session_check);
         } else {
-            $user_info = (new GetUser($this->di))->run($result_session_check['user_id']);
+            $user_info = (new GetUser($this->dic))->run($result_session_check['user_id']);
             if (isset($user_info['data'])) {
                 $user = $user_info['data'];
             } else {

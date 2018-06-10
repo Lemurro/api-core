@@ -26,7 +26,7 @@ class Mailer
      *
      * @var object
      */
-    protected $di;
+    protected $dic;
 
     /**
      * Логгер
@@ -38,16 +38,16 @@ class Mailer
     /**
      * Конструктор
      *
-     * @param object $di Контейнер
+     * @param object $dic Контейнер
      *
      * @throws \Exception
      *
      * @version 01.01.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    public function __construct($di)
+    public function __construct($dic)
     {
-        $this->di = $di;
+        $this->dic = $dic;
 
         $this->log = new Logger('Mailer');
         $this->log->pushHandler(new StreamHandler(SettingsGeneral::FULL_ROOT_PATH . 'logs/mailer.log'));
@@ -76,15 +76,15 @@ class Mailer
                 return true;
             } else {
                 // Очищаемся от старых данных
-                $this->di['phpmailer']->ClearAllRecipients();
-                $this->di['phpmailer']->ClearAttachments();
-                $this->di['phpmailer']->ClearCustomHeaders();
-                $this->di['phpmailer']->ClearReplyTos();
+                $this->dic['phpmailer']->ClearAllRecipients();
+                $this->dic['phpmailer']->ClearAttachments();
+                $this->dic['phpmailer']->ClearCustomHeaders();
+                $this->dic['phpmailer']->ClearReplyTos();
 
                 // Прикрепляем логотип для письма
                 $logo_mail = SettingsGeneral::FULL_ROOT_PATH . 'assets/img/logo.png';
                 if (is_readable($logo_mail)) {
-                    $this->di['phpmailer']->AddEmbeddedImage($logo_mail, 'logotype', 'logo.png', 'base64', 'image/png');
+                    $this->dic['phpmailer']->AddEmbeddedImage($logo_mail, 'logotype', 'logo.png', 'base64', 'image/png');
                 }
 
                 // Прикрепляем другие изображения при необходимости
@@ -94,7 +94,7 @@ class Mailer
                         if (is_readable($filename)) {
                             $basename = pathinfo($filename, PATHINFO_BASENAME);
                             $imagetype = getimagesize($filename)['mime'];
-                            $this->di['phpmailer']->AddEmbeddedImage($filename, $image_code, $basename, 'base64', $imagetype);
+                            $this->dic['phpmailer']->AddEmbeddedImage($filename, $image_code, $basename, 'base64', $imagetype);
                         }
                     }
                 }
@@ -103,7 +103,7 @@ class Mailer
                 if (count($files) > 0) {
                     foreach ($files as $filename) {
                         if (is_readable($filename)) {
-                            $this->di['phpmailer']->addAttachment($filename);
+                            $this->dic['phpmailer']->addAttachment($filename);
                         }
                     }
                 }
@@ -113,12 +113,12 @@ class Mailer
                 $message .= strtr(constant('\Lemurro\Api\App\Configs\EmailTemplates::' . $template_name), $template_data);
                 $message .= EmailTemplates::FOOTER;
 
-                $this->di['phpmailer']->Subject = iconv('utf-8', 'windows-1251', $subject);
-                $this->di['phpmailer']->MsgHTML(iconv('utf-8', 'windows-1251', $message));
+                $this->dic['phpmailer']->Subject = iconv('utf-8', 'windows-1251', $subject);
+                $this->dic['phpmailer']->MsgHTML(iconv('utf-8', 'windows-1251', $message));
 
                 if (count($email_tos) > 0) {
                     foreach ($email_tos as $one_email) {
-                        $this->di['phpmailer']->addAddress($one_email);
+                        $this->dic['phpmailer']->addAddress($one_email);
                     }
                 } else {
                     $this->log->warning('Массив адресов отправки пуст.');
@@ -126,8 +126,8 @@ class Mailer
                     return false;
                 }
 
-                if (!$this->di['phpmailer']->Send()) {
-                    $this->log->warning('При отправке письма произошла ошибка: "' . $this->di['phpmailer']->ErrorInfo . '".');
+                if (!$this->dic['phpmailer']->Send()) {
+                    $this->log->warning('При отправке письма произошла ошибка: "' . $this->dic['phpmailer']->ErrorInfo . '".');
 
                     return false;
                 } else {

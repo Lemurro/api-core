@@ -42,7 +42,7 @@ class ActionCheck extends Action
         if (is_object($auth)) {
             if ($auth->code === $auth_code) {
                 $secret = RandomKey::generate(100);
-                $created_at = $this->di['datetimenow'];
+                $created_at = $this->dic['datetimenow'];
 
                 $session = \ORM::for_table('sessions')->create();
                 $session->session = $secret;

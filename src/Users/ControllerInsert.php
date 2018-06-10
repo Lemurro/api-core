@@ -27,14 +27,14 @@ class ControllerInsert extends Controller
     public function start()
     {
         $checker_checks = [
-            'auth' => $this->di['session_id'],
+            'auth' => $this->dic['session_id'],
             'role' => [],
         ];
-        $checker_result = (new Checker($this->di))->run($checker_checks);
+        $checker_result = (new Checker($this->dic))->run($checker_checks);
         if (count($checker_result) > 0) {
             $this->response->setData($checker_result);
         } else {
-            $result = (new ActionInsert($this->di))->run($this->request->get('data'));
+            $result = (new ActionInsert($this->dic))->run($this->request->get('data'));
             $this->response->setData($result);
         }
 

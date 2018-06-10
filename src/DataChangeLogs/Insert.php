@@ -32,8 +32,8 @@ class Insert extends Action
      */
     public function insert($table_name, $action_name, $record_id, $data = [])
     {
-        if (isset($this->di['user']['user_id'])) {
-            $user_id = $this->di['user']['user_id'];
+        if (isset($this->dic['user']['user_id'])) {
+            $user_id = $this->dic['user']['user_id'];
         } else {
             $user_id = 0;
         }
@@ -44,7 +44,7 @@ class Insert extends Action
         $log->action_name = $action_name;
         $log->record_id = $record_id;
         $log->data = json_encode($data, JSON_UNESCAPED_UNICODE);
-        $log->created_at = $this->di['datetimenow'];
+        $log->created_at = $this->dic['datetimenow'];
         $log->save();
         if (is_object($log) && isset($log->id)) {
             return true;

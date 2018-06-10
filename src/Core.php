@@ -39,7 +39,7 @@ class Core
     /**
      * @var Container
      */
-    protected $di;
+    protected $dic;
 
     /**
      * @var UrlMatcher
@@ -120,11 +120,11 @@ class Core
      */
     protected function initDI()
     {
-        $this->di = new Container();
+        $this->dic = new Container();
 
-        $this->di['session_id'] = $this->request->server->get('HTTP_X_SESSION_ID');
+        $this->dic['session_id'] = $this->request->server->get('HTTP_X_SESSION_ID');
 
-        $this->di['user'] = function ($c) {
+        $this->dic['user'] = function ($c) {
             $result_session_check = (new Session())->check($c['session_id']);
             if (isset($result_session_check['errors'])) {
                 return [];
@@ -140,13 +140,13 @@ class Core
             }
         };
 
-        $this->di['datetimenow'] = function () {
+        $this->dic['datetimenow'] = function () {
             $now = Carbon::now(SettingsGeneral::TIMEZONE);
 
             return $now->toDateTimeString();
         };
 
-        $this->di['phpmailer'] = function () {
+        $this->dic['phpmailer'] = function () {
             $phpmailer = new PHPMailer();
             $phpmailer->isHTML(true);
             $phpmailer->CharSet = 'windows-1251';
@@ -167,19 +167,19 @@ class Core
             return $phpmailer;
         };
 
-        $this->di['mailer'] = function ($c) {
+        $this->dic['mailer'] = function ($c) {
             return new Mailer($c);
         };
 
-        $this->di['sms'] = function () {
+        $this->dic['sms'] = function () {
             return new SMS();
         };
 
-        $this->di['datachangelog'] = function ($c) {
+        $this->dic['datachangelog'] = function ($c) {
             return new DataChangeLogsInsert($c);
         };
 
-        $this->di['log'] = function () {
+        $this->dic['log'] = function () {
             $log = new Logger('MainLog');
             $log->pushHandler(new StreamHandler(SettingsGeneral::FULL_ROOT_PATH . 'logs/main.log'));
 
@@ -203,11 +203,11 @@ class Core
                 $this->response->headers->set('Access-Control-Allow-Methods', 'OPTIONS, ' . $this->request->headers->get('access-control-request-method'));
                 $this->response->send();
             } else {
-                (new AppDIC())->run($this->di);
+                (new AppDIC())->run($this->dic);
                 (new AppResponse())->run($this->response);
 
                 $controller = $this->request->get('_controller');
-                $class = new $controller($this->request, $this->response, $this->di);
+                $class = new $controller($this->request, $this->response, $this->dic);
                 call_user_func([$class, 'start']);
             }
         } catch (ResourceNotFoundException $e) {

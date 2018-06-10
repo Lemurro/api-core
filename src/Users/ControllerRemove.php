@@ -27,14 +27,14 @@ class ControllerRemove extends Controller
     public function start()
     {
         $checker_checks = [
-            'auth' => $this->di['session_id'],
+            'auth' => $this->dic['session_id'],
             'role' => [],
         ];
-        $checker_result = (new Checker($this->di))->run($checker_checks);
+        $checker_result = (new Checker($this->dic))->run($checker_checks);
         if (count($checker_result) > 0) {
             $this->response->setData($checker_result);
         } else {
-            $result = (new ActionRemove($this->di))->run($this->request->get('id'));
+            $result = (new ActionRemove($this->dic))->run($this->request->get('id'));
             $this->response->setData($result);
         }
 

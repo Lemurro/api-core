@@ -38,7 +38,7 @@ class ActionGet extends Action
         $user = (new FindUser())->run($auth_id);
         if (count($user) == 0) {
             if (SettingsGeneral::CAN_REGISTRATION_USERS) {
-                $insert_user = (new InsertUser($this->di))->run([
+                $insert_user = (new InsertUser($this->dic))->run([
                     'auth_id' => [
                         'table' => 'users',
                         'value' => $auth_id,
@@ -81,17 +81,17 @@ class ActionGet extends Action
         $auth_code->auth_id = $auth_id;
         $auth_code->code = $secret;
         $auth_code->user_id = $user['id'];
-        $auth_code->created_at = $this->di['datetimenow'];
+        $auth_code->created_at = $this->dic['datetimenow'];
         $auth_code->save();
         if (is_object($auth_code)) {
             if (SettingsGeneral::PRODUCTION) {
                 switch (SettingsGeneral::AUTH_TYPE) {
                     case 'email':
-                        $result = $this->di['mailer']->send('AUTH_CODE', 'Код для входа в приложение для пользователя: ' . $auth_id, [$auth_id], ['[APP_NAME]' => SettingsGeneral::APP_NAME, '[SECRET]' => $secret]);
+                        $result = $this->dic['mailer']->send('AUTH_CODE', 'Код для входа в приложение для пользователя: ' . $auth_id, [$auth_id], ['[APP_NAME]' => SettingsGeneral::APP_NAME, '[SECRET]' => $secret]);
                         break;
 
                     case 'phone':
-                        $result = $this->di['sms']->send($auth_id, 'Код для входа: ' . $secret . ', ' . SettingsGeneral::APP_NAME);
+                        $result = $this->dic['sms']->send($auth_id, 'Код для входа: ' . $secret . ', ' . SettingsGeneral::APP_NAME);
                         break;
 
                     default:

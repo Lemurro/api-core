@@ -32,7 +32,7 @@ class ActionSave extends Action
      */
     public function run($id, $data)
     {
-        $data = (new RunBeforeSave($this->di))->run($data);
+        $data = (new RunBeforeSave($this->dic))->run($data);
 
         $check_auth_id = \ORM::for_table('users')
             ->select('id')
@@ -74,15 +74,15 @@ class ActionSave extends Action
                     }
 
                     $info->roles = json_encode($data['roles']);
-                    $info->updated_at = $this->di['datetimenow'];
+                    $info->updated_at = $this->dic['datetimenow'];
                     $info->save();
                     if (is_object($info) && isset($info->id)) {
-                        $this->di['datachangelog']->insert('users', 'update', $id, $data);
+                        $this->dic['datachangelog']->insert('users', 'update', $id, $data);
 
                         $result_data['id'] = $id;
                         $result_data['auth_id'] = $data['auth_id'];
 
-                        return (new RunAfterSave($this->di))->run($result_data);
+                        return (new RunAfterSave($this->dic))->run($result_data);
                     } else {
                         return [
                             'errors' => [
