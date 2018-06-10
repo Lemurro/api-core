@@ -11,6 +11,8 @@ namespace Lemurro\Api\Core\Auth\Code;
 use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\RandomNumber;
+use Lemurro\Api\Core\Mailer;
+use Lemurro\Api\Core\SMS\SMS;
 use Lemurro\Api\Core\Users\ActionInsert as InsertUser;
 use Lemurro\Api\Core\Users\Find as FindUser;
 
@@ -87,11 +89,17 @@ class ActionGet extends Action
             if (SettingsGeneral::PRODUCTION) {
                 switch (SettingsGeneral::AUTH_TYPE) {
                     case 'email':
-                        $result = $this->dic['mailer']->send('AUTH_CODE', 'Код для входа в приложение для пользователя: ' . $auth_id, [$auth_id], ['[APP_NAME]' => SettingsGeneral::APP_NAME, '[SECRET]' => $secret]);
+                        /** @var Mailer $mailer */
+                        $mailer = $this->dic['mailer'];
+
+                        $result = $mailer->send('AUTH_CODE', 'Код для входа в приложение для пользователя: ' . $auth_id, [$auth_id], ['[APP_NAME]' => SettingsGeneral::APP_NAME, '[SECRET]' => $secret]);
                         break;
 
                     case 'phone':
-                        $result = $this->dic['sms']->send($auth_id, 'Код для входа: ' . $secret . ', ' . SettingsGeneral::APP_NAME);
+                        /** @var SMS $sms */
+                        $sms = $this->dic['sms'];
+
+                        $result = $sms->send($auth_id, 'Код для входа: ' . $secret . ', ' . SettingsGeneral::APP_NAME);
                         break;
 
                     default:

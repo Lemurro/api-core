@@ -10,6 +10,7 @@ namespace Lemurro\Api\Core\Users;
 
 use Lemurro\Api\App\RunAfter\Users\Remove as RunAfterRemove;
 use Lemurro\Api\Core\Abstracts\Action;
+use Lemurro\Api\Core\DataChangeLogs\Insert as DataChangeLogInsert;
 
 /**
  * Class ActionRemove
@@ -50,7 +51,9 @@ class ActionRemove extends Action
 
                     $user->delete();
 
-                    $this->dic['datachangelog']->insert('users', 'delete', $id);
+                    /** @var DataChangeLogInsert $datachangelog */
+                    $datachangelog = $this->dic['datachangelog'];
+                    $datachangelog->insert('users', 'delete', $id);
 
                     return (new RunAfterRemove($this->dic))->run([
                         'id' => $id,
