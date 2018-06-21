@@ -2,7 +2,7 @@
 /**
  * Удаление элемента из справочника
  *
- * @version 26.05.2018
+ * @version 21.06.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -24,13 +24,13 @@ class ControllerRemove extends Controller
     /**
      * Стартовый метод
      *
-     * @version 26.05.2018
+     * @version 21.06.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
     {
         $checker_checks = [
-            'auth' => $this->dic['session_id'],
+            'auth' => '',
             'role' => [
                 'page'   => 'guide',
                 'access' => 'delete',

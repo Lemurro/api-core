@@ -27,7 +27,7 @@ class ControllerSave extends Controller
     public function start()
     {
         $checker_checks = [
-            'auth' => $this->dic['session_id'],
+            'auth' => '',
             'role' => [],
         ];
         $checker_result = (new Checker($this->dic))->run($checker_checks);

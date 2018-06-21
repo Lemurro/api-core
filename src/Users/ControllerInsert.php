@@ -2,7 +2,7 @@
 /**
  * Добавление пользователя
  *
- * @version 26.05.2018
+ * @version 21.06.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -21,13 +21,13 @@ class ControllerInsert extends Controller
     /**
      * Стартовый метод
      *
-     * @version 26.05.2018
+     * @version 21.06.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
     {
         $checker_checks = [
-            'auth' => $this->dic['session_id'],
+            'auth' => '',
             'role' => [],
         ];
         $checker_result = (new Checker($this->dic))->run($checker_checks);

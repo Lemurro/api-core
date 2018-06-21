@@ -2,7 +2,7 @@
 /**
  * Список справочника
  *
- * @version 30.05.2018
+ * @version 21.06.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -24,13 +24,13 @@ class ControllerIndex extends Controller
     /**
      * Стартовый метод
      *
-     * @version 30.05.2018
+     * @version 21.06.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
     {
         $checker_checks = [
-            'auth' => $this->dic['session_id'],
+            'auth' => '',
         ];
         $checker_result = (new Checker($this->dic))->run($checker_checks);
         if (count($checker_result) > 0) {
