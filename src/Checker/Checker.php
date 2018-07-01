@@ -2,7 +2,7 @@
 /**
  * Какие-либо проверки перед запуском контроллера маршрута
  *
- * @version 26.05.2018
+ * @version 01.07.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -24,7 +24,7 @@ class Checker extends Action
      *
      * @return array
      *
-     * @version 26.05.2018
+     * @version 01.07.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($checks)
@@ -42,7 +42,8 @@ class Checker extends Action
 
                     default:
                         $classname = 'Lemurro\\Api\\App\\Checker\\' . $check_info['class'];
-                        $check_result = (new $classname($this->dic))->run($check_info);
+                        $class = new $classname($this->dic);
+                        $check_result = call_user_func([$class, 'run'], $check_info);
                         break;
                 }
 

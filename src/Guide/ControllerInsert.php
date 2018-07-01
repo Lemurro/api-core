@@ -2,7 +2,7 @@
 /**
  * Добавление элемента в справочник
  *
- * @version 21.06.2018
+ * @version 01.07.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -24,7 +24,7 @@ class ControllerInsert extends Controller
     /**
      * Стартовый метод
      *
-     * @version 21.06.2018
+     * @version 01.07.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -41,8 +41,9 @@ class ControllerInsert extends Controller
             $this->response->setData($checker_result);
         } else {
             if (isset(SettingsGuides::CLASSES[$this->request->get('type')])) {
-                $classname = 'Lemurro\\Api\\App\\Guide\\' . SettingsGuides::CLASSES[$this->request->get('type')] . '\\ActionInsert';
-                $result = (new $classname($this->dic))->run($this->request->get('data'));
+                $action = 'Lemurro\\Api\\App\\Guide\\' . SettingsGuides::CLASSES[$this->request->get('type')] . '\\ActionInsert';
+                $class = new $action($this->dic);
+                $result = call_user_func([$class, 'run'], $this->request->get('data'));
                 $this->response->setData($result);
             } else {
                 $this->response = new RedirectResponse(SettingsGeneral::SHORT_ROOT_PATH . 'unknown-guide-type');
