@@ -2,7 +2,7 @@
 /**
  * Получение кода аутентификации
  *
- * @version 26.05.2018
+ * @version 03.07.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -30,7 +30,7 @@ class ActionGet extends Action
      *
      * @return array
      *
-     * @version 26.05.2018
+     * @version 03.07.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($auth_id)
@@ -41,10 +41,7 @@ class ActionGet extends Action
         if (count($user) == 0) {
             if (SettingsGeneral::CAN_REGISTRATION_USERS) {
                 $insert_user = (new InsertUser($this->dic))->run([
-                    'auth_id' => [
-                        'table' => 'users',
-                        'value' => $auth_id,
-                    ],
+                    'auth_id' => $auth_id,
                 ]);
                 if (isset($insert_user['errors'])) {
                     return $insert_user;
