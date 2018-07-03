@@ -91,6 +91,13 @@ users_remove:
   requirements:
     id: '\d+'
 
+# /user
+
+user:
+  path: /user
+  controller: 'Lemurro\Api\Core\User\ControllerGet'
+  methods: [GET, OPTIONS]
+
 # app routes
 
 app_routes:
