@@ -2,7 +2,7 @@
 /**
  * Изменение пользователя
  *
- * @version 26.05.2018
+ * @version 04.07.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -28,7 +28,7 @@ class ActionSave extends Action
      *
      * @return array
      *
-     * @version 26.05.2018
+     * @version 04.07.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($id, $data)
@@ -70,7 +70,7 @@ class ActionSave extends Action
                         }
                     }
 
-                    if (!is_array($data['roles'])) {
+                    if (!isset($data['roles']) || !is_array($data['roles'])) {
                         $data['roles'] = [];
                     }
 
