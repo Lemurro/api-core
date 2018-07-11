@@ -2,7 +2,7 @@
 /**
  * Инициализация приложения
  *
- * @version 27.06.2018
+ * @version 11.07.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -72,20 +72,22 @@ class Core
     /**
      * Инициализация PDO
      *
-     * @version 26.05.2018
+     * @version 11.07.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function initDatabase()
     {
-        \ORM::configure('connection_string', 'mysql:host=' . SettingsDatabase::HOST . ';port=' . SettingsDatabase::PORT . ';dbname=' . SettingsDatabase::DBNAME);
-        \ORM::configure('username', SettingsDatabase::USERNAME);
-        \ORM::configure('password', SettingsDatabase::PASSWORD);
-        \ORM::configure('logging', SettingsDatabase::LOGGING);
-        \ORM::configure('driver_options', [
-            \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
-            \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
-            \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
-        ]);
+        if (SettingsDatabase::NEED_CONNECT) {
+            \ORM::configure('connection_string', 'mysql:host=' . SettingsDatabase::HOST . ';port=' . SettingsDatabase::PORT . ';dbname=' . SettingsDatabase::DBNAME);
+            \ORM::configure('username', SettingsDatabase::USERNAME);
+            \ORM::configure('password', SettingsDatabase::PASSWORD);
+            \ORM::configure('logging', SettingsDatabase::LOGGING);
+            \ORM::configure('driver_options', [
+                \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
+                \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+                \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+            ]);
+        }
     }
 
     /**
