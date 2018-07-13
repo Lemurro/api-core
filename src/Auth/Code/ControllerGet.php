@@ -2,7 +2,7 @@
 /**
  * Получение кода аутентификации
  *
- * @version 26.05.2018
+ * @version 13.07.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -20,13 +20,12 @@ class ControllerGet extends Controller
     /**
      * Стартовый метод
      *
-     * @version 26.05.2018
+     * @version 13.07.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
     {
-        $result = (new ActionGet($this->dic))->run($this->request->get('auth_id'));
-        $this->response->setData($result);
+        $this->response->setData((new ActionGet($this->dic))->run($this->request->get('auth_id')));
         $this->response->send();
     }
 }

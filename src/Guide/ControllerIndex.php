@@ -2,7 +2,7 @@
 /**
  * Список справочника
  *
- * @version 01.07.2018
+ * @version 13.07.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -24,7 +24,7 @@ class ControllerIndex extends Controller
     /**
      * Стартовый метод
      *
-     * @version 01.07.2018
+     * @version 13.07.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -39,8 +39,7 @@ class ControllerIndex extends Controller
             if (isset(SettingsGuides::CLASSES[$this->request->get('type')])) {
                 $action = 'Lemurro\\Api\\App\\Guide\\' . SettingsGuides::CLASSES[$this->request->get('type')] . '\\ActionIndex';
                 $class = new $action($this->dic);
-                $result = call_user_func([$class, 'run']);
-                $this->response->setData($result);
+                $this->response->setData(call_user_func([$class, 'run']));
             } else {
                 $this->response = new RedirectResponse(SettingsGeneral::SHORT_ROOT_PATH . 'unknown-guide-type');
             }

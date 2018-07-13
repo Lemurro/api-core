@@ -2,7 +2,7 @@
 /**
  * Получение пользователя
  *
- * @version 21.06.2018
+ * @version 13.07.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -21,7 +21,7 @@ class ControllerGet extends Controller
     /**
      * Стартовый метод
      *
-     * @version 21.06.2018
+     * @version 13.07.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -34,8 +34,7 @@ class ControllerGet extends Controller
         if (count($checker_result) > 0) {
             $this->response->setData($checker_result);
         } else {
-            $result = (new ActionGet($this->dic))->run($this->request->get('id'));
-            $this->response->setData($result);
+            $this->response->setData((new ActionGet($this->dic))->run($this->request->get('id')));
         }
 
         $this->response->send();

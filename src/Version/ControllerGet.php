@@ -2,7 +2,7 @@
 /**
  * Получим номер последней версии приложения
  *
- * @version 26.05.2018
+ * @version 13.07.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -20,14 +20,12 @@ class ControllerGet extends Controller
     /**
      * Стартовый метод
      *
-     * @version 26.05.2018
+     * @version 13.07.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
     {
-        $result = (new ActionGet())->run();
-
-        $this->response->setData($result);
+        $this->response->setData((new ActionGet())->run());
         $this->response->send();
     }
 }
