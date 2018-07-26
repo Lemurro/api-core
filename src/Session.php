@@ -2,7 +2,7 @@
 /**
  * Проверка валидности сессии
  *
- * @version 22.03.2018
+ * @version 26.07.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -25,7 +25,7 @@ class Session
      *
      * @return array
      *
-     * @version 22.03.2018
+     * @version 26.07.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function check($session_id)
@@ -41,6 +41,20 @@ class Session
             ->where_equal('session', $session_id)
             ->find_one();
         if (is_object($session)) {
+            if (SettingsGeneral::SESSIONS_BINDING_TO_IP && $session->ip !== $_SERVER['REMOTE_ADDR']) {
+                $session->delete();
+
+                return [
+                    'errors' => [
+                        [
+                            'status' => '401 Unauthorized',
+                            'code'   => 'info',
+                            'title'  => 'Необходимо авторизоваться.',
+                        ],
+                    ],
+                ];
+            }
+
             $session->checked_at = $checked_at;
             $session->save();
 

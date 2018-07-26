@@ -2,12 +2,13 @@
 /**
  * Проверка кода аутентификации
  *
- * @version 26.05.2018
+ * @version 26.07.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
 
+use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\RandomKey;
 
@@ -27,7 +28,7 @@ class ActionCheck extends Action
      *
      * @return array
      *
-     * @version 26.05.2018
+     * @version 26.07.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($auth_id, $auth_code, $device_info)
@@ -49,6 +50,11 @@ class ActionCheck extends Action
                 $session->user_id = $auth->user_id;
                 $session->created_at = $created_at;
                 $session->checked_at = $created_at;
+
+                if (SettingsGeneral::SESSIONS_BINDING_TO_IP) {
+                    $session->ip = $_SERVER['REMOTE_ADDR'];
+                }
+
                 $session->save();
 
                 if (is_object($session) AND isset($session->id)) {
