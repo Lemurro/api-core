@@ -2,14 +2,13 @@
 /**
  * Отправка SMS
  *
- * @version 01.01.2018
+ * @version 26.07.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core\SMS;
 
 use Lemurro\Api\App\Configs\SettingsGeneral;
-use Lemurro\Api\App\Configs\SettingsSMS;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
@@ -50,27 +49,16 @@ class SMS
      *
      * @return boolean
      *
-     * @version 01.01.2018
+     * @version 26.07.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    public function send($phone, $message, $gateway = SettingsSMS::DEFAULT_GATEWAY)
+    public function send($phone, $message, $gateway = null)
     {
-        switch ($gateway) {
-            case 'p1sms':
-                $result = GatewayP1SMS::send($phone, $message);
-                break;
-
-            case 'smsru':
-                $result = GatewaySMSRU::send($phone, $message);
-                break;
-
-            default:
-                $result = [
-                    'success' => false,
-                    'message' => 'Указанный шлюз отсутствует.',
-                ];
-                break;
+        if ($gateway === null) {
+            $gateway = new GatewaySMSRU();
         }
+
+        $result = $gateway->send($phone, $message);
 
         if ($result['success']) {
             $this->log->info($result['message']);

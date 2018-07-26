@@ -2,7 +2,7 @@
 /**
  * Шлюз для отправки sms: sms.ru
  *
- * @version 01.01.2018
+ * @version 26.07.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -25,13 +25,13 @@ class GatewaySMSRU
      *
      * @return array
      *
-     * @version 01.01.2018
+     * @version 26.07.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    static function send($phone, $message)
+    public function send($phone, $message)
     {
         $phone_number = preg_replace('/[^0-9]/', '', $phone);
-        $result = file_get_contents('https://sms.ru/sms/send?api_id=' . SettingsSMS::GATEWAYS['smsru']['api_id'] . '&to=' . $phone_number . '&msg=' . urlencode($message) . '&json=1');
+        $result = file_get_contents('https://sms.ru/sms/send?api_id=' . SettingsSMS::SMSRU_API_ID . '&to=' . $phone_number . '&msg=' . urlencode($message) . '&json=1');
 
         if ($result != '') {
             $parsed = json_decode($result, true);
