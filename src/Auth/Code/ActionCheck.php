@@ -59,11 +59,11 @@ class ActionCheck extends Action
 
                 if (is_object($session) AND isset($session->id)) {
                     $history_registration = \ORM::for_table('history_registrations')->create();
-                    $history_registration->device_uuid = $device_info['uuid'];
-                    $history_registration->device_platform = $device_info['platform'];
-                    $history_registration->device_version = $device_info['version'];
-                    $history_registration->device_manufacturer = $device_info['manufacturer'];
-                    $history_registration->device_model = $device_info['model'];
+                    $history_registration->device_uuid = (isset($device_info['uuid']) ? $device_info['uuid'] : 'unknown');
+                    $history_registration->device_platform = (isset($device_info['platform']) ? $device_info['platform'] : 'unknown');
+                    $history_registration->device_version = (isset($device_info['version']) ? $device_info['version'] : 'unknown');
+                    $history_registration->device_manufacturer = (isset($device_info['manufacturer']) ? $device_info['manufacturer'] : 'unknown');
+                    $history_registration->device_model = (isset($device_info['model']) ? $device_info['model'] : 'unknown');
                     $history_registration->created_at = $created_at;
                     $history_registration->save();
 
