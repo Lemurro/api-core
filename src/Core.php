@@ -2,7 +2,7 @@
 /**
  * Инициализация приложения
  *
- * @version 11.07.2018
+ * @version 17.08.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -14,6 +14,7 @@ use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\App\Configs\SettingsMail;
 use Lemurro\Api\App\DIC as AppDIC;
 use Lemurro\Api\App\Response as AppResponse;
+use Lemurro\Api\Core\Checker\Checker;
 use Lemurro\Api\Core\DataChangeLogs\Insert as DataChangeLogsInsert;
 use Lemurro\Api\Core\SMS\SMS;
 use Lemurro\Api\Core\Users\ActionGet as GetUser;
@@ -117,7 +118,7 @@ class Core
     /**
      * Инициализация DI
      *
-     * @version 26.05.2018
+     * @version 17.08.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function initDI()
@@ -186,6 +187,10 @@ class Core
             $log->pushHandler(new StreamHandler(SettingsGeneral::FULL_ROOT_PATH . 'logs/main.log'));
 
             return $log;
+        };
+
+        $this->dic['checker'] = function ($c) {
+            return new Checker($c);
         };
     }
 

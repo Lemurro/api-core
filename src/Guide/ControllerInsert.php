@@ -2,7 +2,7 @@
 /**
  * Добавление элемента в справочник
  *
- * @version 13.07.2018
+ * @version 17.08.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -11,7 +11,6 @@ namespace Lemurro\Api\Core\Guide;
 use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\App\Configs\SettingsGuides;
 use Lemurro\Api\Core\Abstracts\Controller;
-use Lemurro\Api\Core\Checker\Checker;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
@@ -24,7 +23,7 @@ class ControllerInsert extends Controller
     /**
      * Стартовый метод
      *
-     * @version 13.07.2018
+     * @version 17.08.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -36,7 +35,7 @@ class ControllerInsert extends Controller
                 'access' => 'create-update',
             ],
         ];
-        $checker_result = (new Checker($this->dic))->run($checker_checks);
+        $checker_result = $this->dic['checker']->run($checker_checks);
         if (count($checker_result) > 0) {
             $this->response->setData($checker_result);
         } else {
