@@ -2,7 +2,7 @@
 /**
  * Отправка электронных писем
  *
- * @version 26.05.2018
+ * @version 10.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -13,6 +13,7 @@ use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\App\Configs\SettingsMail;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 
 /**
@@ -60,11 +61,9 @@ class Mailer
      * @param array  $images        Массив изображений для вставки в письмо
      * @param array  $files         Массив файлов для прикрепления к письму
      *
-     * @throws \PHPMailer\PHPMailer\Exception
-     *
      * @return boolean
      *
-     * @version 26.05.2018
+     * @version 10.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function send($template_name, $subject, $email_tos, $template_data, $images = [], $files = [])
@@ -102,14 +101,18 @@ class Mailer
                 if (count($files) > 0) {
                     foreach ($files as $filename) {
                         if (is_readable($filename)) {
-                            $this->phpmailer->addAttachment($filename);
+                            try {
+                                $this->phpmailer->addAttachment($filename);
+                            } catch (Exception $e) {
+                            }
                         }
                     }
                 }
 
                 // Связываем данные с шаблоном
+                $template = constant('\Lemurro\Api\App\Configs\EmailTemplates::' . $template_name);
                 $message = EmailTemplates::HEADER;
-                $message .= strtr(constant('\Lemurro\Api\App\Configs\EmailTemplates::' . $template_name), $template_data);
+                $message .= strtr($template, $template_data);
                 $message .= EmailTemplates::FOOTER;
 
                 $this->phpmailer->Subject = iconv('utf-8', 'windows-1251', $subject);
@@ -125,12 +128,16 @@ class Mailer
                     return false;
                 }
 
-                if (!$this->phpmailer->Send()) {
-                    $this->log->warning('При отправке письма произошла ошибка: "' . $this->phpmailer->ErrorInfo . '".');
+                try {
+                    if (!$this->phpmailer->Send()) {
+                        $this->log->warning('При отправке письма произошла ошибка: "' . $this->phpmailer->ErrorInfo . '".');
 
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } catch (Exception $e) {
                     return false;
-                } else {
-                    return true;
                 }
             }
         } else {

@@ -2,7 +2,7 @@
 /**
  * Изменение пользователя
  *
- * @version 17.08.2018
+ * @version 10.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -20,7 +20,7 @@ class ControllerSave extends Controller
     /**
      * Стартовый метод
      *
-     * @version 17.08.2018
+     * @version 10.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -33,7 +33,10 @@ class ControllerSave extends Controller
         if (count($checker_result) > 0) {
             $this->response->setData($checker_result);
         } else {
-            $this->response->setData((new ActionSave($this->dic))->run($this->request->get('id'), $this->request->get('data')));
+            $this->response->setData((new ActionSave($this->dic))->run(
+                $this->request->get('id'),
+                $this->request->get('data')
+            ));
         }
 
         $this->response->send();

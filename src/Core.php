@@ -2,7 +2,7 @@
 /**
  * Инициализация приложения
  *
- * @version 17.08.2018
+ * @version 10.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -73,13 +73,15 @@ class Core
     /**
      * Инициализация PDO
      *
-     * @version 11.07.2018
+     * @version 10.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function initDatabase()
     {
         if (SettingsDatabase::NEED_CONNECT) {
-            \ORM::configure('connection_string', 'mysql:host=' . SettingsDatabase::HOST . ';port=' . SettingsDatabase::PORT . ';dbname=' . SettingsDatabase::DBNAME);
+            $connection_string = 'mysql:host=' . SettingsDatabase::HOST . ';port=' . SettingsDatabase::PORT . ';dbname=' . SettingsDatabase::DBNAME;
+
+            \ORM::configure('connection_string', $connection_string);
             \ORM::configure('username', SettingsDatabase::USERNAME);
             \ORM::configure('password', SettingsDatabase::PASSWORD);
             \ORM::configure('logging', SettingsDatabase::LOGGING);
@@ -197,7 +199,7 @@ class Core
     /**
      * Старт
      *
-     * @version 27.06.2018
+     * @version 10.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -210,7 +212,9 @@ class Core
             (new AppResponse())->run($this->response);
 
             if ($this->request->getMethod() == 'OPTIONS') {
-                $this->response->headers->set('Access-Control-Allow-Methods', 'OPTIONS, ' . $this->request->headers->get('access-control-request-method'));
+                $allow_methods = 'OPTIONS, ' . $this->request->headers->get('access-control-request-method');
+
+                $this->response->headers->set('Access-Control-Allow-Methods', $allow_methods);
                 $this->response->send();
             } else {
                 $controller = $this->request->get('_controller');

@@ -2,7 +2,7 @@
 /**
  * Получение кода аутентификации
  *
- * @version 03.07.2018
+ * @version 10.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -30,7 +30,7 @@ class ActionGet extends Action
      *
      * @return array
      *
-     * @version 03.07.2018
+     * @version 10.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($auth_id)
@@ -89,7 +89,12 @@ class ActionGet extends Action
                         /** @var Mailer $mailer */
                         $mailer = $this->dic['mailer'];
 
-                        $result = $mailer->send('AUTH_CODE', 'Код для входа в приложение для пользователя: ' . $auth_id, [$auth_id], ['[APP_NAME]' => SettingsGeneral::APP_NAME, '[SECRET]' => $secret]);
+                        $template_name = 'AUTH_CODE';
+                        $subject = 'Код для входа в приложение для пользователя: ' . $auth_id;
+                        $email_tos = [$auth_id];
+                        $template_data = ['[APP_NAME]' => SettingsGeneral::APP_NAME, '[SECRET]' => $secret];
+
+                        $result = $mailer->send($template_name, $subject, $email_tos, $template_data);
                         break;
 
                     case 'phone':

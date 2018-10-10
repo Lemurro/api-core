@@ -2,7 +2,7 @@
 /**
  * Проверка кода аутентификации
  *
- * @version 13.07.2018
+ * @version 10.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -20,12 +20,16 @@ class ControllerCheck extends Controller
     /**
      * Стартовый метод
      *
-     * @version 13.07.2018
+     * @version 10.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
     {
-        $this->response->setData((new ActionCheck($this->dic))->run($this->request->get('auth_id'), $this->request->get('auth_code'), $this->request->get('device_info')));
+        $this->response->setData((new ActionCheck($this->dic))->run(
+            $this->request->get('auth_id'),
+            $this->request->get('auth_code'),
+            $this->request->get('device_info')
+        ));
         $this->response->send();
     }
 }
