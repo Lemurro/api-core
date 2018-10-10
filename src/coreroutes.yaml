@@ -91,6 +91,11 @@ users_remove:
   requirements:
     id: '\d+'
 
+users_login_by_user:
+  path: /users/login_by_user
+  controller: '\Lemurro\Api\Core\Users\ControllerLoginByUser'
+  methods: [POST, OPTIONS]
+
 # /user
 
 user:
