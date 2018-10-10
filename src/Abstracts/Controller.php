@@ -2,7 +2,7 @@
 /**
  * Шаблон контроллера
  *
- * @version 06.06.2018
+ * @version 10.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -39,9 +39,9 @@ abstract class Controller
      *
      * @param Request      $request  Объект запроса
      * @param JsonResponse $response Объект ответа
-     * @param Container    $di       Объект контейнера зависимостей
+     * @param Container    $dic      Объект контейнера зависимостей
      *
-     * @version 06.06.2018
+     * @version 10.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function __construct($request, $response, $dic)
