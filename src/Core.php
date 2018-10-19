@@ -2,7 +2,7 @@
 /**
  * Инициализация приложения
  *
- * @version 18.10.2018
+ * @version 19.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -199,7 +199,7 @@ class Core
     /**
      * Старт
      *
-     * @version 18.10.2018
+     * @version 19.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -208,6 +208,8 @@ class Core
             $matcher = $this->url_matcher->match($this->request->getPathInfo());
             $this->request->attributes->add($matcher);
 
+            (new AppResponse())->run($this->response);
+
             if ($this->request->getMethod() == 'OPTIONS') {
                 $allow_methods = 'OPTIONS, ' . $this->request->headers->get('access-control-request-method');
 
@@ -215,7 +217,6 @@ class Core
                 $this->response->send();
             } else {
                 (new AppDIC())->run($this->dic);
-                (new AppResponse())->run($this->response);
 
                 $controller = $this->request->get('_controller');
                 $class = new $controller($this->request, $this->response, $this->dic);
