@@ -2,7 +2,7 @@
 /**
  * Проверка прав доступа
  *
- * @version 10.10.2018
+ * @version 24.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -23,12 +23,12 @@ class Role
      *
      * @return array
      *
-     * @version 10.10.2018
+     * @version 24.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($data, $user_roles)
     {
-        if (count($user_roles) > 0) {
+        if (is_array($user_roles) && count($user_roles) > 0) {
             if (isset($user_roles['admin'])) {
                 return [];
             } else {
