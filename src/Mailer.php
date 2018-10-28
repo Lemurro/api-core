@@ -2,7 +2,7 @@
 /**
  * Отправка электронных писем
  *
- * @version 10.10.2018
+ * @version 28.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -40,7 +40,7 @@ class Mailer
      *
      * @throws \Exception
      *
-     * @version 01.01.2018
+     * @version 28.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function __construct($dic)
@@ -48,7 +48,7 @@ class Mailer
         $this->phpmailer = $dic['phpmailer'];
 
         $this->log = new Logger('Mailer');
-        $this->log->pushHandler(new StreamHandler(SettingsGeneral::FULL_ROOT_PATH . 'logs/mailer.log'));
+        $this->log->pushHandler(new StreamHandler(SettingsGeneral::LOGS_PATH . 'mailer.log'));
     }
 
     /**

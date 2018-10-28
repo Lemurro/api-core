@@ -2,7 +2,7 @@
 /**
  * Отправка SMS
  *
- * @version 26.07.2018
+ * @version 28.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -31,13 +31,13 @@ class SMS
      *
      * @throws \Exception
      *
-     * @version 01.01.2018
+     * @version 28.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function __construct()
     {
         $this->log = new Logger('SMS');
-        $this->log->pushHandler(new StreamHandler(SettingsGeneral::FULL_ROOT_PATH . 'logs/sms.log'));
+        $this->log->pushHandler(new StreamHandler(SettingsGeneral::LOGS_PATH . 'sms.log'));
     }
 
     /**

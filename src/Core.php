@@ -2,7 +2,7 @@
 /**
  * Инициализация приложения
  *
- * @version 19.10.2018
+ * @version 28.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -120,7 +120,7 @@ class Core
     /**
      * Инициализация DI
      *
-     * @version 17.08.2018
+     * @version 28.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function initDI()
@@ -186,7 +186,7 @@ class Core
 
         $this->dic['log'] = function () {
             $log = new Logger('MainLog');
-            $log->pushHandler(new StreamHandler(SettingsGeneral::FULL_ROOT_PATH . 'logs/main.log'));
+            $log->pushHandler(new StreamHandler(SettingsGeneral::LOGS_PATH . 'main.log'));
 
             return $log;
         };

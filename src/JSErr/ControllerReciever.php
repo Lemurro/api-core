@@ -4,7 +4,7 @@
  *
  * @example http://path-to-api/jserrors?msg=message&file=file.js&line=32&col=3&err={"json-string"}
  *
- * @version 26.05.2018
+ * @version 28.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -27,7 +27,7 @@ class ControllerReciever extends Controller
      *
      * @throws \Exception
      *
-     * @version 26.05.2018
+     * @version 28.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -43,7 +43,7 @@ class ControllerReciever extends Controller
         ];
 
         $log = new Logger('JSErrLog');
-        $log->pushHandler(new StreamHandler(SettingsGeneral::FULL_ROOT_PATH . 'logs/jserr.log'));
+        $log->pushHandler(new StreamHandler(SettingsGeneral::LOGS_PATH . 'jserr.log'));
         $log->error(implode(' | ', $array));
 
         echo $one_pixel_image;
