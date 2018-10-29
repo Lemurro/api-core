@@ -2,7 +2,7 @@
 /**
  * Вход под указанным пользователем
  *
- * @version 10.10.2018
+ * @version 29.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -20,7 +20,7 @@ class ControllerLoginByUser extends Controller
     /**
      * Стартовый метод
      *
-     * @version 10.10.2018
+     * @version 29.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -30,10 +30,10 @@ class ControllerLoginByUser extends Controller
             'role' => [],
         ];
         $checker_result = $this->dic['checker']->run($checker_checks);
-        if (count($checker_result) > 0) {
-            $this->response->setData($checker_result);
-        } else {
+        if (is_array($checker_result) && count($checker_result) == 0) {
             $this->response->setData((new ActionLoginByUser($this->dic))->run($this->request->get('user_id')));
+        } else {
+            $this->response->setData($checker_result);
         }
 
         $this->response->send();

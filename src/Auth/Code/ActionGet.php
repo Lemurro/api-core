@@ -2,7 +2,7 @@
 /**
  * Получение кода аутентификации
  *
- * @version 10.10.2018
+ * @version 29.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -30,7 +30,7 @@ class ActionGet extends Action
      *
      * @return array
      *
-     * @version 10.10.2018
+     * @version 29.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($auth_id)
@@ -38,7 +38,7 @@ class ActionGet extends Action
         (new Code())->clear($auth_id);
 
         $user = (new FindUser())->run($auth_id);
-        if (count($user) == 0) {
+        if (is_array($user) && count($user) == 0) {
             if (SettingsGeneral::CAN_REGISTRATION_USERS) {
                 $insert_user = (new InsertUser($this->dic))->run([
                     'auth_id' => $auth_id,

@@ -2,7 +2,7 @@
 /**
  * Отправка электронных писем
  *
- * @version 28.10.2018
+ * @version 29.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -63,7 +63,7 @@ class Mailer
      *
      * @return boolean
      *
-     * @version 10.10.2018
+     * @version 29.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function send($template_name, $subject, $email_tos, $template_data, $images = [], $files = [])
@@ -86,7 +86,7 @@ class Mailer
                 }
 
                 // Прикрепляем другие изображения при необходимости
-                if (count($images) > 0) {
+                if (is_array($images) && count($images) > 0) {
                     foreach ($images as $image_code => $image_filename) {
                         $filename = SettingsGeneral::FULL_ROOT_PATH . $image_filename;
                         if (is_readable($filename)) {
@@ -98,7 +98,7 @@ class Mailer
                 }
 
                 // Прикрепляем файлы при необходимости
-                if (count($files) > 0) {
+                if (is_array($files) && count($files) > 0) {
                     foreach ($files as $filename) {
                         if (is_readable($filename)) {
                             try {
@@ -118,7 +118,7 @@ class Mailer
                 $this->phpmailer->Subject = iconv('utf-8', 'windows-1251', $subject);
                 $this->phpmailer->MsgHTML(iconv('utf-8', 'windows-1251', $message));
 
-                if (count($email_tos) > 0) {
+                if (is_array($email_tos) && count($email_tos) > 0) {
                     foreach ($email_tos as $one_email) {
                         $this->phpmailer->addAddress($one_email);
                     }

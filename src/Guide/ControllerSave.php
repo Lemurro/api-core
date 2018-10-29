@@ -2,7 +2,7 @@
 /**
  * Изменение элемента в справочнике
  *
- * @version 10.10.2018
+ * @version 29.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -23,7 +23,7 @@ class ControllerSave extends Controller
     /**
      * Стартовый метод
      *
-     * @version 10.10.2018
+     * @version 29.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -36,9 +36,7 @@ class ControllerSave extends Controller
             ],
         ];
         $checker_result = $this->dic['checker']->run($checker_checks);
-        if (count($checker_result) > 0) {
-            $this->response->setData($checker_result);
-        } else {
+        if (is_array($checker_result) && count($checker_result) == 0) {
             if (isset(SettingsGuides::CLASSES[$this->request->get('type')])) {
                 $action = 'Lemurro\\Api\\App\\Guide\\' . SettingsGuides::CLASSES[$this->request->get('type')] . '\\ActionSave';
                 $class = new $action($this->dic);
@@ -50,6 +48,8 @@ class ControllerSave extends Controller
             } else {
                 $this->response = new RedirectResponse(SettingsGeneral::SHORT_ROOT_PATH . 'unknown-guide-type');
             }
+        } else {
+            $this->response->setData($checker_result);
         }
 
         $this->response->send();
