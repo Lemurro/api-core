@@ -2,7 +2,7 @@
 /**
  * Список пользователей
  *
- * @version 27.11.2018
+ * @version 11.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -59,7 +59,7 @@ class ActionIndex extends Action
     /**
      * Получим информацию о датах последних действия
      *
-     * @version 27.11.2018
+     * @version 11.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function getLastActionDates()
@@ -74,7 +74,6 @@ class ActionIndex extends Action
         if (is_array($sessions) && count($sessions) > 0) {
             foreach ($sessions as $session) {
                 $dt = Carbon::createFromFormat('Y-m-d H:i:s', $session->checked_at, SettingsGeneral::TIMEZONE);
-                $dt->timezone = $this->dic['user']['timezone'];
 
                 $this->last_action_dates[$session->user_id] = $dt->format('d.m.Y H:i:s');
             }
@@ -84,7 +83,7 @@ class ActionIndex extends Action
     /**
      * Получим информацию о пользователях
      *
-     * @version 27.11.2018
+     * @version 11.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function getInfoUsers()
@@ -101,7 +100,7 @@ class ActionIndex extends Action
             if ($this->info_users_count > 0) {
                 foreach ($this->info_users_items as &$item) {
                     $item['id'] = $item['user_id'];
-                    $item['last_action_date'] = (isset($this->last_action_dates[$item['user_id']]) ? $this->last_action_dates[$item['user_id']] : 'Нет');
+                    $item['last_action_date'] = (isset($this->last_action_dates[$item['user_id']]) ? $this->last_action_dates[$item['user_id']] : 'отсутствует');
                 }
             }
         } else {
