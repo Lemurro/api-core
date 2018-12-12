@@ -51,7 +51,7 @@ class Session
                         [
                             'status' => '401 Unauthorized',
                             'code'   => 'info',
-                            'title'  => 'Необходимо авторизоваться.',
+                            'title'  => 'Необходимо авторизоваться',
                         ],
                     ],
                 ];
@@ -67,7 +67,7 @@ class Session
                     [
                         'status' => '401 Unauthorized',
                         'code'   => 'info',
-                        'title'  => 'Необходимо авторизоваться.',
+                        'title'  => 'Необходимо авторизоваться',
                     ],
                 ],
             ];

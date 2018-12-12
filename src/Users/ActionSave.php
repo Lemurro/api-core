@@ -47,7 +47,7 @@ class ActionSave extends Action
                     [
                         'status' => '400 Bad Request',
                         'code'   => 'info',
-                        'title'  => 'Пользователь с такими данными для входа уже существует.',
+                        'title'  => 'Пользователь с такими данными для входа уже существует',
                     ],
                 ],
             ];
@@ -94,7 +94,7 @@ class ActionSave extends Action
                                 [
                                     'status' => '500 Internal Server Error',
                                     'code'   => 'danger',
-                                    'title'  => 'Произошла ошибка при изменении информации пользователя. Попробуйте ещё раз.',
+                                    'title'  => 'Произошла ошибка при изменении информации пользователя, попробуйте ещё раз',
                                 ],
                             ],
                         ];
@@ -105,7 +105,7 @@ class ActionSave extends Action
                             [
                                 'status' => '404 Not Found',
                                 'code'   => 'info',
-                                'title'  => 'Информация о пользователе не найдена.',
+                                'title'  => 'Информация о пользователе не найдена',
                             ],
                         ],
                     ];
@@ -116,7 +116,7 @@ class ActionSave extends Action
                         [
                             'status' => '500 Internal Server Error',
                             'code'   => 'danger',
-                            'title'  => 'Произошла ошибка при изменении пользователя. Попробуйте ещё раз.',
+                            'title'  => 'Произошла ошибка при изменении пользователя, попробуйте ещё раз',
                         ],
                     ],
                 ];
@@ -127,7 +127,7 @@ class ActionSave extends Action
                     [
                         'status' => '404 Not Found',
                         'code'   => 'info',
-                        'title'  => 'Пользователь не найден.',
+                        'title'  => 'Пользователь не найден',
                     ],
                 ],
             ];

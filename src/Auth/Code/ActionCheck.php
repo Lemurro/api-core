@@ -81,7 +81,7 @@ class ActionCheck extends Action
                             [
                                 'status' => '500 Internal Server Error',
                                 'code'   => 'danger',
-                                'title'  => 'Произошла ошибка при аутентификации. Попробуйте ещё раз.',
+                                'title'  => 'Произошла ошибка при аутентификации, попробуйте ещё раз',
                             ],
                         ],
                     ];
@@ -96,7 +96,7 @@ class ActionCheck extends Action
                             [
                                 'status' => '400 Bad Request',
                                 'code'   => 'warning',
-                                'title'  => 'Неверный код. Попробуйте ещё раз.',
+                                'title'  => 'Неверный код, попробуйте ещё раз',
                             ],
                         ],
                     ];
@@ -108,7 +108,7 @@ class ActionCheck extends Action
                             [
                                 'status' => '401 Unauthorized',
                                 'code'   => 'danger',
-                                'title'  => 'Попытка взлома. Запросите код повторно.',
+                                'title'  => 'Попытка взлома, запросите код повторно',
                             ],
                         ],
                     ];
@@ -120,7 +120,7 @@ class ActionCheck extends Action
                     [
                         'status' => '400 Bad Request',
                         'code'   => 'warning',
-                        'title'  => 'Код отсутствует. Перезапустите приложение.',
+                        'title'  => 'Код отсутствует, перезапустите приложение',
                     ],
                 ],
             ];

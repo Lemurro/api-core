@@ -65,7 +65,7 @@ class ActionRemove extends Action
                             [
                                 'status' => '500 Internal Server Error',
                                 'code'   => 'danger',
-                                'title'  => 'Произошла ошибка при удалении пользователя. Попробуйте ещё раз.',
+                                'title'  => 'Произошла ошибка при удалении пользователя, попробуйте ещё раз',
                             ],
                         ],
                     ];
@@ -76,7 +76,7 @@ class ActionRemove extends Action
                         [
                             'status' => '404 Not Found',
                             'code'   => 'info',
-                            'title'  => 'Информация о пользователе не найдена.',
+                            'title'  => 'Информация о пользователе не найдена',
                         ],
                     ],
                 ];
@@ -87,7 +87,7 @@ class ActionRemove extends Action
                     [
                         'status' => '404 Not Found',
                         'code'   => 'info',
-                        'title'  => 'Пользователь не найден.',
+                        'title'  => 'Пользователь не найден',
                     ],
                 ],
             ];

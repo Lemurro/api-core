@@ -56,7 +56,7 @@ class ActionGet extends Action
                     [
                         'status' => '404 Not Found',
                         'code'   => 'info',
-                        'title'  => 'Пользователь не найден.',
+                        'title'  => 'Пользователь не найден',
                     ],
                 ],
             ];

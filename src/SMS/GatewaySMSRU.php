@@ -2,7 +2,7 @@
 /**
  * Шлюз для отправки sms: sms.ru
  *
- * @version 15.10.2018
+ * @version 12.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -25,7 +25,7 @@ class GatewaySMSRU
      *
      * @return array
      *
-     * @version 15.10.2018
+     * @version 12.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function send($phone, $message)
@@ -58,7 +58,7 @@ class GatewaySMSRU
         } else {
             return [
                 'success' => false,
-                'message' => 'Ошибка запроса к API.',
+                'message' => 'Ошибка запроса к API',
             ];
         }
     }

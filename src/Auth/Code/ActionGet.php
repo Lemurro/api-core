@@ -56,7 +56,7 @@ class ActionGet extends Action
                         [
                             'status' => '404 Not Found',
                             'code'   => 'warning',
-                            'title'  => 'Пользователь не найден.',
+                            'title'  => 'Пользователь не найден',
                         ],
                     ],
                 ];
@@ -112,7 +112,7 @@ class ActionGet extends Action
                                 [
                                     'status' => '400 Bad Request',
                                     'code'   => 'warning',
-                                    'title'  => 'Неверный вид аутентификации. Проверьте настройки.',
+                                    'title'  => 'Неверный вид аутентификации, проверьте настройки',
                                 ],
                             ],
                         ];
@@ -122,7 +122,7 @@ class ActionGet extends Action
                 if ($result) {
                     return [
                         'data' => [
-                            'message' => 'Письмо с кодом успешно отправлено на указанную электронную почту.',
+                            'message' => 'Письмо с кодом успешно отправлено на указанную электронную почту',
                         ],
                     ];
                 } else {
@@ -131,7 +131,7 @@ class ActionGet extends Action
                             [
                                 'status' => '500 Internal Server Error',
                                 'code'   => 'danger',
-                                'title'  => 'Произошла ошибка при отправке кода. Попробуйте ещё раз.',
+                                'title'  => 'Произошла ошибка при отправке кода, попробуйте ещё раз',
                             ],
                         ],
                     ];
@@ -149,7 +149,7 @@ class ActionGet extends Action
                     [
                         'status' => '500 Internal Server Error',
                         'code'   => 'danger',
-                        'title'  => 'Произошла ошибка при создании кода. Попробуйте ещё раз.',
+                        'title'  => 'Произошла ошибка при создании кода, попробуйте ещё раз',
                     ],
                 ],
             ];
