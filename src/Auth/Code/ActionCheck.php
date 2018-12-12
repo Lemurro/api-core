@@ -11,6 +11,7 @@ namespace Lemurro\Api\Core\Auth\Code;
 use Lemurro\Api\App\Configs\SettingsAuth;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\RandomKey;
+use ORM;
 
 /**
  * Class ActionCheck
@@ -37,7 +38,7 @@ class ActionCheck extends Action
 
         $cleaner->clear();
 
-        $auth = \ORM::for_table('auth_codes')
+        $auth = ORM::for_table('auth_codes')
             ->where_equal('auth_id', $auth_id)
             ->find_one();
         if (is_object($auth)) {
@@ -45,7 +46,7 @@ class ActionCheck extends Action
                 $secret = RandomKey::generate(100);
                 $created_at = $this->dic['datetimenow'];
 
-                $session = \ORM::for_table('sessions')->create();
+                $session = ORM::for_table('sessions')->create();
                 $session->session = $secret;
                 $session->user_id = $auth->user_id;
                 $session->created_at = $created_at;
@@ -58,7 +59,7 @@ class ActionCheck extends Action
                 $session->save();
 
                 if (is_object($session) AND isset($session->id)) {
-                    $history_registration = \ORM::for_table('history_registrations')->create();
+                    $history_registration = ORM::for_table('history_registrations')->create();
                     $history_registration->device_uuid = (isset($device_info['uuid']) ? $device_info['uuid'] : 'unknown');
                     $history_registration->device_platform = (isset($device_info['platform']) ? $device_info['platform'] : 'unknown');
                     $history_registration->device_version = (isset($device_info['version']) ? $device_info['version'] : 'unknown');

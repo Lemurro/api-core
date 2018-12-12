@@ -2,7 +2,7 @@
 /**
  * Список пользователей
  *
- * @version 11.12.2018
+ * @version 12.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -83,12 +83,12 @@ class ActionIndex extends Action
     /**
      * Получим информацию о пользователях
      *
-     * @version 11.12.2018
+     * @version 12.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function getInfoUsers()
     {
-        $this->info_users_items = \ORM::for_table('info_users')
+        $this->info_users_items = ORM::for_table('info_users')
             ->table_alias('iu')
             ->left_outer_join('users', ['u.id', '=', 'iu.user_id'], 'u')
             ->where_null('iu.deleted_at')

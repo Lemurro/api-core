@@ -21,6 +21,8 @@ use Lemurro\Api\Core\SMS\SMS;
 use Lemurro\Api\Core\Users\ActionGet as GetUser;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use ORM;
+use PDO;
 use PHPMailer\PHPMailer\PHPMailer;
 use Pimple\Container;
 use Symfony\Component\Config\FileLocator;
@@ -74,7 +76,7 @@ class Core
     /**
      * Инициализация PDO
      *
-     * @version 10.10.2018
+     * @version 12.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function initDatabase()
@@ -82,14 +84,14 @@ class Core
         if (SettingsDatabase::NEED_CONNECT) {
             $connection_string = 'mysql:host=' . SettingsDatabase::HOST . ';port=' . SettingsDatabase::PORT . ';dbname=' . SettingsDatabase::DBNAME;
 
-            \ORM::configure('connection_string', $connection_string);
-            \ORM::configure('username', SettingsDatabase::USERNAME);
-            \ORM::configure('password', SettingsDatabase::PASSWORD);
-            \ORM::configure('logging', SettingsDatabase::LOGGING);
-            \ORM::configure('driver_options', [
-                \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION,
-                \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
-                \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+            ORM::configure('connection_string', $connection_string);
+            ORM::configure('username', SettingsDatabase::USERNAME);
+            ORM::configure('password', SettingsDatabase::PASSWORD);
+            ORM::configure('logging', SettingsDatabase::LOGGING);
+            ORM::configure('driver_options', [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
             ]);
         }
     }

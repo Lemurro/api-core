@@ -2,7 +2,7 @@
 /**
  * Изменение пользователя
  *
- * @version 04.07.2018
+ * @version 12.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -12,6 +12,7 @@ use Lemurro\Api\App\RunAfter\Users\Save as RunAfterSave;
 use Lemurro\Api\App\RunBefore\Users\Save as RunBeforeSave;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\DataChangeLogs\Insert as DataChangeLogInsert;
+use ORM;
 
 /**
  * Class ActionSave
@@ -28,14 +29,14 @@ class ActionSave extends Action
      *
      * @return array
      *
-     * @version 04.07.2018
+     * @version 12.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($id, $data)
     {
         $data = (new RunBeforeSave($this->dic))->run($data);
 
-        $check_auth_id = \ORM::for_table('users')
+        $check_auth_id = ORM::for_table('users')
             ->select('id')
             ->where_equal('auth_id', $data['auth_id'])
             ->where_not_equal('id', $id)
@@ -52,13 +53,13 @@ class ActionSave extends Action
             ];
         }
 
-        $user = \ORM::for_table('users')
+        $user = ORM::for_table('users')
             ->find_one($id);
         if (is_object($user)) {
             $user->auth_id = $data['auth_id'];
             $user->save();
             if (is_object($user) && isset($user->id)) {
-                $info = \ORM::for_table('info_users')
+                $info = ORM::for_table('info_users')
                     ->where_equal('user_id', $id)
                     ->find_one();
                 if (is_object($info)) {

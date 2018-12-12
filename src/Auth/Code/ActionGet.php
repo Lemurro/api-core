@@ -16,6 +16,7 @@ use Lemurro\Api\Core\Mailer;
 use Lemurro\Api\Core\SMS\SMS;
 use Lemurro\Api\Core\Users\ActionInsert as InsertUser;
 use Lemurro\Api\Core\Users\Find as FindUser;
+use ORM;
 
 /**
  * Class ActionGet
@@ -63,7 +64,7 @@ class ActionGet extends Action
         }
 
         $all_codes = [];
-        $auth_codes = \ORM::for_table('auth_codes')
+        $auth_codes = ORM::for_table('auth_codes')
             ->select('code')
             ->find_many();
         if (is_array($auth_codes) && count($auth_codes) > 0) {
@@ -77,7 +78,7 @@ class ActionGet extends Action
             $secret = RandomNumber::generate(4);
         }
 
-        $auth_code = \ORM::for_table('auth_codes')->create();
+        $auth_code = ORM::for_table('auth_codes')->create();
         $auth_code->auth_id = $auth_id;
         $auth_code->code = $secret;
         $auth_code->user_id = $user['id'];

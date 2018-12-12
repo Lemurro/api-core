@@ -11,6 +11,7 @@ namespace Lemurro\Api\Core;
 use Carbon\Carbon;
 use Lemurro\Api\App\Configs\SettingsAuth;
 use Lemurro\Api\App\Configs\SettingsGeneral;
+use ORM;
 
 /**
  * Class Session
@@ -34,11 +35,11 @@ class Session
         $now = Carbon::now(SettingsGeneral::TIMEZONE);
         $checked_at = $now->toDateTimeString();
 
-        \ORM::for_table('sessions')
+        ORM::for_table('sessions')
             ->where_lt('checked_at', $now->subDays(SettingsAuth::SESSIONS_OLDER_THAN))
             ->delete_many();
 
-        $session = \ORM::for_table('sessions')
+        $session = ORM::for_table('sessions')
             ->where_equal('session', $session_id)
             ->find_one();
         if (is_object($session)) {

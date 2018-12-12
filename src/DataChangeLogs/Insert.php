@@ -2,13 +2,14 @@
 /**
  * Добавление записи в лог действий
  *
- * @version 26.05.2018
+ * @version 12.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core\DataChangeLogs;
 
 use Lemurro\Api\Core\Abstracts\Action;
+use ORM;
 
 /**
  * Class Insert
@@ -27,7 +28,7 @@ class Insert extends Action
      *
      * @return boolean
      *
-     * @version 26.05.2018
+     * @version 12.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function insert($table_name, $action_name, $record_id, $data = [])
@@ -38,7 +39,7 @@ class Insert extends Action
             $user_id = 0;
         }
 
-        $log = \ORM::for_table('data_change_logs')->create();
+        $log = ORM::for_table('data_change_logs')->create();
         $log->user_id = $user_id;
         $log->table_name = $table_name;
         $log->action_name = $action_name;

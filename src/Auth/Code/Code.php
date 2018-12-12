@@ -11,6 +11,7 @@ namespace Lemurro\Api\Core\Auth\Code;
 use Carbon\Carbon;
 use Lemurro\Api\App\Configs\SettingsAuth;
 use Lemurro\Api\App\Configs\SettingsGeneral;
+use ORM;
 
 /**
  * Class Code
@@ -31,12 +32,12 @@ class Code
     {
         $now = Carbon::now(SettingsGeneral::TIMEZONE);
 
-        \ORM::for_table('auth_codes')
+        ORM::for_table('auth_codes')
             ->where_lt('created_at', $now->subHours(SettingsAuth::AUTH_CODES_OLDER_THAN))
             ->delete_many();
 
         if ($auth_id != '') {
-            \ORM::for_table('auth_codes')
+            ORM::for_table('auth_codes')
                 ->where_equal('auth_id', $auth_id)
                 ->delete_many();
         }

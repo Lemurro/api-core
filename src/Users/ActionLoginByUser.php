@@ -11,6 +11,7 @@ namespace Lemurro\Api\Core\Users;
 use Lemurro\Api\App\Configs\SettingsAuth;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\RandomKey;
+use ORM;
 
 /**
  * Class ActionLoginByUser
@@ -39,7 +40,7 @@ class ActionLoginByUser extends Action
         $secret = RandomKey::generate(100);
         $created_at = $this->dic['datetimenow'];
 
-        $session = \ORM::for_table('sessions')->create();
+        $session = ORM::for_table('sessions')->create();
         $session->session = $secret;
         $session->user_id = $user_id;
         $session->created_at = $created_at;

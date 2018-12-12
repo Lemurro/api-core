@@ -2,7 +2,7 @@
 /**
  * Добавление пользователя
  *
- * @version 26.05.2018
+ * @version 12.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -12,6 +12,7 @@ use Lemurro\Api\App\RunAfter\Users\Insert as RunAfterInsert;
 use Lemurro\Api\App\RunBefore\Users\Insert as RunBeforeInsert;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\DataChangeLogs\Insert as DataChangeLogInsert;
+use ORM;
 
 /**
  * Class ActionInsert
@@ -27,14 +28,14 @@ class ActionInsert extends Action
      *
      * @return array
      *
-     * @version 26.05.2018
+     * @version 12.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($data)
     {
         $data = (new RunBeforeInsert($this->dic))->run($data);
 
-        $check_auth_id = \ORM::for_table('users')
+        $check_auth_id = ORM::for_table('users')
             ->select('id')
             ->where_equal('auth_id', $data['auth_id'])
             ->find_one();
@@ -50,12 +51,12 @@ class ActionInsert extends Action
             ];
         }
 
-        $new_user = \ORM::for_table('users')->create();
+        $new_user = ORM::for_table('users')->create();
         $new_user->auth_id = $data['auth_id'];
         $new_user->created_at = $this->dic['datetimenow'];
         $new_user->save();
         if (is_object($new_user) && isset($new_user->id)) {
-            $new_user_info = \ORM::for_table('info_users')->create();
+            $new_user_info = ORM::for_table('info_users')->create();
 
             $result_data = [];
             if (isset($data['info_users']) && is_array($data['info_users']) && count($data['info_users']) > 0) {

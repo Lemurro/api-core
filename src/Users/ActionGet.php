@@ -2,13 +2,14 @@
 /**
  * Получение пользователя
  *
- * @version 24.04.2018
+ * @version 12.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core\Users;
 
 use Lemurro\Api\Core\Abstracts\Action;
+use ORM;
 
 /**
  * Class ActionGet
@@ -24,12 +25,12 @@ class ActionGet extends Action
      *
      * @return array
      *
-     * @version 24.04.2018
+     * @version 12.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($id)
     {
-        $record = \ORM::for_table('info_users')
+        $record = ORM::for_table('info_users')
             ->table_alias('iu')
             ->left_outer_join('users', ['u.id', '=', 'iu.user_id'], 'u')
             ->where_equal('iu.user_id', $id)
