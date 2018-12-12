@@ -81,6 +81,7 @@ class ActionInsert extends Action
 
                 $result_data['id'] = $new_user->id;
                 $result_data['auth_id'] = $data['auth_id'];
+                $result_data['last_action_date'] = 'отсутствует';
 
                 return (new RunAfterInsert($this->dic))->run($result_data);
             } else {

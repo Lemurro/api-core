@@ -85,6 +85,7 @@ class ActionSave extends Action
 
                         $result_data['id'] = $id;
                         $result_data['auth_id'] = $data['auth_id'];
+                        $result_data['last_action_date'] = $this->getLastActionDate($id);
 
                         return (new RunAfterSave($this->dic))->run($result_data);
                     } else {
@@ -130,6 +131,31 @@ class ActionSave extends Action
                     ],
                 ],
             ];
+        }
+    }
+
+    /**
+     * Получим дату последнего действия
+     *
+     * @param integer $id ИД пользователя
+     *
+     * @return string
+     *
+     * @version 12.12.2018
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     */
+    protected function getLastActionDate($id)
+    {
+        $item = ORM::for_table('sessions')
+            ->select('checked_at')
+            ->where_equal('user_id', $id)
+            ->order_by_desc('checked_at')
+            ->limit(1)
+            ->find_one();
+        if (is_object($item)) {
+            return $item->checked_at;
+        } else {
+            return 'отсутствует';
         }
     }
 }
