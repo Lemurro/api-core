@@ -8,10 +8,8 @@
 
 namespace Lemurro\Api\Core\Guide;
 
-use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\App\Configs\SettingsGuides;
 use Lemurro\Api\Core\Abstracts\Controller;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Class ControllerSave
@@ -46,7 +44,15 @@ class ControllerSave extends Controller
                     $this->request->get('data')
                 ));
             } else {
-                $this->response = new RedirectResponse(SettingsGeneral::SHORT_ROOT_PATH . 'unknown-guide-type');
+                $this->response->setData([
+                    'errors' => [
+                        [
+                            'status' => '404 Not Found',
+                            'code'   => 'info',
+                            'title'  => 'Неизвестный справочник',
+                        ],
+                    ],
+                ]);
             }
         } else {
             $this->response->setData($checker_result);
