@@ -8,8 +8,6 @@
 
 namespace Lemurro\Api\Core\Users;
 
-use Carbon\Carbon;
-use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\Core\Abstracts\Action;
 use ORM;
 
@@ -59,7 +57,7 @@ class ActionIndex extends Action
     /**
      * Получим информацию о датах последних действия
      *
-     * @version 11.12.2018
+     * @version 12.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function getLastActionDates()
@@ -73,9 +71,7 @@ class ActionIndex extends Action
             ->find_many();
         if (is_array($sessions) && count($sessions) > 0) {
             foreach ($sessions as $session) {
-                $dt = Carbon::createFromFormat('Y-m-d H:i:s', $session->checked_at, SettingsGeneral::TIMEZONE);
-
-                $this->last_action_dates[$session->user_id] = $dt->format('d.m.Y H:i:s');
+                $this->last_action_dates[$session->user_id] = $session->checked_at;
             }
         }
     }
