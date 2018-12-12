@@ -2,7 +2,7 @@
 /**
  * Инициализация приложения
  *
- * @version 28.10.2018
+ * @version 12.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Lemurro\Api\App\Configs\SettingsDatabase;
 use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\App\Configs\SettingsMail;
+use Lemurro\Api\App\Configs\SettingsPath;
 use Lemurro\Api\App\DIC as AppDIC;
 use Lemurro\Api\App\Response as AppResponse;
 use Lemurro\Api\Core\Checker\Checker;
@@ -96,12 +97,12 @@ class Core
     /**
      * Инициализация маршрутов
      *
-     * @version 26.05.2018
+     * @version 12.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function initRoutes()
     {
-        $fileLocator = new FileLocator([__DIR__, SettingsGeneral::FULL_ROOT_PATH]);
+        $fileLocator = new FileLocator([__DIR__, SettingsPath::FULL_ROOT]);
         $loader = new YamlFileLoader($fileLocator);
         $routes = $loader->load('coreroutes.yaml');
 
@@ -120,7 +121,7 @@ class Core
     /**
      * Инициализация DI
      *
-     * @version 28.10.2018
+     * @version 12.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function initDI()
@@ -186,7 +187,7 @@ class Core
 
         $this->dic['log'] = function () {
             $log = new Logger('MainLog');
-            $log->pushHandler(new StreamHandler(SettingsGeneral::LOGS_PATH . 'main.log'));
+            $log->pushHandler(new StreamHandler(SettingsPath::LOGS . 'main.log'));
 
             return $log;
         };

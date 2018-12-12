@@ -2,7 +2,7 @@
 /**
  * Отправка электронных писем
  *
- * @version 29.10.2018
+ * @version 12.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -11,6 +11,7 @@ namespace Lemurro\Api\Core;
 use Lemurro\Api\App\Configs\EmailTemplates;
 use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\App\Configs\SettingsMail;
+use Lemurro\Api\App\Configs\SettingsPath;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use PHPMailer\PHPMailer\Exception;
@@ -40,7 +41,7 @@ class Mailer
      *
      * @throws \Exception
      *
-     * @version 28.10.2018
+     * @version 12.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function __construct($dic)
@@ -48,7 +49,7 @@ class Mailer
         $this->phpmailer = $dic['phpmailer'];
 
         $this->log = new Logger('Mailer');
-        $this->log->pushHandler(new StreamHandler(SettingsGeneral::LOGS_PATH . 'mailer.log'));
+        $this->log->pushHandler(new StreamHandler(SettingsPath::LOGS . 'mailer.log'));
     }
 
     /**
@@ -63,7 +64,7 @@ class Mailer
      *
      * @return boolean
      *
-     * @version 29.10.2018
+     * @version 12.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function send($template_name, $subject, $email_tos, $template_data, $images = [], $files = [])
@@ -80,7 +81,7 @@ class Mailer
                 $this->phpmailer->ClearReplyTos();
 
                 // Прикрепляем логотип для письма
-                $logo_mail = SettingsGeneral::FULL_ROOT_PATH . 'assets/img/logo.png';
+                $logo_mail = SettingsPath::FULL_ROOT . 'assets/img/logo.png';
                 if (is_readable($logo_mail)) {
                     $this->phpmailer->AddEmbeddedImage($logo_mail, 'logotype', 'logo.png', 'base64', 'image/png');
                 }
@@ -88,7 +89,7 @@ class Mailer
                 // Прикрепляем другие изображения при необходимости
                 if (is_array($images) && count($images) > 0) {
                     foreach ($images as $image_code => $image_filename) {
-                        $filename = SettingsGeneral::FULL_ROOT_PATH . $image_filename;
+                        $filename = SettingsPath::FULL_ROOT . $image_filename;
                         if (is_readable($filename)) {
                             $basename = pathinfo($filename, PATHINFO_BASENAME);
                             $imagetype = getimagesize($filename)['mime'];

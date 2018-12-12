@@ -2,13 +2,13 @@
 /**
  * Получим номер последней версии приложения
  *
- * @version 01.01.2018
+ * @version 12.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core\Version;
 
-use Lemurro\Api\App\Configs\SettingsGeneral;
+use Lemurro\Api\App\Configs\SettingsPath;
 
 /**
  * Class ActionGet
@@ -22,13 +22,13 @@ class ActionGet
      *
      * @return array
      *
-     * @version 01.01.2018
+     * @version 12.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run()
     {
-        $version_android = file_get_contents(SettingsGeneral::FULL_ROOT_PATH . 'version.android');
-        $version_ios = file_get_contents(SettingsGeneral::FULL_ROOT_PATH . 'version.ios');
+        $version_android = file_get_contents(SettingsPath::FULL_ROOT . 'version.android');
+        $version_ios = file_get_contents(SettingsPath::FULL_ROOT . 'version.ios');
 
         return [
             'data' => [

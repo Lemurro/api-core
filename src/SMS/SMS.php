@@ -2,13 +2,13 @@
 /**
  * Отправка SMS
  *
- * @version 28.10.2018
+ * @version 12.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core\SMS;
 
-use Lemurro\Api\App\Configs\SettingsGeneral;
+use Lemurro\Api\App\Configs\SettingsPath;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
@@ -31,13 +31,13 @@ class SMS
      *
      * @throws \Exception
      *
-     * @version 28.10.2018
+     * @version 12.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function __construct()
     {
         $this->log = new Logger('SMS');
-        $this->log->pushHandler(new StreamHandler(SettingsGeneral::LOGS_PATH . 'sms.log'));
+        $this->log->pushHandler(new StreamHandler(SettingsPath::LOGS . 'sms.log'));
     }
 
     /**
