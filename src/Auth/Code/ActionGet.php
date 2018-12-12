@@ -2,12 +2,13 @@
 /**
  * Получение кода аутентификации
  *
- * @version 29.10.2018
+ * @version 12.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
 
+use Lemurro\Api\App\Configs\SettingsAuth;
 use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\RandomNumber;
@@ -30,7 +31,7 @@ class ActionGet extends Action
      *
      * @return array
      *
-     * @version 29.10.2018
+     * @version 12.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($auth_id)
@@ -39,7 +40,7 @@ class ActionGet extends Action
 
         $user = (new FindUser())->run($auth_id);
         if (is_array($user) && count($user) == 0) {
-            if (SettingsGeneral::CAN_REGISTRATION_USERS) {
+            if (SettingsAuth::CAN_REGISTRATION_USERS) {
                 $insert_user = (new InsertUser($this->dic))->run([
                     'auth_id' => $auth_id,
                 ]);
@@ -84,7 +85,7 @@ class ActionGet extends Action
         $auth_code->save();
         if (is_object($auth_code)) {
             if (SettingsGeneral::PRODUCTION) {
-                switch (SettingsGeneral::AUTH_TYPE) {
+                switch (SettingsAuth::TYPE) {
                     case 'email':
                         /** @var Mailer $mailer */
                         $mailer = $this->dic['mailer'];

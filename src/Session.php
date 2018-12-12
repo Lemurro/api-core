@@ -2,13 +2,14 @@
 /**
  * Проверка валидности сессии
  *
- * @version 26.07.2018
+ * @version 12.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core;
 
 use Carbon\Carbon;
+use Lemurro\Api\App\Configs\SettingsAuth;
 use Lemurro\Api\App\Configs\SettingsGeneral;
 
 /**
@@ -25,7 +26,7 @@ class Session
      *
      * @return array
      *
-     * @version 26.07.2018
+     * @version 12.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function check($session_id)
@@ -34,14 +35,14 @@ class Session
         $checked_at = $now->toDateTimeString();
 
         \ORM::for_table('sessions')
-            ->where_lt('checked_at', $now->subDays(SettingsGeneral::SESSIONS_OLDER_THAN))
+            ->where_lt('checked_at', $now->subDays(SettingsAuth::SESSIONS_OLDER_THAN))
             ->delete_many();
 
         $session = \ORM::for_table('sessions')
             ->where_equal('session', $session_id)
             ->find_one();
         if (is_object($session)) {
-            if (SettingsGeneral::SESSIONS_BINDING_TO_IP && $session->ip !== $_SERVER['REMOTE_ADDR']) {
+            if (SettingsAuth::SESSIONS_BINDING_TO_IP && $session->ip !== $_SERVER['REMOTE_ADDR']) {
                 $session->delete();
 
                 return [

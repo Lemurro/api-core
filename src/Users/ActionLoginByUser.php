@@ -2,13 +2,13 @@
 /**
  * Вход под указанным пользователем
  *
- * @version 10.10.2018
+ * @version 12.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core\Users;
 
-use Lemurro\Api\App\Configs\SettingsGeneral;
+use Lemurro\Api\App\Configs\SettingsAuth;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\RandomKey;
 
@@ -26,7 +26,7 @@ class ActionLoginByUser extends Action
      *
      * @return array
      *
-     * @version 10.10.2018
+     * @version 12.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($user_id)
@@ -45,7 +45,7 @@ class ActionLoginByUser extends Action
         $session->created_at = $created_at;
         $session->checked_at = $created_at;
 
-        if (SettingsGeneral::SESSIONS_BINDING_TO_IP) {
+        if (SettingsAuth::SESSIONS_BINDING_TO_IP) {
             $session->ip = $_SERVER['REMOTE_ADDR'];
         }
 
