@@ -99,7 +99,7 @@ class Core
     /**
      * Инициализация маршрутов
      *
-     * @version 12.12.2018
+     * @version 13.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function initRoutes()
@@ -113,6 +113,7 @@ class Core
 
         $this->response->headers->set('Access-Control-Allow-Origin', '*');
         $this->response->headers->set('Access-Control-Allow-Headers', 'X-SESSION-ID');
+        $this->response->headers->set('Access-Control-Allow-Headers', 'X-UTC-OFFSET');
 
         $context = new RequestContext();
         $context->fromRequest($this->request);
@@ -131,6 +132,7 @@ class Core
         $this->dic = new Container();
 
         $this->dic['session_id'] = $this->request->server->get('HTTP_X_SESSION_ID');
+        $this->dic['utc_offset'] = $this->request->server->get('HTTP_X_UTC_OFFSET');
 
         $this->dic['user'] = function ($c) {
             $result_session_check = (new Session())->check($c['session_id']);
