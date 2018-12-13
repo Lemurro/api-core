@@ -112,8 +112,7 @@ class Core
         $this->response = new JsonResponse();
 
         $this->response->headers->set('Access-Control-Allow-Origin', '*');
-        $this->response->headers->set('Access-Control-Allow-Headers', 'X-SESSION-ID');
-        $this->response->headers->set('Access-Control-Allow-Headers', 'X-UTC-OFFSET');
+        $this->response->headers->set('Access-Control-Allow-Headers', 'X-SESSION-ID, X-UTC-OFFSET');
 
         $context = new RequestContext();
         $context->fromRequest($this->request);
