@@ -2,7 +2,7 @@
 /**
  * Проверка валидности сессии
  *
- * @version 12.12.2018
+ * @version 13.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -10,7 +10,6 @@ namespace Lemurro\Api\Core;
 
 use Carbon\Carbon;
 use Lemurro\Api\App\Configs\SettingsAuth;
-use Lemurro\Api\App\Configs\SettingsGeneral;
 use ORM;
 
 /**
@@ -27,12 +26,12 @@ class Session
      *
      * @return array
      *
-     * @version 12.12.2018
+     * @version 13.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function check($session_id)
     {
-        $now = Carbon::now(SettingsGeneral::TIMEZONE);
+        $now = Carbon::now('UTC');
         $checked_at = $now->toDateTimeString();
 
         ORM::for_table('sessions')

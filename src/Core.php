@@ -2,7 +2,7 @@
 /**
  * Инициализация приложения
  *
- * @version 12.12.2018
+ * @version 13.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -123,7 +123,7 @@ class Core
     /**
      * Инициализация DI
      *
-     * @version 12.12.2018
+     * @version 13.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function initDI()
@@ -149,7 +149,7 @@ class Core
         };
 
         $this->dic['datetimenow'] = function () {
-            $now = Carbon::now(SettingsGeneral::TIMEZONE);
+            $now = Carbon::now('UTC');
 
             return $now->toDateTimeString();
         };
