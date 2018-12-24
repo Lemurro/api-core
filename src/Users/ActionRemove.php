@@ -2,7 +2,7 @@
 /**
  * Удаление пользователя
  *
- * @version 12.12.2018
+ * @version 24.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -11,6 +11,7 @@ namespace Lemurro\Api\Core\Users;
 use Lemurro\Api\App\RunAfter\Users\Remove as RunAfterRemove;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\DataChangeLogs\Insert as DataChangeLogInsert;
+use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
 /**
@@ -27,7 +28,7 @@ class ActionRemove extends Action
      *
      * @return array
      *
-     * @version 12.12.2018
+     * @version 24.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($id)
@@ -60,37 +61,25 @@ class ActionRemove extends Action
                         'id' => $id,
                     ]);
                 } else {
-                    return [
-                        'errors' => [
-                            [
-                                'status' => '500 Internal Server Error',
-                                'code'   => 'danger',
-                                'title'  => 'Произошла ошибка при удалении пользователя, попробуйте ещё раз',
-                            ],
-                        ],
-                    ];
+                    return Response::error(
+                        '500 Internal Server Error',
+                        'danger',
+                        'Произошла ошибка при удалении пользователя, попробуйте ещё раз'
+                    );
                 }
             } else {
-                return [
-                    'errors' => [
-                        [
-                            'status' => '404 Not Found',
-                            'code'   => 'info',
-                            'title'  => 'Информация о пользователе не найдена',
-                        ],
-                    ],
-                ];
+                return Response::error(
+                    '404 Not Found',
+                    'info',
+                    'Информация о пользователе не найдена'
+                );
             }
         } else {
-            return [
-                'errors' => [
-                    [
-                        'status' => '404 Not Found',
-                        'code'   => 'info',
-                        'title'  => 'Пользователь не найден',
-                    ],
-                ],
-            ];
+            return Response::error(
+                '404 Not Found',
+                'info',
+                'Пользователь не найден'
+            );
         }
     }
 }

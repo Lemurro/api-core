@@ -2,13 +2,14 @@
 /**
  * Информация о пользователе
  *
- * @version 29.10.2018
+ * @version 24.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core\User;
 
 use Lemurro\Api\Core\Abstracts\Controller;
+use Lemurro\Api\Core\Helpers\Response;
 
 /**
  * Class ControllerGet
@@ -20,26 +21,20 @@ class ControllerGet extends Controller
     /**
      * Стартовый метод
      *
-     * @version 29.10.2018
+     * @version 24.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
     {
         $user_info = $this->dic['user'];
         if (is_array($user_info) && count($user_info) > 0) {
-            $this->response->setData([
-                'data' => $user_info,
-            ]);
+            $this->response->setData(Response::data($user_info));
         } else {
-            $this->response->setData([
-                'errors' => [
-                    [
-                        'status' => '401 Unauthorized',
-                        'code'   => 'info',
-                        'title'  => 'Необходимо авторизоваться',
-                    ],
-                ],
-            ]);
+            $this->response->setData(Response::error(
+                '401 Unauthorized',
+                'info',
+                'Необходимо авторизоваться'
+            ));
         }
 
         $this->response->send();

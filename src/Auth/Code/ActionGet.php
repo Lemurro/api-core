@@ -2,7 +2,7 @@
 /**
  * Получение кода аутентификации
  *
- * @version 12.12.2018
+ * @version 24.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -12,6 +12,7 @@ use Lemurro\Api\App\Configs\SettingsAuth;
 use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\RandomNumber;
+use Lemurro\Api\Core\Helpers\Response;
 use Lemurro\Api\Core\Mailer;
 use Lemurro\Api\Core\SMS\SMS;
 use Lemurro\Api\Core\Users\ActionInsert as InsertUser;
@@ -32,7 +33,7 @@ class ActionGet extends Action
      *
      * @return array
      *
-     * @version 12.12.2018
+     * @version 24.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($auth_id)
@@ -51,15 +52,11 @@ class ActionGet extends Action
                     $user = $insert_user['data'];
                 }
             } else {
-                return [
-                    'errors' => [
-                        [
-                            'status' => '404 Not Found',
-                            'code'   => 'warning',
-                            'title'  => 'Пользователь не найден',
-                        ],
-                    ],
-                ];
+                return Response::error(
+                    '404 Not Found',
+                    'warning',
+                    'Пользователь не найден'
+                );
             }
         }
 
@@ -107,52 +104,36 @@ class ActionGet extends Action
                         break;
 
                     default:
-                        return [
-                            'errors' => [
-                                [
-                                    'status' => '400 Bad Request',
-                                    'code'   => 'warning',
-                                    'title'  => 'Неверный вид аутентификации, проверьте настройки',
-                                ],
-                            ],
-                        ];
+                        return Response::error(
+                            '400 Bad Request',
+                            'warning',
+                            'Неверный вид аутентификации, проверьте настройки'
+                        );
                         break;
                 }
 
                 if ($result) {
-                    return [
-                        'data' => [
-                            'message' => 'Письмо с кодом успешно отправлено на указанную электронную почту',
-                        ],
-                    ];
+                    return Response::data([
+                        'message' => 'Письмо с кодом успешно отправлено на указанную электронную почту',
+                    ]);
                 } else {
-                    return [
-                        'errors' => [
-                            [
-                                'status' => '500 Internal Server Error',
-                                'code'   => 'danger',
-                                'title'  => 'Произошла ошибка при отправке кода, попробуйте ещё раз',
-                            ],
-                        ],
-                    ];
+                    return Response::error(
+                        '500 Internal Server Error',
+                        'danger',
+                        'Произошла ошибка при отправке кода, попробуйте ещё раз'
+                    );
                 }
             } else {
-                return [
-                    'data' => [
-                        'message' => $secret,
-                    ],
-                ];
+                return Response::data([
+                    'message' => $secret,
+                ]);
             }
         } else {
-            return [
-                'errors' => [
-                    [
-                        'status' => '500 Internal Server Error',
-                        'code'   => 'danger',
-                        'title'  => 'Произошла ошибка при создании кода, попробуйте ещё раз',
-                    ],
-                ],
-            ];
+            return Response::error(
+                '500 Internal Server Error',
+                'danger',
+                'Произошла ошибка при создании кода, попробуйте ещё раз'
+            );
         }
     }
 }

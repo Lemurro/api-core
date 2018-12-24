@@ -2,13 +2,14 @@
 /**
  * Список пользователей
  *
- * @version 12.12.2018
+ * @version 24.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core\Users;
 
 use Lemurro\Api\Core\Abstracts\Action;
+use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
 /**
@@ -38,7 +39,7 @@ class ActionIndex extends Action
      *
      * @return array
      *
-     * @version 27.11.2018
+     * @version 24.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run()
@@ -46,12 +47,10 @@ class ActionIndex extends Action
         $this->getLastActionDates();
         $this->getInfoUsers();
 
-        return [
-            'data' => [
-                'count' => $this->info_users_count,
-                'items' => $this->info_users_items,
-            ],
-        ];
+        return Response::data([
+            'count' => $this->info_users_count,
+            'items' => $this->info_users_items,
+        ]);
     }
 
     /**

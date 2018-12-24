@@ -2,7 +2,7 @@
 /**
  * Инициализация приложения
  *
- * @version 13.12.2018
+ * @version 24.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -17,6 +17,7 @@ use Lemurro\Api\App\DIC as AppDIC;
 use Lemurro\Api\App\Response as AppResponse;
 use Lemurro\Api\Core\Checker\Checker;
 use Lemurro\Api\Core\DataChangeLogs\Insert as DataChangeLogsInsert;
+use Lemurro\Api\Core\Helpers\Response;
 use Lemurro\Api\Core\SMS\SMS;
 use Lemurro\Api\Core\Users\ActionGet as GetUser;
 use Monolog\Handler\StreamHandler;
@@ -203,7 +204,7 @@ class Core
     /**
      * Старт
      *
-     * @version 19.10.2018
+     * @version 24.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -227,17 +228,11 @@ class Core
                 call_user_func([$class, 'start']);
             }
         } catch (ResourceNotFoundException $e) {
-            $body = [
-                'errors' => [
-                    [
-                        'status' => '404 Not Found',
-                        'code'   => 'info',
-                        'title'  => 'Неопределённый запрос',
-                    ],
-                ],
-            ];
-
-            $this->response->setData($body);
+            $this->response->setData(Response::error(
+                '404 Not Found',
+                'info',
+                'Неопределённый запрос'
+            ));
             $this->response->send();
         }
     }

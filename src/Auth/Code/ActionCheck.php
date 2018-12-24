@@ -2,7 +2,7 @@
 /**
  * Проверка кода аутентификации
  *
- * @version 12.12.2018
+ * @version 24.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -11,6 +11,7 @@ namespace Lemurro\Api\Core\Auth\Code;
 use Lemurro\Api\App\Configs\SettingsAuth;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\RandomKey;
+use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
 /**
@@ -29,7 +30,7 @@ class ActionCheck extends Action
      *
      * @return array
      *
-     * @version 12.12.2018
+     * @version 24.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($auth_id, $auth_code, $device_info)
@@ -70,60 +71,42 @@ class ActionCheck extends Action
 
                     $cleaner->clear($auth_id);
 
-                    return [
-                        'data' => [
-                            'session' => $secret,
-                        ],
-                    ];
+                    return Response::data([
+                        'session' => $secret,
+                    ]);
                 } else {
-                    return [
-                        'errors' => [
-                            [
-                                'status' => '500 Internal Server Error',
-                                'code'   => 'danger',
-                                'title'  => 'Произошла ошибка при аутентификации, попробуйте ещё раз',
-                            ],
-                        ],
-                    ];
+                    return Response::error(
+                        '500 Internal Server Error',
+                        'danger',
+                        'Произошла ошибка при аутентификации, попробуйте ещё раз'
+                    );
                 }
             } else {
                 if ($auth->attempts < 3) {
                     $auth->attempts++;
                     $auth->save();
 
-                    return [
-                        'errors' => [
-                            [
-                                'status' => '400 Bad Request',
-                                'code'   => 'warning',
-                                'title'  => 'Неверный код, попробуйте ещё раз',
-                            ],
-                        ],
-                    ];
+                    return Response::error(
+                        '400 Bad Request',
+                        'warning',
+                        'Неверный код, попробуйте ещё раз'
+                    );
                 } else {
                     $auth->delete();
 
-                    return [
-                        'errors' => [
-                            [
-                                'status' => '401 Unauthorized',
-                                'code'   => 'danger',
-                                'title'  => 'Попытка взлома, запросите код повторно',
-                            ],
-                        ],
-                    ];
+                    return Response::error(
+                        '401 Unauthorized',
+                        'danger',
+                        'Попытка взлома, запросите код повторно'
+                    );
                 }
             }
         } else {
-            return [
-                'errors' => [
-                    [
-                        'status' => '400 Bad Request',
-                        'code'   => 'warning',
-                        'title'  => 'Код отсутствует, перезапустите приложение',
-                    ],
-                ],
-            ];
+            return Response::error(
+                '400 Bad Request',
+                'warning',
+                'Код отсутствует, перезапустите приложение'
+            );
         }
     }
 }

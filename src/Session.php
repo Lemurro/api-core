@@ -2,7 +2,7 @@
 /**
  * Проверка валидности сессии
  *
- * @version 13.12.2018
+ * @version 24.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -10,6 +10,7 @@ namespace Lemurro\Api\Core;
 
 use Carbon\Carbon;
 use Lemurro\Api\App\Configs\SettingsAuth;
+use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
 /**
@@ -26,7 +27,7 @@ class Session
      *
      * @return array
      *
-     * @version 13.12.2018
+     * @version 24.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function check($session_id)
@@ -45,15 +46,11 @@ class Session
             if (SettingsAuth::SESSIONS_BINDING_TO_IP && $session->ip !== $_SERVER['REMOTE_ADDR']) {
                 $session->delete();
 
-                return [
-                    'errors' => [
-                        [
-                            'status' => '401 Unauthorized',
-                            'code'   => 'info',
-                            'title'  => 'Необходимо авторизоваться',
-                        ],
-                    ],
-                ];
+                return Response::error(
+                    '401 Unauthorized',
+                    'info',
+                    'Необходимо авторизоваться'
+                );
             }
 
             $session->checked_at = $checked_at;
@@ -61,15 +58,11 @@ class Session
 
             return $session->as_array();
         } else {
-            return [
-                'errors' => [
-                    [
-                        'status' => '401 Unauthorized',
-                        'code'   => 'info',
-                        'title'  => 'Необходимо авторизоваться',
-                    ],
-                ],
-            ];
+            return Response::error(
+                '401 Unauthorized',
+                'info',
+                'Необходимо авторизоваться'
+            );
         }
     }
 }

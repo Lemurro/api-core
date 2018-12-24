@@ -2,11 +2,13 @@
 /**
  * Проверка прав доступа
  *
- * @version 24.10.2018
+ * @version 24.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core\Checker;
+
+use Lemurro\Api\Core\Helpers\Response;
 
 /**
  * Class Role
@@ -23,7 +25,7 @@ class Role
      *
      * @return array
      *
-     * @version 24.10.2018
+     * @version 24.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($data, $user_roles)
@@ -40,17 +42,13 @@ class Role
             }
         }
 
-        return [
-            'errors' => [
-                [
-                    'status' => '403 Forbidden',
-                    'code'   => 'warning',
-                    'title'  => 'Доступ ограничен',
-                    'meta'   => [
-                        'redirect' => true,
-                    ],
-                ],
-            ],
-        ];
+        return Response::error(
+            '403 Forbidden',
+            'warning',
+            'Доступ ограничен',
+            [
+                'redirect' => true,
+            ]
+        );
     }
 }

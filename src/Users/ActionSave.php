@@ -2,7 +2,7 @@
 /**
  * Изменение пользователя
  *
- * @version 12.12.2018
+ * @version 24.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -12,6 +12,7 @@ use Lemurro\Api\App\RunAfter\Users\Save as RunAfterSave;
 use Lemurro\Api\App\RunBefore\Users\Save as RunBeforeSave;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\DataChangeLogs\Insert as DataChangeLogInsert;
+use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
 /**
@@ -29,7 +30,7 @@ class ActionSave extends Action
      *
      * @return array
      *
-     * @version 12.12.2018
+     * @version 24.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($id, $data)
@@ -42,15 +43,7 @@ class ActionSave extends Action
             ->where_not_equal('id', $id)
             ->find_one();
         if (is_object($check_auth_id)) {
-            return [
-                'errors' => [
-                    [
-                        'status' => '400 Bad Request',
-                        'code'   => 'info',
-                        'title'  => 'Пользователь с такими данными для входа уже существует',
-                    ],
-                ],
-            ];
+            return Response::error('400 Bad Request', 'info', 'Пользователь с такими данными для входа уже существует');
         }
 
         $user = ORM::for_table('users')
@@ -89,48 +82,32 @@ class ActionSave extends Action
 
                         return (new RunAfterSave($this->dic))->run($result_data);
                     } else {
-                        return [
-                            'errors' => [
-                                [
-                                    'status' => '500 Internal Server Error',
-                                    'code'   => 'danger',
-                                    'title'  => 'Произошла ошибка при изменении информации пользователя, попробуйте ещё раз',
-                                ],
-                            ],
-                        ];
+                        return Response::error(
+                            '500 Internal Server Error',
+                            'danger',
+                            'Произошла ошибка при изменении информации пользователя, попробуйте ещё раз'
+                        );
                     }
                 } else {
-                    return [
-                        'errors' => [
-                            [
-                                'status' => '404 Not Found',
-                                'code'   => 'info',
-                                'title'  => 'Информация о пользователе не найдена',
-                            ],
-                        ],
-                    ];
+                    return Response::error(
+                        '404 Not Found',
+                        'info',
+                        'Информация о пользователе не найдена'
+                    );
                 }
             } else {
-                return [
-                    'errors' => [
-                        [
-                            'status' => '500 Internal Server Error',
-                            'code'   => 'danger',
-                            'title'  => 'Произошла ошибка при изменении пользователя, попробуйте ещё раз',
-                        ],
-                    ],
-                ];
+                return Response::error(
+                    '500 Internal Server Error',
+                    'danger',
+                    'Произошла ошибка при изменении пользователя, попробуйте ещё раз'
+                );
             }
         } else {
-            return [
-                'errors' => [
-                    [
-                        'status' => '404 Not Found',
-                        'code'   => 'info',
-                        'title'  => 'Пользователь не найден',
-                    ],
-                ],
-            ];
+            return Response::error(
+                '404 Not Found',
+                'info',
+                'Пользователь не найден'
+            );
         }
     }
 

@@ -2,13 +2,14 @@
 /**
  * Проверка валидности сессии
  *
- * @version 28.10.2018
+ * @version 24.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core\Auth;
 
 use Lemurro\Api\Core\Abstracts\Controller;
+use Lemurro\Api\Core\Helpers\Response;
 use Lemurro\Api\Core\Session;
 
 /**
@@ -21,7 +22,7 @@ class ControllerCheck extends Controller
     /**
      * Стартовый метод
      *
-     * @version 28.10.2018
+     * @version 24.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -30,11 +31,9 @@ class ControllerCheck extends Controller
         if (isset($result_session_check['errors'])) {
             $this->response->setData($result_session_check);
         } else {
-            $this->response->setData([
-                'data' => [
-                    'id'   => $result_session_check['session'],
-                ],
-            ]);
+            $this->response->setData(Response::data([
+                'id'   => $result_session_check['session'],
+            ]));
         }
 
         $this->response->send();

@@ -2,7 +2,7 @@
 /**
  * Изменение элемента в справочнике
  *
- * @version 29.10.2018
+ * @version 24.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -10,6 +10,7 @@ namespace Lemurro\Api\Core\Guide;
 
 use Lemurro\Api\App\Configs\SettingsGuides;
 use Lemurro\Api\Core\Abstracts\Controller;
+use Lemurro\Api\Core\Helpers\Response;
 
 /**
  * Class ControllerSave
@@ -21,7 +22,7 @@ class ControllerSave extends Controller
     /**
      * Стартовый метод
      *
-     * @version 29.10.2018
+     * @version 24.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -44,15 +45,11 @@ class ControllerSave extends Controller
                     $this->request->get('data')
                 ));
             } else {
-                $this->response->setData([
-                    'errors' => [
-                        [
-                            'status' => '404 Not Found',
-                            'code'   => 'info',
-                            'title'  => 'Неизвестный справочник',
-                        ],
-                    ],
-                ]);
+                $this->response->setData(Response::error(
+                    '404 Not Found',
+                    'info',
+                    'Неизвестный справочник'
+                ));
             }
         } else {
             $this->response->setData($checker_result);
