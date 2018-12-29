@@ -8,23 +8,11 @@
 
 namespace Lemurro\Api\Core;
 
-use Carbon\Carbon;
-use Lemurro\Api\App\Configs\SettingsDatabase;
-use Lemurro\Api\App\Configs\SettingsGeneral;
-use Lemurro\Api\App\Configs\SettingsMail;
 use Lemurro\Api\App\Configs\SettingsPath;
 use Lemurro\Api\App\DIC as AppDIC;
 use Lemurro\Api\App\Response as AppResponse;
-use Lemurro\Api\Core\Checker\Checker;
-use Lemurro\Api\Core\DataChangeLog\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
-use Lemurro\Api\Core\SMS\SMS;
 use Lemurro\Api\Core\Users\ActionGet as GetUser;
-use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
-use ORM;
-use PDO;
-use PHPMailer\PHPMailer\PHPMailer;
 use Pimple\Container;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -64,37 +52,15 @@ class Core
     /**
      * Конструктор
      *
-     * @version 26.05.2018
+     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function __construct()
     {
-        $this->initDatabase();
+        DB::init();
+
         $this->initRoutes();
-        $this->initDI();
-    }
-
-    /**
-     * Инициализация PDO
-     *
-     * @version 12.12.2018
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     */
-    protected function initDatabase()
-    {
-        if (SettingsDatabase::NEED_CONNECT) {
-            $connection_string = 'mysql:host=' . SettingsDatabase::HOST . ';port=' . SettingsDatabase::PORT . ';dbname=' . SettingsDatabase::DBNAME;
-
-            ORM::configure('connection_string', $connection_string);
-            ORM::configure('username', SettingsDatabase::USERNAME);
-            ORM::configure('password', SettingsDatabase::PASSWORD);
-            ORM::configure('logging', SettingsDatabase::LOGGING);
-            ORM::configure('driver_options', [
-                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
-            ]);
-        }
+        $this->initDIC();
     }
 
     /**
@@ -122,14 +88,14 @@ class Core
     }
 
     /**
-     * Инициализация DI
+     * Инициализация DIC
      *
-     * @version 13.12.2018
+     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    protected function initDI()
+    protected function initDIC()
     {
-        $this->dic = new Container();
+        $this->dic = DIC::init();
 
         $this->dic['session_id'] = $this->request->server->get('HTTP_X_SESSION_ID');
         $this->dic['utc_offset'] = $this->request->server->get('HTTP_X_UTC_OFFSET');
@@ -148,56 +114,6 @@ class Core
                     return [];
                 }
             }
-        };
-
-        $this->dic['datetimenow'] = function () {
-            $now = Carbon::now('UTC');
-
-            return $now->toDateTimeString();
-        };
-
-        $this->dic['phpmailer'] = function () {
-            $phpmailer = new PHPMailer();
-            $phpmailer->isHTML(true);
-            $phpmailer->CharSet = 'windows-1251';
-            $phpmailer->From = SettingsMail::APP_EMAIL;
-            $phpmailer->FromName = iconv('utf-8', 'windows-1251', SettingsGeneral::APP_NAME);
-
-            if (SettingsMail::SMTP) {
-                $phpmailer->isSMTP();
-                $phpmailer->SMTPDebug = 0;
-                $phpmailer->SMTPAuth = true;
-                $phpmailer->SMTPSecure = SettingsMail::SMTP_SECURITY;
-                $phpmailer->Host = SettingsMail::SMTP_HOST;
-                $phpmailer->Port = SettingsMail::SMTP_PORT;
-                $phpmailer->Username = SettingsMail::SMTP_USERNAME;
-                $phpmailer->Password = SettingsMail::SMTP_PASSWORD;
-            }
-
-            return $phpmailer;
-        };
-
-        $this->dic['mailer'] = function ($c) {
-            return new Mailer($c);
-        };
-
-        $this->dic['sms'] = function () {
-            return new SMS();
-        };
-
-        $this->dic['datachangelog'] = function ($c) {
-            return new DataChangeLog($c);
-        };
-
-        $this->dic['log'] = function () {
-            $log = new Logger('MainLog');
-            $log->pushHandler(new StreamHandler(SettingsPath::LOGS . 'main.log'));
-
-            return $log;
-        };
-
-        $this->dic['checker'] = function ($c) {
-            return new Checker($c);
         };
     }
 
