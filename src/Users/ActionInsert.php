@@ -2,7 +2,7 @@
 /**
  * Добавление пользователя
  *
- * @version 24.12.2018
+ * @version 29.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -29,7 +29,7 @@ class ActionInsert extends Action
      *
      * @return array
      *
-     * @version 24.12.2018
+     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($data)
@@ -41,11 +41,7 @@ class ActionInsert extends Action
             ->where_equal('auth_id', $data['auth_id'])
             ->find_one();
         if (is_object($check_auth_id)) {
-            return Response::error(
-                '400 Bad Request',
-                'info',
-                'Пользователь с такими данными для входа уже существует'
-            );
+            return Response::error400('Пользователь с такими данными для входа уже существует');
         }
 
         $new_user = ORM::for_table('users')->create();
@@ -82,18 +78,10 @@ class ActionInsert extends Action
 
                 return (new RunAfterInsert($this->dic))->run($result_data);
             } else {
-                return Response::error(
-                    '500 Internal Server Error',
-                    'danger',
-                    'Произошла ошибка при добавлении информации о пользователе, попробуйте ещё раз'
-                );
+                return Response::error500('Произошла ошибка при добавлении информации о пользователе, попробуйте ещё раз');
             }
         } else {
-            return Response::error(
-                '500 Internal Server Error',
-                'danger',
-                'Произошла ошибка при добавлении пользователя, попробуйте ещё раз'
-            );
+            return Response::error500('Произошла ошибка при добавлении пользователя, попробуйте ещё раз');
         }
     }
 }

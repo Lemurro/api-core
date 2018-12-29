@@ -2,7 +2,7 @@
 /**
  * Получение кода аутентификации
  *
- * @version 24.12.2018
+ * @version 29.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -33,7 +33,7 @@ class ActionGet extends Action
      *
      * @return array
      *
-     * @version 24.12.2018
+     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($auth_id)
@@ -52,11 +52,7 @@ class ActionGet extends Action
                     $user = $insert_user['data'];
                 }
             } else {
-                return Response::error(
-                    '404 Not Found',
-                    'warning',
-                    'Пользователь не найден'
-                );
+                return Response::error404('Пользователь не найден');
             }
         }
 
@@ -104,11 +100,7 @@ class ActionGet extends Action
                         break;
 
                     default:
-                        return Response::error(
-                            '400 Bad Request',
-                            'warning',
-                            'Неверный вид аутентификации, проверьте настройки'
-                        );
+                        return Response::error400('Неверный вид аутентификации, проверьте настройки');
                         break;
                 }
 
@@ -117,11 +109,7 @@ class ActionGet extends Action
                         'message' => 'Письмо с кодом успешно отправлено на указанную электронную почту',
                     ]);
                 } else {
-                    return Response::error(
-                        '500 Internal Server Error',
-                        'danger',
-                        'Произошла ошибка при отправке кода, попробуйте ещё раз'
-                    );
+                    return Response::error500('Произошла ошибка при отправке кода, попробуйте ещё раз');
                 }
             } else {
                 return Response::data([
@@ -129,11 +117,7 @@ class ActionGet extends Action
                 ]);
             }
         } else {
-            return Response::error(
-                '500 Internal Server Error',
-                'danger',
-                'Произошла ошибка при создании кода, попробуйте ещё раз'
-            );
+            return Response::error500('Произошла ошибка при создании кода, попробуйте ещё раз');
         }
     }
 }

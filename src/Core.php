@@ -2,7 +2,7 @@
 /**
  * Инициализация приложения
  *
- * @version 24.12.2018
+ * @version 29.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -204,7 +204,7 @@ class Core
     /**
      * Старт
      *
-     * @version 24.12.2018
+     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -228,11 +228,7 @@ class Core
                 call_user_func([$class, 'start']);
             }
         } catch (ResourceNotFoundException $e) {
-            $this->response->setData(Response::error(
-                '404 Not Found',
-                'info',
-                'Неопределённый запрос'
-            ));
+            $this->response->setData(Response::error404('Неопределённый запрос'));
             $this->response->send();
         }
     }

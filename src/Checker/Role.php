@@ -2,7 +2,7 @@
 /**
  * Проверка прав доступа
  *
- * @version 24.12.2018
+ * @version 29.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -25,7 +25,7 @@ class Role
      *
      * @return array
      *
-     * @version 24.12.2018
+     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($data, $user_roles)
@@ -42,13 +42,6 @@ class Role
             }
         }
 
-        return Response::error(
-            '403 Forbidden',
-            'warning',
-            'Доступ ограничен',
-            [
-                'redirect' => true,
-            ]
-        );
+        return Response::error403('Доступ ограничен', true);
     }
 }

@@ -2,7 +2,7 @@
 /**
  * Проверка кода аутентификации
  *
- * @version 24.12.2018
+ * @version 29.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -30,7 +30,7 @@ class ActionCheck extends Action
      *
      * @return array
      *
-     * @version 24.12.2018
+     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($auth_id, $auth_code, $device_info)
@@ -75,38 +75,22 @@ class ActionCheck extends Action
                         'session' => $secret,
                     ]);
                 } else {
-                    return Response::error(
-                        '500 Internal Server Error',
-                        'danger',
-                        'Произошла ошибка при аутентификации, попробуйте ещё раз'
-                    );
+                    return Response::error500('Произошла ошибка при аутентификации, попробуйте ещё раз');
                 }
             } else {
                 if ($auth->attempts < 3) {
                     $auth->attempts++;
                     $auth->save();
 
-                    return Response::error(
-                        '400 Bad Request',
-                        'warning',
-                        'Неверный код, попробуйте ещё раз'
-                    );
+                    return Response::error400('Неверный код, попробуйте ещё раз');
                 } else {
                     $auth->delete();
 
-                    return Response::error(
-                        '401 Unauthorized',
-                        'danger',
-                        'Попытка взлома, запросите код повторно'
-                    );
+                    return Response::error401('Попытка взлома, запросите код повторно');
                 }
             }
         } else {
-            return Response::error(
-                '400 Bad Request',
-                'warning',
-                'Код отсутствует, перезапустите приложение'
-            );
+            return Response::error400('Код отсутствует, перезапустите приложение');
         }
     }
 }

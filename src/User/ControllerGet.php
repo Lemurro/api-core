@@ -2,7 +2,7 @@
 /**
  * Информация о пользователе
  *
- * @version 24.12.2018
+ * @version 29.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -21,7 +21,7 @@ class ControllerGet extends Controller
     /**
      * Стартовый метод
      *
-     * @version 24.12.2018
+     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -30,11 +30,7 @@ class ControllerGet extends Controller
         if (is_array($user_info) && count($user_info) > 0) {
             $this->response->setData(Response::data($user_info));
         } else {
-            $this->response->setData(Response::error(
-                '401 Unauthorized',
-                'info',
-                'Необходимо авторизоваться'
-            ));
+            $this->response->setData(Response::error401('Необходимо авторизоваться'));
         }
 
         $this->response->send();

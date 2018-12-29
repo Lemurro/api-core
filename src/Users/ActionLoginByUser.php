@@ -2,7 +2,7 @@
 /**
  * Вход под указанным пользователем
  *
- * @version 24.12.2018
+ * @version 29.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -28,7 +28,7 @@ class ActionLoginByUser extends Action
      *
      * @return array
      *
-     * @version 24.12.2018
+     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($user_id)
@@ -58,11 +58,7 @@ class ActionLoginByUser extends Action
                 'session' => $secret,
             ]);
         } else {
-            return Response::error(
-                '500 Internal Server Error',
-                'danger',
-                'Произошла ошибка при аутентификации, попробуйте ещё раз'
-            );
+            return Response::error500('Произошла ошибка при аутентификации, попробуйте ещё раз');
         }
     }
 }

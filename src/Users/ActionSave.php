@@ -2,7 +2,7 @@
 /**
  * Изменение пользователя
  *
- * @version 24.12.2018
+ * @version 29.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -30,7 +30,7 @@ class ActionSave extends Action
      *
      * @return array
      *
-     * @version 24.12.2018
+     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($id, $data)
@@ -43,7 +43,7 @@ class ActionSave extends Action
             ->where_not_equal('id', $id)
             ->find_one();
         if (is_object($check_auth_id)) {
-            return Response::error('400 Bad Request', 'info', 'Пользователь с такими данными для входа уже существует');
+            return Response::error400('Пользователь с такими данными для входа уже существует');
         }
 
         $user = ORM::for_table('users')
@@ -82,32 +82,16 @@ class ActionSave extends Action
 
                         return (new RunAfterSave($this->dic))->run($result_data);
                     } else {
-                        return Response::error(
-                            '500 Internal Server Error',
-                            'danger',
-                            'Произошла ошибка при изменении информации пользователя, попробуйте ещё раз'
-                        );
+                        return Response::error500('Произошла ошибка при изменении информации пользователя, попробуйте ещё раз');
                     }
                 } else {
-                    return Response::error(
-                        '404 Not Found',
-                        'info',
-                        'Информация о пользователе не найдена'
-                    );
+                    return Response::error404('Информация о пользователе не найдена');
                 }
             } else {
-                return Response::error(
-                    '500 Internal Server Error',
-                    'danger',
-                    'Произошла ошибка при изменении пользователя, попробуйте ещё раз'
-                );
+                return Response::error500('Произошла ошибка при изменении пользователя, попробуйте ещё раз');
             }
         } else {
-            return Response::error(
-                '404 Not Found',
-                'info',
-                'Пользователь не найден'
-            );
+            return Response::error404('Пользователь не найден');
         }
     }
 

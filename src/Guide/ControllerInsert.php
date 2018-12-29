@@ -2,7 +2,7 @@
 /**
  * Добавление элемента в справочник
  *
- * @version 24.12.2018
+ * @version 29.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -22,7 +22,7 @@ class ControllerInsert extends Controller
     /**
      * Стартовый метод
      *
-     * @version 24.12.2018
+     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -41,11 +41,7 @@ class ControllerInsert extends Controller
                 $class = new $action($this->dic);
                 $this->response->setData(call_user_func([$class, 'run'], $this->request->get('data')));
             } else {
-                $this->response->setData(Response::error(
-                    '404 Not Found',
-                    'info',
-                    'Неизвестный справочник'
-                ));
+                $this->response->setData(Response::error404('Неизвестный справочник'));
             }
         } else {
             $this->response->setData($checker_result);

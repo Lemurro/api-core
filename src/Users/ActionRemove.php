@@ -2,7 +2,7 @@
 /**
  * Удаление пользователя
  *
- * @version 24.12.2018
+ * @version 29.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -28,7 +28,7 @@ class ActionRemove extends Action
      *
      * @return array
      *
-     * @version 24.12.2018
+     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($id)
@@ -61,25 +61,13 @@ class ActionRemove extends Action
                         'id' => $id,
                     ]);
                 } else {
-                    return Response::error(
-                        '500 Internal Server Error',
-                        'danger',
-                        'Произошла ошибка при удалении пользователя, попробуйте ещё раз'
-                    );
+                    return Response::error500('Произошла ошибка при удалении пользователя, попробуйте ещё раз');
                 }
             } else {
-                return Response::error(
-                    '404 Not Found',
-                    'info',
-                    'Информация о пользователе не найдена'
-                );
+                return Response::error404('Информация о пользователе не найдена');
             }
         } else {
-            return Response::error(
-                '404 Not Found',
-                'info',
-                'Пользователь не найден'
-            );
+            return Response::error404('Пользователь не найден');
         }
     }
 }
