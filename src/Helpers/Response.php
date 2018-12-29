@@ -2,7 +2,7 @@
 /**
  * Генератор ответа
  *
- * @version 24.12.2018
+ * @version 29.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  * @author  Евгений Кулагин <ekulagin59@gmail.com>
  */
@@ -163,21 +163,13 @@ class Response
      *
      * @return array
      *
-     * @version 24.12.2018
+     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     static function errors($errors)
     {
         if (empty($errors)) {
-            return [
-                'errors' => [
-                    [
-                        'status' => '500 Internal Server Error',
-                        'code'   => 'danger',
-                        'title'  => 'Ошибка при выполнении запроса',
-                    ],
-                ],
-            ];
+            return self::error500('Ошибка при выполнении запроса');
         } else {
             $many_errors = [];
 
