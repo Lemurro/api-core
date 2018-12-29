@@ -18,6 +18,7 @@
   },
   "require": {
     "php": ">=7.0.0",
+    "hellogerard/jobby": "^3.4",
     "j4mie/idiorm": "^1.5",
     "monolog/monolog": "^1.22",
     "nesbot/carbon": "^1.22",
