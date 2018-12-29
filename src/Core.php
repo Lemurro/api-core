@@ -66,7 +66,7 @@ class Core
     /**
      * Инициализация маршрутов
      *
-     * @version 13.12.2018
+     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function initRoutes()
@@ -75,11 +75,18 @@ class Core
         $loader = new YamlFileLoader($fileLocator);
         $routes = $loader->load('coreroutes.yaml');
 
+        $headers = [
+            'X-SESSION-ID',
+            'X-UTC-OFFSET',
+            'X-Requested-With',
+            'X-File-Name',
+        ];
+
         $this->request = Request::createFromGlobals();
         $this->response = new JsonResponse();
 
         $this->response->headers->set('Access-Control-Allow-Origin', '*');
-        $this->response->headers->set('Access-Control-Allow-Headers', 'X-SESSION-ID, X-UTC-OFFSET');
+        $this->response->headers->set('Access-Control-Allow-Headers', implode(',', $headers));
 
         $context = new RequestContext();
         $context->fromRequest($this->request);
