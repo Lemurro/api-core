@@ -11,7 +11,7 @@ namespace Lemurro\Api\Core\Users;
 use Lemurro\Api\App\RunAfter\Users\Insert as RunAfterInsert;
 use Lemurro\Api\App\RunBefore\Users\Insert as RunBeforeInsert;
 use Lemurro\Api\Core\Abstracts\Action;
-use Lemurro\Api\Core\DataChangeLogs\Insert as DataChangeLogInsert;
+use Lemurro\Api\Core\DataChangeLog\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
@@ -68,9 +68,9 @@ class ActionInsert extends Action
             $new_user_info->created_at = $this->dic['datetimenow'];
             $new_user_info->save();
             if (is_object($new_user_info) && isset($new_user_info->id)) {
-                /** @var DataChangeLogInsert $datachangelog */
-                $datachangelog = $this->dic['datachangelog'];
-                $datachangelog->insert('users', 'insert', $new_user->id, $data);
+                /** @var DataChangeLog $data_change_log */
+                $data_change_log = $this->dic['datachangelog'];
+                $data_change_log->insert('users', 'insert', $new_user->id, $data);
 
                 $result_data['id'] = $new_user->id;
                 $result_data['auth_id'] = $data['auth_id'];

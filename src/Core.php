@@ -16,7 +16,7 @@ use Lemurro\Api\App\Configs\SettingsPath;
 use Lemurro\Api\App\DIC as AppDIC;
 use Lemurro\Api\App\Response as AppResponse;
 use Lemurro\Api\Core\Checker\Checker;
-use Lemurro\Api\Core\DataChangeLogs\Insert as DataChangeLogsInsert;
+use Lemurro\Api\Core\DataChangeLog\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
 use Lemurro\Api\Core\SMS\SMS;
 use Lemurro\Api\Core\Users\ActionGet as GetUser;
@@ -186,7 +186,7 @@ class Core
         };
 
         $this->dic['datachangelog'] = function ($c) {
-            return new DataChangeLogsInsert($c);
+            return new DataChangeLog($c);
         };
 
         $this->dic['log'] = function () {

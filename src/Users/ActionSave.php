@@ -11,7 +11,7 @@ namespace Lemurro\Api\Core\Users;
 use Lemurro\Api\App\RunAfter\Users\Save as RunAfterSave;
 use Lemurro\Api\App\RunBefore\Users\Save as RunBeforeSave;
 use Lemurro\Api\Core\Abstracts\Action;
-use Lemurro\Api\Core\DataChangeLogs\Insert as DataChangeLogInsert;
+use Lemurro\Api\Core\DataChangeLog\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
@@ -72,9 +72,9 @@ class ActionSave extends Action
                     $info->updated_at = $this->dic['datetimenow'];
                     $info->save();
                     if (is_object($info) && isset($info->id)) {
-                        /** @var DataChangeLogInsert $datachangelog */
-                        $datachangelog = $this->dic['datachangelog'];
-                        $datachangelog->insert('users', 'update', $id, $data);
+                        /** @var DataChangeLog $data_change_log */
+                        $data_change_log = $this->dic['datachangelog'];
+                        $data_change_log->insert('users', 'update', $id, $data);
 
                         $result_data['id'] = $id;
                         $result_data['auth_id'] = $data['auth_id'];

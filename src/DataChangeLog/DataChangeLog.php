@@ -2,21 +2,21 @@
 /**
  * Добавление записи в лог действий
  *
- * @version 12.12.2018
+ * @version 29.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
-namespace Lemurro\Api\Core\DataChangeLogs;
+namespace Lemurro\Api\Core\DataChangeLog;
 
 use Lemurro\Api\Core\Abstracts\Action;
 use ORM;
 
 /**
- * Class Insert
+ * Class DataChangeLog
  *
- * @package Lemurro\Api\Core\DataChangeLogs
+ * @package Lemurro\Api\Core\DataChangeLog
  */
-class Insert extends Action
+class DataChangeLog extends Action
 {
     /**
      * Выполним действие
@@ -28,7 +28,7 @@ class Insert extends Action
      *
      * @return boolean
      *
-     * @version 12.12.2018
+     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function insert($table_name, $action_name, $record_id, $data = [])
