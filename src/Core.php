@@ -2,7 +2,7 @@
 /**
  * Инициализация приложения
  *
- * @version 28.10.2018
+ * @version 08.01.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -96,7 +96,7 @@ class Core
     /**
      * Инициализация маршрутов
      *
-     * @version 26.05.2018
+     * @version 08.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function initRoutes()
@@ -108,8 +108,17 @@ class Core
         $this->request = Request::createFromGlobals();
         $this->response = new JsonResponse();
 
+        $headers = [
+            'X-SESSION-ID',
+            'X-Requested-With',
+            'X-File-Name',
+        ];
+
+        $this->request = Request::createFromGlobals();
+        $this->response = new JsonResponse();
+
         $this->response->headers->set('Access-Control-Allow-Origin', '*');
-        $this->response->headers->set('Access-Control-Allow-Headers', 'X-SESSION-ID');
+        $this->response->headers->set('Access-Control-Allow-Headers', implode(',', $headers));
 
         $context = new RequestContext();
         $context->fromRequest($this->request);

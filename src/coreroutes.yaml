@@ -25,6 +25,23 @@ auth_code_check:
   controller: '\Lemurro\Api\Core\Auth\Code\ControllerCheck'
   methods: [POST, OPTIONS]
 
+# file
+
+file_upload:
+  path: /file/upload
+  controller: 'Lemurro\Api\Core\File\ControllerUpload'
+  methods: [POST, OPTIONS]
+
+file_download_prepare:
+  path: /file/download/prepare
+  controller: 'Lemurro\Api\Core\File\ControllerDownloadPrepare'
+  methods: [POST, OPTIONS]
+
+file_download_run:
+  path: /file/download/run
+  controller: 'Lemurro\Api\Core\File\ControllerDownloadRun'
+  methods: [GET, OPTIONS]
+
 # /guide
 
 guide_index:
