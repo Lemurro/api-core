@@ -2,7 +2,7 @@
 /**
  * Изменение пользователя
  *
- * @version 04.07.2018
+ * @version 14.01.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -28,7 +28,7 @@ class ActionSave extends Action
      *
      * @return array
      *
-     * @version 04.07.2018
+     * @version 14.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($id, $data)
@@ -62,10 +62,8 @@ class ActionSave extends Action
                     ->where_equal('user_id', $id)
                     ->find_one();
                 if (is_object($info)) {
-                    $result_data = [];
                     if (isset($data['info_users']) && is_array($data['info_users']) && count($data['info_users']) > 0) {
                         foreach ($data['info_users'] as $key => $value) {
-                            $result_data[$key] = $value;
                             $info[$key] = $value;
                         }
                     }
@@ -82,10 +80,9 @@ class ActionSave extends Action
                         $datachangelog = $this->dic['datachangelog'];
                         $datachangelog->insert('users', 'update', $id, $data);
 
-                        $result_data['id'] = $id;
-                        $result_data['auth_id'] = $data['auth_id'];
+                        $data['id'] = $id;
 
-                        return (new RunAfterSave($this->dic))->run($result_data);
+                        return (new RunAfterSave($this->dic))->run($data);
                     } else {
                         return [
                             'errors' => [
