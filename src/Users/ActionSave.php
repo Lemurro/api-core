@@ -2,7 +2,7 @@
 /**
  * Изменение пользователя
  *
- * @version 29.12.2018
+ * @version 14.01.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -30,7 +30,7 @@ class ActionSave extends Action
      *
      * @return array
      *
-     * @version 29.12.2018
+     * @version 14.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($id, $data)
@@ -56,10 +56,8 @@ class ActionSave extends Action
                     ->where_equal('user_id', $id)
                     ->find_one();
                 if (is_object($info)) {
-                    $result_data = [];
                     if (isset($data['info_users']) && is_array($data['info_users']) && count($data['info_users']) > 0) {
                         foreach ($data['info_users'] as $key => $value) {
-                            $result_data[$key] = $value;
                             $info[$key] = $value;
                         }
                     }
@@ -76,11 +74,10 @@ class ActionSave extends Action
                         $data_change_log = $this->dic['datachangelog'];
                         $data_change_log->insert('users', 'update', $id, $data);
 
-                        $result_data['id'] = $id;
-                        $result_data['auth_id'] = $data['auth_id'];
-                        $result_data['last_action_date'] = $this->getLastActionDate($id);
+                        $data['id'] = $id;
+                        $data['last_action_date'] = $this->getLastActionDate($id);
 
-                        return (new RunAfterSave($this->dic))->run($result_data);
+                        return (new RunAfterSave($this->dic))->run($data);
                     } else {
                         return Response::error500('Произошла ошибка при изменении информации пользователя, попробуйте ещё раз');
                     }

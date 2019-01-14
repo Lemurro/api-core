@@ -2,7 +2,7 @@
 /**
  * Добавление пользователя
  *
- * @version 29.12.2018
+ * @version 14.01.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -29,7 +29,7 @@ class ActionInsert extends Action
      *
      * @return array
      *
-     * @version 29.12.2018
+     * @version 14.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($data)
@@ -51,10 +51,8 @@ class ActionInsert extends Action
         if (is_object($new_user) && isset($new_user->id)) {
             $new_user_info = ORM::for_table('info_users')->create();
 
-            $result_data = [];
             if (isset($data['info_users']) && is_array($data['info_users']) && count($data['info_users']) > 0) {
                 foreach ($data['info_users'] as $key => $value) {
-                    $result_data[$key] = $value;
                     $new_user_info[$key] = $value;
                 }
             }
@@ -72,11 +70,10 @@ class ActionInsert extends Action
                 $data_change_log = $this->dic['datachangelog'];
                 $data_change_log->insert('users', 'insert', $new_user->id, $data);
 
-                $result_data['id'] = $new_user->id;
-                $result_data['auth_id'] = $data['auth_id'];
-                $result_data['last_action_date'] = 'отсутствует';
+                $data['id'] = $new_user->id;
+                $data['last_action_date'] = 'отсутствует';
 
-                return (new RunAfterInsert($this->dic))->run($result_data);
+                return (new RunAfterInsert($this->dic))->run($data);
             } else {
                 return Response::error500('Произошла ошибка при добавлении информации о пользователе, попробуйте ещё раз');
             }
