@@ -2,12 +2,13 @@
 /**
  * Получение пользователя
  *
- * @version 29.12.2018
+ * @version 16.01.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core\Users;
 
+use Lemurro\Api\App\RunAfter\Users\Get as RunAfterGet;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\Response;
 use ORM;
@@ -26,7 +27,7 @@ class ActionGet extends Action
      *
      * @return array
      *
-     * @version 29.12.2018
+     * @version 16.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($id)
@@ -48,7 +49,7 @@ class ActionGet extends Action
                 $record['roles'] = [];
             }
 
-            return Response::data($record);
+            return (new RunAfterGet($this->dic))->run($record);
         } else {
             return Response::error404('Пользователь не найден');
         }
