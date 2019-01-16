@@ -2,12 +2,13 @@
 /**
  * Получение пользователя
  *
- * @version 24.04.2018
+ * @version 16.01.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core\Users;
 
+use Lemurro\Api\App\RunAfter\Users\Get as RunAfterGet;
 use Lemurro\Api\Core\Abstracts\Action;
 
 /**
@@ -24,7 +25,7 @@ class ActionGet extends Action
      *
      * @return array
      *
-     * @version 24.04.2018
+     * @version 16.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($id)
@@ -46,9 +47,7 @@ class ActionGet extends Action
                 $record['roles'] = [];
             }
 
-            return [
-                'data' => $record,
-            ];
+            return (new RunAfterGet($this->dic))->run($record);
         } else {
             return [
                 'errors' => [
