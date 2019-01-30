@@ -4,7 +4,7 @@
  *
  * @example http://path-to-api/jserrors?msg=message&file=file.js&line=32&col=3&err={"json-string"}
  *
- * @version 12.12.2018
+ * @version 30.01.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -12,7 +12,7 @@ namespace Lemurro\Api\Core\JSErr;
 
 use Lemurro\Api\App\Configs\SettingsPath;
 use Lemurro\Api\Core\Abstracts\Controller;
-use Monolog\Handler\StreamHandler;
+use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 
 /**
@@ -27,7 +27,7 @@ class ControllerReciever extends Controller
      *
      * @throws \Exception
      *
-     * @version 12.12.2018
+     * @version 30.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -43,7 +43,7 @@ class ControllerReciever extends Controller
         ];
 
         $log = new Logger('JSErrLog');
-        $log->pushHandler(new StreamHandler(SettingsPath::LOGS . 'jserr.log'));
+        $log->pushHandler(new RotatingFileHandler(SettingsPath::LOGS . 'jserr.log'));
         $log->error(implode(' | ', $array));
 
         echo $one_pixel_image;
