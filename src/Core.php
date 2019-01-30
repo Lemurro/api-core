@@ -2,7 +2,7 @@
 /**
  * Инициализация приложения
  *
- * @version 08.01.2019
+ * @version 30.01.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -18,7 +18,7 @@ use Lemurro\Api\Core\Checker\Checker;
 use Lemurro\Api\Core\DataChangeLogs\Insert as DataChangeLogsInsert;
 use Lemurro\Api\Core\SMS\SMS;
 use Lemurro\Api\Core\Users\ActionGet as GetUser;
-use Monolog\Handler\StreamHandler;
+use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use PHPMailer\PHPMailer\PHPMailer;
 use Pimple\Container;
@@ -129,7 +129,7 @@ class Core
     /**
      * Инициализация DI
      *
-     * @version 28.10.2018
+     * @version 30.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function initDI()
@@ -195,7 +195,9 @@ class Core
 
         $this->dic['log'] = function () {
             $log = new Logger('MainLog');
-            $log->pushHandler(new StreamHandler(SettingsGeneral::LOGS_PATH . 'main.log'));
+            $handler = new RotatingFileHandler(SettingsGeneral::LOGS_PATH . 'main.log');
+
+            $log->pushHandler($handler);
 
             return $log;
         };
