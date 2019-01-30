@@ -2,7 +2,7 @@
 /**
  * Инициализация Dependency Injection Container
  *
- * @version 29.12.2018
+ * @version 30.01.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -15,7 +15,7 @@ use Lemurro\Api\App\Configs\SettingsPath;
 use Lemurro\Api\Core\Checker\Checker;
 use Lemurro\Api\Core\DataChangeLog\DataChangeLog;
 use Lemurro\Api\Core\SMS\SMS;
-use Monolog\Handler\StreamHandler;
+use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use PHPMailer\PHPMailer\PHPMailer;
 use Pimple\Container;
@@ -32,7 +32,7 @@ class DIC
      *
      * @return Container
      *
-     * @version 29.12.2018
+     * @version 30.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     static function init()
@@ -80,7 +80,9 @@ class DIC
 
         $dic['log'] = function () {
             $log = new Logger('MainLog');
-            $log->pushHandler(new StreamHandler(SettingsPath::LOGS . 'main.log'));
+            $handler = new RotatingFileHandler(SettingsPath::LOGS . 'main.log');
+
+            $log->pushHandler($handler);
 
             return $log;
         };
