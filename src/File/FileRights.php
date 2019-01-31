@@ -2,7 +2,7 @@
 /**
  * Проверка доступа пользователя к файлу
  *
- * @version 08.01.2019
+ * @version 31.01.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -27,7 +27,7 @@ class FileRights extends Action
      *
      * @return boolean
      *
-     * @version 08.01.2019
+     * @version 31.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function check($container_type, $container_id)
@@ -36,8 +36,9 @@ class FileRights extends Action
             return true;
         }
 
+        $classname = 'Lemurro\\Api\\App\\Checker\\File' . ucfirst($container_type);
+
         try {
-            $classname = 'Lemurro\\Api\\App\\Checker\\File' . ucfirst($container_type);
             $class = new $classname($this->dic);
 
             return call_user_func([$class, 'check'], $container_id);
