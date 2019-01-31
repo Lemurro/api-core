@@ -2,7 +2,7 @@
 /**
  * Инициализация приложения
  *
- * @version 30.01.2019
+ * @version 31.01.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -16,10 +16,9 @@ use Lemurro\Api\App\DIC as AppDIC;
 use Lemurro\Api\App\Response as AppResponse;
 use Lemurro\Api\Core\Checker\Checker;
 use Lemurro\Api\Core\DataChangeLogs\Insert as DataChangeLogsInsert;
+use Lemurro\Api\Core\Helpers\LoggerFactory;
 use Lemurro\Api\Core\SMS\SMS;
 use Lemurro\Api\Core\Users\ActionGet as GetUser;
-use Monolog\Handler\RotatingFileHandler;
-use Monolog\Logger;
 use PHPMailer\PHPMailer\PHPMailer;
 use Pimple\Container;
 use Symfony\Component\Config\FileLocator;
@@ -129,7 +128,7 @@ class Core
     /**
      * Инициализация DI
      *
-     * @version 30.01.2019
+     * @version 31.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function initDI()
@@ -194,12 +193,7 @@ class Core
         };
 
         $this->dic['log'] = function () {
-            $log = new Logger('MainLog');
-            $handler = new RotatingFileHandler(SettingsGeneral::LOGS_PATH . 'main.log');
-
-            $log->pushHandler($handler);
-
-            return $log;
+            return LoggerFactory::create('Main');
         };
 
         $this->dic['checker'] = function ($c) {

@@ -29,6 +29,8 @@
     "symfony/config": "^4.0",
     "symfony/yaml": "^4.0",
     "ext-fileinfo": "*",
-    "ext-json": "*"
+    "ext-json": "*",
+    "ext-iconv": "*",
+    "ext-pdo": "*"
   }
 }
