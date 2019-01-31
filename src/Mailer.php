@@ -2,7 +2,7 @@
 /**
  * Отправка электронных писем
  *
- * @version 30.01.2019
+ * @version 31.01.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -12,7 +12,7 @@ use Lemurro\Api\App\Configs\EmailTemplates;
 use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\App\Configs\SettingsMail;
 use Lemurro\Api\App\Configs\SettingsPath;
-use Monolog\Handler\RotatingFileHandler;
+use Lemurro\Api\Core\Helpers\LoggerFactory;
 use Monolog\Logger;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -39,17 +39,13 @@ class Mailer
      *
      * @param object $dic Контейнер
      *
-     * @throws \Exception
-     *
-     * @version 30.01.2019
+     * @version 31.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function __construct($dic)
     {
         $this->phpmailer = $dic['phpmailer'];
-
-        $this->log = new Logger('Mailer');
-        $this->log->pushHandler(new RotatingFileHandler(SettingsPath::LOGS . 'mailer.log'));
+        $this->log = LoggerFactory::create('Mailer');
     }
 
     /**
