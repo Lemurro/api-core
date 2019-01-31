@@ -35,6 +35,8 @@ class LoggerFactory
         $filename = SettingsPath::LOGS . mb_strtolower($name, 'UTF-8') . '.log';
         $handler = new RotatingFileHandler($filename);
 
+        $handler->setFilenameFormat('{date}-{filename}', 'Y/m/d');
+
         $logger->pushHandler($handler);
 
         return $logger;
