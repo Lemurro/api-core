@@ -18,6 +18,7 @@
   },
   "require": {
     "php": ">=7.0.0",
+    "giggsey/libphonenumber-for-php": "~8.10",
     "hellogerard/jobby": "~3.4",
     "j4mie/idiorm": "~1.5",
     "monolog/monolog": "~1.22",
