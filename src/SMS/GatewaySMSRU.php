@@ -9,6 +9,7 @@
 namespace Lemurro\Api\Core\SMS;
 
 use Lemurro\Api\App\Configs\SettingsSMS;
+use Lemurro\Api\Core\Abstracts\GatewaySMS;
 use Lemurro\Api\Core\Helpers\LoggerFactory;
 use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumberUtil;
@@ -18,7 +19,7 @@ use libphonenumber\PhoneNumberUtil;
  *
  * @package Lemurro\Api\Core\SMS
  */
-class GatewaySMSRU
+class GatewaySMSRU implements GatewaySMS
 {
     /**
      * Отправка sms
