@@ -36,29 +36,25 @@ class Mailer
     /**
      * @var string HTML-код шапки письма
      */
-    protected $header;
+    public $header = EmailTemplates::HEADER;
 
     /**
      * @var string HTML-код подвала письма
      */
-    protected $footer;
+    public $footer = EmailTemplates::FOOTER;
 
     /**
      * Конструктор
      *
-     * @param object $dic    Контейнер
-     * @param string $header HTML-код шапки письма
-     * @param string $footer HTML-код подвала письма
+     * @param object $dic Контейнер
      *
      * @version 16.03.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    public function __construct($dic, $header = EmailTemplates::HEADER, $footer = EmailTemplates::FOOTER)
+    public function __construct($dic)
     {
         $this->phpmailer = $dic['phpmailer'];
         $this->log = LoggerFactory::create('Mailer');
-        $this->header = $header;
-        $this->footer = $footer;
     }
 
     /**
