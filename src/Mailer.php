@@ -2,7 +2,7 @@
 /**
  * Отправка электронных писем
  *
- * @version 31.01.2019
+ * @version 16.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -35,17 +35,31 @@ class Mailer
     protected $log;
 
     /**
+     * @var string HTML-код шапки письма
+     */
+    protected $header;
+
+    /**
+     * @var string HTML-код подвала письма
+     */
+    protected $footer;
+
+    /**
      * Конструктор
      *
      * @param object $dic Контейнер
+     * @param string $header HTML-код шапки письма
+     * @param string $footer HTML-код подвала письма
      *
-     * @version 31.01.2019
+     * @version 16.03.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    public function __construct($dic)
+    public function __construct($dic, $header = EmailTemplates::HEADER, $footer = EmailTemplates::FOOTER)
     {
         $this->phpmailer = $dic['phpmailer'];
         $this->log = LoggerFactory::create('Mailer');
+        $this->header = $header;
+        $this->footer = $footer;
     }
 
     /**
@@ -60,7 +74,7 @@ class Mailer
      *
      * @return boolean
      *
-     * @version 12.12.2018
+     * @version 16.03.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function send($template_name, $subject, $email_tos, $template_data, $images = [], $files = [])
@@ -108,9 +122,7 @@ class Mailer
 
                 // Связываем данные с шаблоном
                 $template = constant('\Lemurro\Api\App\Configs\EmailTemplates::' . $template_name);
-                $message = EmailTemplates::HEADER;
-                $message .= strtr($template, $template_data);
-                $message .= EmailTemplates::FOOTER;
+                $message = $this->header . strtr($template, $template_data) . $this->footer;
 
                 $this->phpmailer->Subject = iconv('utf-8', 'windows-1251', $subject);
                 $this->phpmailer->MsgHTML(iconv('utf-8', 'windows-1251', $message));
