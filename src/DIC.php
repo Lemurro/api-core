@@ -2,7 +2,7 @@
 /**
  * Инициализация Dependency Injection Container
  *
- * @version 31.01.2019
+ * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -12,9 +12,10 @@ use Carbon\Carbon;
 use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\App\Configs\SettingsMail;
 use Lemurro\Api\Core\Checker\Checker;
-use Lemurro\Api\Core\DataChangeLog\DataChangeLog;
+use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\LoggerFactory;
-use Lemurro\Api\Core\SMS\SMS;
+use Lemurro\Api\Core\Helpers\Mailer;
+use Lemurro\Api\Core\Helpers\SMS\SMS;
 use PHPMailer\PHPMailer\PHPMailer;
 use Pimple\Container;
 

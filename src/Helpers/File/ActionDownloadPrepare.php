@@ -2,11 +2,11 @@
 /**
  * Подготовка файла к скачиванию
  *
- * @version 08.01.2019
+ * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
-namespace Lemurro\Api\Core\File;
+namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\App\Configs\SettingsFile;
 use Lemurro\Api\Core\Helpers\Response;
@@ -15,7 +15,7 @@ use Lemurro\Api\Core\Abstracts\Action;
 /**
  * Class ActionDownloadPrepare
  *
- * @package Lemurro\Api\Core\File
+ * @package Lemurro\Api\Core\Helpers\File
  */
 class ActionDownloadPrepare extends Action
 {

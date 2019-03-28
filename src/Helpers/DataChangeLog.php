@@ -2,11 +2,11 @@
 /**
  * Добавление записи в лог действий
  *
- * @version 29.12.2018
+ * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
-namespace Lemurro\Api\Core\DataChangeLog;
+namespace Lemurro\Api\Core\Helpers;
 
 use Lemurro\Api\Core\Abstracts\Action;
 use ORM;
@@ -14,7 +14,7 @@ use ORM;
 /**
  * Class DataChangeLog
  *
- * @package Lemurro\Api\Core\DataChangeLog
+ * @package Lemurro\Api\Core\Helpers
  */
 class DataChangeLog extends Action
 {

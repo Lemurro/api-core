@@ -2,7 +2,7 @@
 /**
  * Добавление пользователя
  *
- * @version 14.01.2019
+ * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -11,7 +11,7 @@ namespace Lemurro\Api\Core\Users;
 use Lemurro\Api\App\RunAfter\Users\Insert as RunAfterInsert;
 use Lemurro\Api\App\RunBefore\Users\Insert as RunBeforeInsert;
 use Lemurro\Api\Core\Abstracts\Action;
-use Lemurro\Api\Core\DataChangeLog\DataChangeLog;
+use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 

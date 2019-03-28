@@ -2,7 +2,7 @@
 /**
  * Получение кода аутентификации
  *
- * @version 29.12.2018
+ * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -11,10 +11,10 @@ namespace Lemurro\Api\Core\Auth\Code;
 use Lemurro\Api\App\Configs\SettingsAuth;
 use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\Core\Abstracts\Action;
+use Lemurro\Api\Core\Helpers\Mailer;
 use Lemurro\Api\Core\Helpers\RandomNumber;
 use Lemurro\Api\Core\Helpers\Response;
-use Lemurro\Api\Core\Mailer;
-use Lemurro\Api\Core\SMS\SMS;
+use Lemurro\Api\Core\Helpers\SMS\SMS;
 use Lemurro\Api\Core\Users\ActionInsert as InsertUser;
 use Lemurro\Api\Core\Users\Find as FindUser;
 use ORM;
@@ -33,7 +33,7 @@ class ActionGet extends Action
      *
      * @return array
      *
-     * @version 29.12.2018
+     * @version 28.03.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($auth_id)

@@ -2,7 +2,7 @@
 /**
  * Удаление пользователя
  *
- * @version 29.12.2018
+ * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -10,7 +10,7 @@ namespace Lemurro\Api\Core\Users;
 
 use Lemurro\Api\App\RunAfter\Users\Remove as RunAfterRemove;
 use Lemurro\Api\Core\Abstracts\Action;
-use Lemurro\Api\Core\DataChangeLog\DataChangeLog;
+use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 

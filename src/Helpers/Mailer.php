@@ -2,17 +2,16 @@
 /**
  * Отправка электронных писем
  *
- * @version 16.03.2019
+ * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
-namespace Lemurro\Api\Core;
+namespace Lemurro\Api\Core\Helpers;
 
 use Lemurro\Api\App\Configs\EmailTemplates;
 use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\App\Configs\SettingsMail;
 use Lemurro\Api\App\Configs\SettingsPath;
-use Lemurro\Api\Core\Helpers\LoggerFactory;
 use Monolog\Logger;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -20,7 +19,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 /**
  * Class Mailer
  *
- * @package Lemurro\Api\Core
+ * @package Lemurro\Api\Core\Helpers
  */
 class Mailer
 {

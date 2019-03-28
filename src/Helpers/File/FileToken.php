@@ -2,11 +2,11 @@
 /**
  * Токены для скачивания файлов
  *
- * @version 08.01.2019
+ * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
-namespace Lemurro\Api\Core\File;
+namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\Core\Helpers\Response;
 use Lemurro\Api\Core\Abstracts\Action;
@@ -15,7 +15,7 @@ use ORM;
 /**
  * Class FileToken
  *
- * @package Lemurro\Api\Core\File
+ * @package Lemurro\Api\Core\Helpers\File
  */
 class FileToken extends Action
 {

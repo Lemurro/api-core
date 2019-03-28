@@ -2,11 +2,11 @@
 /**
  * Проверка доступа пользователя к файлу
  *
- * @version 31.01.2019
+ * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
-namespace Lemurro\Api\Core\File;
+namespace Lemurro\Api\Core\Helpers\File;
 
 use Exception;
 use Lemurro\Api\Core\Abstracts\Action;
@@ -15,7 +15,7 @@ use Monolog\Logger;
 /**
  * Class FileRights
  *
- * @package Lemurro\Api\Core\File
+ * @package Lemurro\Api\Core\Helpers\File
  */
 class FileRights extends Action
 {

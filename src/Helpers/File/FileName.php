@@ -2,16 +2,16 @@
 /**
  * Создание уникального имени для файла (с проверкой на дубликаты)
  *
- * @version 08.01.2019
+ * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
-namespace Lemurro\Api\Core\File;
+namespace Lemurro\Api\Core\Helpers\File;
 
 /**
  * Class FileName
  *
- * @package Lemurro\Api\Core\File
+ * @package Lemurro\Api\Core\Helpers\File
  */
 class FileName
 {

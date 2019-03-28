@@ -2,11 +2,11 @@
 /**
  * Шлюз для отправки sms: sms.ru
  *
- * @version 16.03.2019
+ * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
-namespace Lemurro\Api\Core\SMS;
+namespace Lemurro\Api\Core\Helpers\SMS;
 
 use Lemurro\Api\App\Configs\SettingsSMS;
 use Lemurro\Api\Core\Abstracts\GatewaySMS;
@@ -18,7 +18,7 @@ use libphonenumber\PhoneNumberUtil;
 /**
  * Class GatewaySMSRU
  *
- * @package Lemurro\Api\Core\SMS
+ * @package Lemurro\Api\Core\Helpers\SMS
  */
 class GatewaySMSRU implements GatewaySMS
 {

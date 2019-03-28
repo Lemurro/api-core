@@ -2,11 +2,11 @@
 /**
  * Очистим устаревшие токены для скачивания
  *
- * @version 08.01.2019
+ * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
-namespace Lemurro\Api\Core\File;
+namespace Lemurro\Api\Core\Helpers\File;
 
 use Carbon\Carbon;
 use Lemurro\Api\App\Configs\SettingsFile;
@@ -15,7 +15,7 @@ use ORM;
 /**
  * Class FileOlderTokens
  *
- * @package Lemurro\Api\Core\File
+ * @package Lemurro\Api\Core\Helpers\File
  */
 class FileOlderTokens
 {
