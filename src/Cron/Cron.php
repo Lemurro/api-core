@@ -2,12 +2,13 @@
 /**
  * Инициализация cron-задач
  *
- * @version 29.12.2018
+ * @version 29.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core\Cron;
 
+use Lemurro\Api\App\DIC as AppDIC;
 use Lemurro\Api\Core\DB;
 use Lemurro\Api\Core\DIC;
 use Lemurro\Api\Core\Users\ActionGet as GetUser;
@@ -23,6 +24,9 @@ class Cron
 {
     /**
      * Cron constructor.
+     *
+     * @version 29.03.2019
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function __construct()
     {
@@ -34,7 +38,7 @@ class Cron
      *
      * @return Container
      *
-     * @version 29.12.2018
+     * @version 29.03.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function getDIC()
@@ -68,6 +72,8 @@ class Cron
                 return [];
             }
         };
+
+        (new AppDIC())->run($dic);
 
         return $dic;
     }
