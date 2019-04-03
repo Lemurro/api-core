@@ -2,7 +2,7 @@
 /**
  * Удаление пользователя
  *
- * @version 29.10.2018
+ * @version 03.04.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -20,7 +20,7 @@ class ControllerRemove extends Controller
     /**
      * Стартовый метод
      *
-     * @version 29.10.2018
+     * @version 03.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -31,9 +31,9 @@ class ControllerRemove extends Controller
         ];
         $checker_result = $this->dic['checker']->run($checker_checks);
         if (is_array($checker_result) && count($checker_result) == 0) {
-            $this->response->setData($checker_result);
-        } else {
             $this->response->setData((new ActionRemove($this->dic))->run($this->request->get('id')));
+        } else {
+            $this->response->setData($checker_result);
         }
 
         $this->response->send();
