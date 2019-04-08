@@ -2,13 +2,12 @@
 /**
  * Проверка доступа пользователя к файлу
  *
- * @version 28.03.2019
+ * @version 08.04.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
-use Exception;
 use Lemurro\Api\Core\Abstracts\Action;
 use Monolog\Logger;
 
@@ -27,7 +26,7 @@ class FileRights extends Action
      *
      * @return boolean
      *
-     * @version 31.01.2019
+     * @version 08.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function check($container_type, $container_id)
@@ -38,15 +37,15 @@ class FileRights extends Action
 
         $classname = 'Lemurro\\Api\\App\\Checker\\File' . ucfirst($container_type);
 
-        try {
+        if (class_exists($classname)) {
             $class = new $classname($this->dic);
 
             return call_user_func([$class, 'check'], $container_id);
-        } catch (Exception $e) {
+        } else {
             /** @var Logger $log */
             $log = $this->dic['log'];
 
-            $log->error('/File/FileRights.php: Unknown class "' . $classname . '", ' . $e->getMessage());
+            $log->error('/File/FileRights.php: Unknown class "' . $classname . '"');
 
             return false;
         }
