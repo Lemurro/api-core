@@ -2,7 +2,7 @@
 /**
  * Инициализация Jobby
  *
- * @version 29.03.2019
+ * @version 15.04.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -66,14 +66,14 @@ class Jobby
     /**
      * Очистим устаревшие токены для скачивания
      *
-     * @version 29.03.2019
+     * @version 15.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function fileOlderTokens()
     {
         // Выполняем задачу каждые 5 минут
         try {
-            $this->jobby->add('FileOlderTokens', [
+            $this->jobby->add(SettingsCron::NAME_PREFIX . 'FileOlderTokens', [
                 'enabled'  => true,
                 'schedule' => '*/5 * * * *', // Каждые 5 минут
                 'closure'  => function () {
@@ -92,14 +92,14 @@ class Jobby
     /**
      * Очистим устаревшие файлы во временном каталоге
      *
-     * @version 29.03.2019
+     * @version 15.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function fileOlderFiles()
     {
         // Выполняем задачу каждый день в 0:00 UTC
         try {
-            $this->jobby->add('FileOlderFiles', [
+            $this->jobby->add(SettingsCron::NAME_PREFIX . 'FileOlderFiles', [
                 'enabled'  => true,
                 'schedule' => '0 0 * * *', // Каждый день в 0:00
                 'closure'  => function () {
