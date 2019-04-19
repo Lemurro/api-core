@@ -2,13 +2,13 @@
 /**
  * Инициализация cron-задач
  *
- * @version 29.03.2019
+ * @version 19.04.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core\Cron;
 
-use Lemurro\Api\App\DIC as AppDIC;
+use Lemurro\Api\App\Overrides\DIC as AppDIC;
 use Lemurro\Api\Core\DB;
 use Lemurro\Api\Core\DIC;
 use Lemurro\Api\Core\Users\ActionGet as GetUser;
