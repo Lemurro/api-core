@@ -2,7 +2,7 @@
 /**
  * Инициализация приложения
  *
- * @version 19.04.2019
+ * @version 22.04.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -11,6 +11,8 @@ namespace Lemurro\Api\Core;
 use Lemurro\Api\App\Configs\SettingsPath;
 use Lemurro\Api\App\Overrides\DIC as AppDIC;
 use Lemurro\Api\App\Overrides\Response as AppResponse;
+use Lemurro\Api\Core\Helpers\DB;
+use Lemurro\Api\Core\Helpers\DIC;
 use Lemurro\Api\Core\Helpers\Response;
 use Lemurro\Api\Core\Users\ActionGet as GetUser;
 use Pimple\Container;

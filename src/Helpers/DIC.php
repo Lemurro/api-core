@@ -2,19 +2,16 @@
 /**
  * Инициализация Dependency Injection Container
  *
- * @version 28.03.2019
+ * @version 22.04.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
-namespace Lemurro\Api\Core;
+namespace Lemurro\Api\Core\Helpers;
 
 use Carbon\Carbon;
 use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\App\Configs\SettingsMail;
 use Lemurro\Api\Core\Checker\Checker;
-use Lemurro\Api\Core\Helpers\DataChangeLog;
-use Lemurro\Api\Core\Helpers\LoggerFactory;
-use Lemurro\Api\Core\Helpers\Mailer;
 use Lemurro\Api\Core\Helpers\SMS\SMS;
 use PHPMailer\PHPMailer\PHPMailer;
 use Pimple\Container;
@@ -22,7 +19,7 @@ use Pimple\Container;
 /**
  * Class DIC
  *
- * @package Lemurro\Api\Core
+ * @package Lemurro\Api\Core\Helpers
  */
 class DIC
 {
@@ -31,12 +28,14 @@ class DIC
      *
      * @return Container
      *
-     * @version 31.01.2019
+     * @version 22.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     static function init()
     {
         $dic = new Container();
+
+        $dic['utc_offset'] = 0;
 
         $dic['datetimenow'] = function () {
             $now = Carbon::now('UTC');

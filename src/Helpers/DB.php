@@ -2,11 +2,11 @@
 /**
  * Инициализация ORM для запросов к БД
  *
- * @version 29.12.2018
+ * @version 22.04.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
-namespace Lemurro\Api\Core;
+namespace Lemurro\Api\Core\Helpers;
 
 use Lemurro\Api\App\Configs\SettingsDatabase;
 use ORM;
@@ -15,7 +15,7 @@ use PDO;
 /**
  * Class DB
  *
- * @package Lemurro\Api\Core
+ * @package Lemurro\Api\Core\Helpers
  */
 class DB
 {

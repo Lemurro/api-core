@@ -9,8 +9,8 @@
 namespace Lemurro\Api\Core\Cron;
 
 use Lemurro\Api\App\Overrides\DIC as AppDIC;
-use Lemurro\Api\Core\DB;
-use Lemurro\Api\Core\DIC;
+use Lemurro\Api\Core\Helpers\DB;
+use Lemurro\Api\Core\Helpers\DIC;
 use Lemurro\Api\Core\Users\ActionGet as GetUser;
 use ORM;
 use Pimple\Container;
