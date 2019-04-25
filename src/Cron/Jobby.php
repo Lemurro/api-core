@@ -2,7 +2,7 @@
 /**
  * Инициализация Jobby
  *
- * @version 15.04.2019
+ * @version 25.04.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -92,7 +92,7 @@ class Jobby
     /**
      * Очистим устаревшие файлы во временном каталоге
      *
-     * @version 15.04.2019
+     * @version 25.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function fileOlderFiles()
@@ -103,8 +103,6 @@ class Jobby
                 'enabled'  => true,
                 'schedule' => '0 0 * * *', // Каждый день в 0:00
                 'closure'  => function () {
-                    new Cron();
-
                     (new FileOlderFiles)->clear();
 
                     return true;
