@@ -2,7 +2,7 @@
 /**
  * Инициализация cron-задач
  *
- * @version 19.04.2019
+ * @version 25.04.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -38,14 +38,12 @@ class Cron
      *
      * @return Container
      *
-     * @version 29.03.2019
+     * @version 25.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function getDIC()
     {
         $dic = DIC::init();
-
-        $dic['utc_offset'] = 0;
 
         $dic['user'] = function ($c) {
             $first_admin = ORM::for_table('info_users')
