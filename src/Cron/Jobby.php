@@ -14,6 +14,8 @@ use Lemurro\Api\App\Configs\SettingsCron;
 use Lemurro\Api\App\Configs\SettingsMail;
 use Lemurro\Api\Core\Helpers\File\FileOlderFiles;
 use Lemurro\Api\Core\Helpers\File\FileOlderTokens;
+use Lemurro\Api\Core\Helpers\LoggerFactory;
+use Monolog\Logger;
 
 /**
  * Class Jobby
@@ -22,6 +24,11 @@ use Lemurro\Api\Core\Helpers\File\FileOlderTokens;
  */
 class Jobby
 {
+    /**
+     * @var Logger
+     */
+    public $log;
+
     /**
      * @var JobbyJobby
      */
@@ -36,6 +43,8 @@ class Jobby
     public function __construct()
     {
         date_default_timezone_set('UTC');
+
+        $this->log = LoggerFactory::create('Jobby');
 
         $this->jobby = new JobbyJobby([
             'output'         => SettingsCron::LOG_FILE,
@@ -68,7 +77,7 @@ class Jobby
     /**
      * Очистим устаревшие токены для скачивания
      *
-     * @version 15.04.2019
+     * @version 29.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function fileOlderTokens()
@@ -87,14 +96,14 @@ class Jobby
                 },
             ]);
         } catch (Exception $e) {
-            file_put_contents(SettingsCron::LOG_FILE, $e->getMessage());
+            $this->log->error($e->getFile() . '(' . $e->getLine() . '): ' . $e->getMessage());
         }
     }
 
     /**
      * Очистим устаревшие файлы во временном каталоге
      *
-     * @version 25.04.2019
+     * @version 29.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function fileOlderFiles()
@@ -111,7 +120,7 @@ class Jobby
                 },
             ]);
         } catch (Exception $e) {
-            file_put_contents(SettingsCron::LOG_FILE, $e->getMessage());
+            $this->log->error($e->getFile() . '(' . $e->getLine() . '): ' . $e->getMessage());
         }
     }
 }
