@@ -2,7 +2,7 @@
 /**
  * Инициализация приложения
  *
- * @version 22.04.2019
+ * @version 29.04.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -54,11 +54,13 @@ class Core
     /**
      * Конструктор
      *
-     * @version 29.12.2018
+     * @version 29.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function __construct()
     {
+        date_default_timezone_set('UTC');
+
         DB::init();
 
         $this->initRoutes();

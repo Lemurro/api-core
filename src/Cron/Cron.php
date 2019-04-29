@@ -2,7 +2,7 @@
 /**
  * Инициализация cron-задач
  *
- * @version 25.04.2019
+ * @version 29.04.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -25,11 +25,13 @@ class Cron
     /**
      * Cron constructor.
      *
-     * @version 29.03.2019
+     * @version 29.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function __construct()
     {
+        date_default_timezone_set('UTC');
+
         DB::init();
     }
 
