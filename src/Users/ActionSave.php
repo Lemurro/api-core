@@ -2,7 +2,7 @@
 /**
  * Изменение пользователя
  *
- * @version 28.03.2019
+ * @version 30.04.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -99,7 +99,7 @@ class ActionSave extends Action
      *
      * @return string
      *
-     * @version 12.12.2018
+     * @version 30.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function getLastActionDate($id)
@@ -113,7 +113,7 @@ class ActionSave extends Action
         if (is_object($item)) {
             return $item->checked_at;
         } else {
-            return 'отсутствует';
+            return null;
         }
     }
 }

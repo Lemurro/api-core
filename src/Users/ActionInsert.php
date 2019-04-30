@@ -2,7 +2,7 @@
 /**
  * Добавление пользователя
  *
- * @version 28.03.2019
+ * @version 30.04.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -29,7 +29,7 @@ class ActionInsert extends Action
      *
      * @return array
      *
-     * @version 14.01.2019
+     * @version 30.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($data)
@@ -71,7 +71,7 @@ class ActionInsert extends Action
                 $data_change_log->insert('users', 'insert', $new_user->id, $data);
 
                 $data['id'] = $new_user->id;
-                $data['last_action_date'] = 'отсутствует';
+                $data['last_action_date'] = null;
 
                 return (new RunAfterInsert($this->dic))->run($data);
             } else {
