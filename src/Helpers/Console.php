@@ -2,30 +2,28 @@
 /**
  * Инициализация cron-задач
  *
- * @version 29.04.2019
+ * @version 30.04.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
-namespace Lemurro\Api\Core\Cron;
+namespace Lemurro\Api\Core\Helpers;
 
 use Lemurro\Api\App\Overrides\DIC as AppDIC;
-use Lemurro\Api\Core\Helpers\DB;
-use Lemurro\Api\Core\Helpers\DIC;
 use Lemurro\Api\Core\Users\ActionGet as GetUser;
 use ORM;
 use Pimple\Container;
 
 /**
- * Class Cron
+ * Class Console
  *
- * @package Lemurro\Cron
+ * @package Lemurro\Helpers
  */
-class Cron
+class Console
 {
     /**
-     * Cron constructor.
+     * Console constructor.
      *
-     * @version 29.04.2019
+     * @version 30.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function __construct()
@@ -40,7 +38,7 @@ class Cron
      *
      * @return Container
      *
-     * @version 25.04.2019
+     * @version 30.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function getDIC()

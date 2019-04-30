@@ -2,7 +2,7 @@
 /**
  * Инициализация Jobby
  *
- * @version 29.04.2019
+ * @version 30.04.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -12,6 +12,7 @@ use Exception;
 use Jobby\Jobby as JobbyJobby;
 use Lemurro\Api\App\Configs\SettingsCron;
 use Lemurro\Api\App\Configs\SettingsMail;
+use Lemurro\Api\Core\Helpers\Console;
 use Lemurro\Api\Core\Helpers\File\FileOlderFiles;
 use Lemurro\Api\Core\Helpers\File\FileOlderTokens;
 use Lemurro\Api\Core\Helpers\LoggerFactory;
@@ -77,7 +78,7 @@ class Jobby
     /**
      * Очистим устаревшие токены для скачивания
      *
-     * @version 29.04.2019
+     * @version 30.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function fileOlderTokens()
@@ -88,7 +89,7 @@ class Jobby
                 'enabled'  => true,
                 'schedule' => '*/5 * * * *', // Каждые 5 минут
                 'closure'  => function () {
-                    new Cron();
+                    new Console();
 
                     (new FileOlderTokens)->clear();
 
