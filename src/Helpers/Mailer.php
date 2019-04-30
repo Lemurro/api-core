@@ -2,7 +2,7 @@
 /**
  * Отправка электронных писем
  *
- * @version 28.03.2019
+ * @version 30.04.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -46,7 +46,7 @@ class Mailer
     /**
      * Конструктор
      *
-     * @param object $dic Контейнер
+     * @param object $dic    Контейнер
      * @param string $header HTML-код шапки письма
      * @param string $footer HTML-код подвала письма
      *
@@ -73,7 +73,7 @@ class Mailer
      *
      * @return boolean
      *
-     * @version 16.03.2019
+     * @version 30.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function send($template_name, $subject, $email_tos, $template_data, $images = [], $files = [])
@@ -88,12 +88,6 @@ class Mailer
                 $this->phpmailer->ClearAttachments();
                 $this->phpmailer->ClearCustomHeaders();
                 $this->phpmailer->ClearReplyTos();
-
-                // Прикрепляем логотип для письма
-                $logo_mail = SettingsPath::FULL_ROOT . 'assets/img/logo.png';
-                if (is_readable($logo_mail)) {
-                    $this->phpmailer->AddEmbeddedImage($logo_mail, 'logotype', 'logo.png', 'base64', 'image/png');
-                }
 
                 // Прикрепляем другие изображения при необходимости
                 if (is_array($images) && count($images) > 0) {
@@ -121,7 +115,10 @@ class Mailer
 
                 // Связываем данные с шаблоном
                 $template = constant('\Lemurro\Api\App\Configs\EmailTemplates::' . $template_name);
-                $message = $this->header . strtr($template, $template_data) . $this->footer;
+                $header_content = strtr($this->header, ['[LOGO_BASE64]' => EmailTemplates::LOGO_BASE64]);
+                $body_content = strtr($template, $template_data);
+                $footer_content = $this->footer;
+                $message = $header_content . $body_content . $footer_content;
 
                 $this->phpmailer->Subject = iconv('utf-8', 'windows-1251', $subject);
                 $this->phpmailer->MsgHTML(iconv('utf-8', 'windows-1251', $message));
