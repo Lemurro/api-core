@@ -30,7 +30,7 @@ class ActionSave extends Action
      *
      * @return array
      *
-     * @version 14.01.2019
+     * @version 30.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($id, $data)
@@ -49,6 +49,14 @@ class ActionSave extends Action
         $user = ORM::for_table('users')
             ->find_one($id);
         if (is_object($user)) {
+            if ($id == 1) {
+                $data['auth_id'] = 'lemurro@lemurro';
+                $data['roles'] = ['admin' => 'true'];
+                $data['info_users']['last_name'] = 'Пользователь';
+                $data['info_users']['first_name'] = 'для';
+                $data['info_users']['second_name'] = 'cli-скриптов';
+            }
+
             $user->auth_id = $data['auth_id'];
             $user->save();
             if (is_object($user) && isset($user->id)) {

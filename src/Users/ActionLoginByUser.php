@@ -2,7 +2,7 @@
 /**
  * Вход под указанным пользователем
  *
- * @version 29.12.2018
+ * @version 30.04.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -28,7 +28,7 @@ class ActionLoginByUser extends Action
      *
      * @return array
      *
-     * @version 29.12.2018
+     * @version 30.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($user_id)
@@ -36,6 +36,10 @@ class ActionLoginByUser extends Action
         $user = (new ActionGet($this->dic))->run($user_id);
         if (isset($user['errors'])) {
             return $user;
+        }
+
+        if ($user_id == 1) {
+            Response::error403('Входить под пользователем с id=1 запрещено', false);
         }
 
         $secret = RandomKey::generate(100);
