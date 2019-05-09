@@ -2,7 +2,7 @@
 /**
  * Изменение пользователя
  *
- * @version 30.04.2019
+ * @version 09.05.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -30,7 +30,7 @@ class ActionSave extends Action
      *
      * @return array
      *
-     * @version 30.04.2019
+     * @version 09.05.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($id, $data)
@@ -74,7 +74,9 @@ class ActionSave extends Action
                         $data['roles'] = [];
                     }
 
-                    $info->roles = json_encode($data['roles']);
+                    $json_roles = json_encode($data['roles']);
+
+                    $info->roles = $json_roles;
                     $info->updated_at = $this->dic['datetimenow'];
                     $info->save();
                     if (is_object($info) && isset($info->id)) {
@@ -84,6 +86,12 @@ class ActionSave extends Action
 
                         $data['id'] = $id;
                         $data['last_action_date'] = $this->getLastActionDate($id);
+                        $data['roles'] = $json_roles;
+
+                        if (isset($data['info_users']) && !empty($data['info_users'])) {
+                            $data = array_merge($data, $data['info_users']);
+                            unset($data['info_users']);
+                        }
 
                         return (new RunAfterSave($this->dic))->run($data);
                     } else {

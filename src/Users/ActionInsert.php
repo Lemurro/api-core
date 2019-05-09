@@ -2,7 +2,7 @@
 /**
  * Добавление пользователя
  *
- * @version 30.04.2019
+ * @version 09.05.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -29,7 +29,7 @@ class ActionInsert extends Action
      *
      * @return array
      *
-     * @version 30.04.2019
+     * @version 09.05.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($data)
@@ -61,8 +61,10 @@ class ActionInsert extends Action
                 $data['roles'] = [];
             }
 
+            $json_roles = json_encode($data['roles']);
+
             $new_user_info->user_id = $new_user->id;
-            $new_user_info->roles = json_encode($data['roles']);
+            $new_user_info->roles = $json_roles;
             $new_user_info->created_at = $this->dic['datetimenow'];
             $new_user_info->save();
             if (is_object($new_user_info) && isset($new_user_info->id)) {
@@ -72,6 +74,12 @@ class ActionInsert extends Action
 
                 $data['id'] = $new_user->id;
                 $data['last_action_date'] = null;
+                $data['roles'] = $json_roles;
+
+                if (isset($data['info_users']) && !empty($data['info_users'])) {
+                    $data = array_merge($data, $data['info_users']);
+                    unset($data['info_users']);
+                }
 
                 return (new RunAfterInsert($this->dic))->run($data);
             } else {
