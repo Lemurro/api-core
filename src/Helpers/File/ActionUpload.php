@@ -2,7 +2,7 @@
 /**
  * Загрузка файла во временный каталог
  *
- * @version 28.03.2019
+ * @version 15.05.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -29,7 +29,7 @@ class ActionUpload extends Action
      *
      * @return array
      *
-     * @version 08.01.2019
+     * @version 15.05.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($file)
@@ -80,7 +80,10 @@ class ActionUpload extends Action
 
             $allowed_extensions = implode(', ', SettingsFile::ALLOWED_EXTENSIONS);
 
-            return Response::error400('Разрешённые форматы: ' . $allowed_extensions);
+            return Response::error400('Разрешённые форматы: ' . $allowed_extensions, [
+                'mime' => $orig_mime,
+                'ext'  => $orig_ext,
+            ]);
         }
     }
 }
