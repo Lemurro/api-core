@@ -2,7 +2,7 @@
 /**
  * Скачивание файла
  *
- * @version 28.03.2019
+ * @version 15.05.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -24,7 +24,7 @@ class ControllerDownloadRun extends Controller
     /**
      * Стартовый метод
      *
-     * @version 08.01.2019
+     * @version 15.05.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -36,16 +36,35 @@ class ControllerDownloadRun extends Controller
             $this->response->send();
         }
 
-        $filepath = SettingsFile::FILE_FOLDER . $file_info['data']['path'];
+        switch ($file_info['data']['type']) {
+            case 'permanent':
+                $folder = SettingsFile::FILE_FOLDER;
+                break;
 
-        if (is_readable($filepath) && is_file($filepath)) {
-            $response = new BinaryFileResponse($filepath);
-            $response->headers->set('Content-type', mime_content_type($filepath));
-            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $file_info['data']['name']);
-            $response->send();
-        } else {
+            case 'temporary':
+                $folder = SettingsFile::TEMP_FOLDER;
+                break;
+
+            default:
+                $folder = null;
+                break;
+        }
+
+        if (empty($folder)) {
             $this->response->setData(Response::error404('Файл не найден'));
             $this->response->send();
         }
+
+        $filepath = $folder . $file_info['data']['path'];
+
+        if (!is_readable($filepath) || !is_file($filepath)) {
+            $this->response->setData(Response::error404('Файл не найден'));
+            $this->response->send();
+        }
+
+        $response = new BinaryFileResponse($filepath);
+        $response->headers->set('Content-type', mime_content_type($filepath));
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $file_info['data']['name']);
+        $response->send();
     }
 }
