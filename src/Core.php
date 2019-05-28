@@ -2,17 +2,19 @@
 /**
  * Инициализация приложения
  *
- * @version 29.04.2019
+ * @version 28.05.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core;
 
+use Exception;
 use Lemurro\Api\App\Configs\SettingsPath;
 use Lemurro\Api\App\Overrides\DIC as AppDIC;
 use Lemurro\Api\App\Overrides\Response as AppResponse;
 use Lemurro\Api\Core\Helpers\DB;
 use Lemurro\Api\Core\Helpers\DIC;
+use Lemurro\Api\Core\Helpers\LogException;
 use Lemurro\Api\Core\Helpers\Response;
 use Lemurro\Api\Core\Users\ActionGet as GetUser;
 use Pimple\Container;
@@ -131,7 +133,7 @@ class Core
     /**
      * Старт
      *
-     * @version 29.12.2018
+     * @version 28.05.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -150,12 +152,17 @@ class Core
             } else {
                 (new AppDIC())->run($this->dic);
 
-                $controller = $this->request->get('_controller');
-                $class = new $controller($this->request, $this->response, $this->dic);
-                call_user_func([$class, 'start']);
+                $class = $this->request->get('_controller');
+                $controller = new $class($this->request, $this->response, $this->dic);
+                call_user_func([$controller, 'start']);
             }
         } catch (ResourceNotFoundException $e) {
             $this->response->setData(Response::error404('Неопределённый запрос'));
+            $this->response->send();
+        } catch (Exception $e) {
+            LogException::write($this->dic['log'], $e);
+
+            $this->response->setData(Response::error500('Непредвиденная ошибка, подробности в лог-файле'));
             $this->response->send();
         }
     }
