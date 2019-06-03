@@ -2,7 +2,7 @@
 /**
  * Удаление пользователя
  *
- * @version 30.04.2019
+ * @version 03.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -28,7 +28,7 @@ class ActionRemove extends Action
      *
      * @return array
      *
-     * @version 30.04.2019
+     * @version 03.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($id)
@@ -37,7 +37,7 @@ class ActionRemove extends Action
             ->find_one($id);
         if (is_object($user)) {
             if ($id == 1) {
-                Response::error403('Пользователь с id=1 не может быть удалён', false);
+                return Response::error403('Пользователь с id=1 не может быть удалён', false);
             }
 
             $info = ORM::for_table('info_users')
