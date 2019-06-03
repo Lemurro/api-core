@@ -2,7 +2,7 @@
 /**
  * Список пользователей
  *
- * @version 30.04.2019
+ * @version 03.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -78,7 +78,7 @@ class ActionIndex extends Action
     /**
      * Получим информацию о пользователях
      *
-     * @version 30.04.2019
+     * @version 03.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function getInfoUsers()
@@ -95,6 +95,7 @@ class ActionIndex extends Action
             if ($this->info_users_count > 0) {
                 foreach ($this->info_users_items as &$item) {
                     $item['id'] = $item['user_id'];
+                    $item['locked'] = ($item['locked'] === '1');
                     $item['last_action_date'] = (isset($this->last_action_dates[$item['user_id']]) ? $this->last_action_dates[$item['user_id']] : null);
                 }
             }

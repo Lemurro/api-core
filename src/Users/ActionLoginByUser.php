@@ -42,6 +42,10 @@ class ActionLoginByUser extends Action
             return Response::error403('Входить под пользователем с id=1 запрещено', false);
         }
 
+        if ($user['data']['locked'] == 1) {
+            return Response::error403('Пользователь заблокирован и недоступен для входа', false);
+        }
+
         $secret = RandomKey::generate(100);
         $created_at = $this->dic['datetimenow'];
 

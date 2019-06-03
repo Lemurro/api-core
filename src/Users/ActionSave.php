@@ -2,7 +2,7 @@
 /**
  * Изменение пользователя
  *
- * @version 09.05.2019
+ * @version 03.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -30,7 +30,7 @@ class ActionSave extends Action
      *
      * @return array
      *
-     * @version 09.05.2019
+     * @version 03.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($id, $data)
@@ -85,6 +85,7 @@ class ActionSave extends Action
                         $data_change_log->insert('users', 'update', $id, $data);
 
                         $data['id'] = $id;
+                        $data['locked'] = ($user->locked === '1');
                         $data['last_action_date'] = $this->getLastActionDate($id);
                         $data['roles'] = $json_roles;
 

@@ -2,7 +2,7 @@
 /**
  * Получение кода аутентификации
  *
- * @version 28.03.2019
+ * @version 03.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -33,7 +33,7 @@ class ActionGet extends Action
      *
      * @return array
      *
-     * @version 28.03.2019
+     * @version 03.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($auth_id)
@@ -41,7 +41,7 @@ class ActionGet extends Action
         (new Code())->clear($auth_id);
 
         $user = (new FindUser())->run($auth_id);
-        if (is_array($user) && count($user) == 0) {
+        if (is_array($user) && empty($user)) {
             if (SettingsAuth::CAN_REGISTRATION_USERS) {
                 $insert_user = (new InsertUser($this->dic))->run([
                     'auth_id' => $auth_id,
@@ -54,6 +54,10 @@ class ActionGet extends Action
             } else {
                 return Response::error404('Пользователь не найден');
             }
+        }
+
+        if ($user['locked'] == 1) {
+            return Response::error403('Пользователь заблокирован и недоступен для входа, пожалуйста обратитесь к администратору', false);
         }
 
         $all_codes = [];

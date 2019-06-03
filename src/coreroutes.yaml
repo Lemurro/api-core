@@ -113,6 +113,20 @@ users_login_by_user:
   controller: '\Lemurro\Api\Core\Users\ControllerLoginByUser'
   methods: [POST, OPTIONS]
 
+users_lock:
+  path: /users/{id}/lock
+  controller: '\Lemurro\Api\Core\Users\ControllerLock'
+  methods: [POST, OPTIONS]
+  requirements:
+    id: '\d+'
+
+users_unlock:
+  path: /users/{id}/unlock
+  controller: '\Lemurro\Api\Core\Users\ControllerUnlock'
+  methods: [POST, OPTIONS]
+  requirements:
+    id: '\d+'
+
 # /user
 
 user:

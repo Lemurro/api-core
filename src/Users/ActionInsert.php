@@ -2,7 +2,7 @@
 /**
  * Добавление пользователя
  *
- * @version 09.05.2019
+ * @version 03.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -29,7 +29,7 @@ class ActionInsert extends Action
      *
      * @return array
      *
-     * @version 09.05.2019
+     * @version 03.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($data)
@@ -73,6 +73,7 @@ class ActionInsert extends Action
                 $data_change_log->insert('users', 'insert', $new_user->id, $data);
 
                 $data['id'] = $new_user->id;
+                $data['locked'] = false;
                 $data['last_action_date'] = null;
                 $data['roles'] = $json_roles;
 
