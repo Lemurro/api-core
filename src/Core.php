@@ -2,7 +2,7 @@
 /**
  * Инициализация приложения
  *
- * @version 28.05.2019
+ * @version 03.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -133,7 +133,7 @@ class Core
     /**
      * Старт
      *
-     * @version 28.05.2019
+     * @version 03.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -162,7 +162,7 @@ class Core
         } catch (Exception $e) {
             LogException::write($this->dic['log'], $e);
 
-            $this->response->setData(Response::error500('Непредвиденная ошибка, подробности в лог-файле'));
+            $this->response->setData(Response::error500('Непредвиденная ошибка,<br>подробности в лог-файле'));
             $this->response->send();
         }
     }
