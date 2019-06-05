@@ -127,6 +127,39 @@ users_unlock:
   requirements:
     id: '\d+'
 
+# access_sets
+
+access_sets_index:
+  path: /access_sets
+  controller: '\Lemurro\Api\Core\AccessSets\ControllerIndex'
+  methods: [GET, OPTIONS]
+
+access_sets_insert:
+  path: /access_sets
+  controller: '\Lemurro\Api\Core\AccessSets\ControllerInsert'
+  methods: [POST, OPTIONS]
+
+access_sets_get:
+  path: /access_sets/{id}
+  controller: '\Lemurro\Api\Core\AccessSets\ControllerGet'
+  methods: [GET, OPTIONS]
+  requirements:
+    id: '\d+'
+
+access_sets_save:
+  path: /access_sets/{id}
+  controller: '\Lemurro\Api\Core\AccessSets\ControllerSave'
+  methods: [POST, OPTIONS]
+  requirements:
+    id: '\d+'
+
+access_sets_remove:
+  path: /access_sets/{id}/remove
+  controller: '\Lemurro\Api\Core\AccessSets\ControllerRemove'
+  methods: [POST, OPTIONS]
+  requirements:
+    id: '\d+'
+
 # /user
 
 user:
