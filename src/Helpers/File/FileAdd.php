@@ -28,6 +28,11 @@ class FileAdd extends Action
     protected $log;
 
     /**
+     * @var array
+     */
+    protected $undo_list = [];
+
+    /**
      * Выполним действие
      *
      * @param string $file_name      Имя файла во временном каталоге
@@ -55,6 +60,33 @@ class FileAdd extends Action
                 $container_id
             );
         }
+    }
+
+    /**
+     * Возвращаем файлы обратно во временное хранилище
+     *
+     * @return boolean
+     *
+     * @version 06.06.2019
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     */
+    public function undo()
+    {
+        if (!empty($this->undo_list)) {
+            foreach ($this->undo_list as $path_file => $item) {
+                rename($item['destination_file'], $item['source_file']);
+
+                if (isset($item['id'])) {
+                    $file = ORM::for_table('files')
+                        ->find_one($item['id']);
+                    if (is_object($file)) {
+                        $file->delete();
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -99,6 +131,11 @@ class FileAdd extends Action
         $path_file = $suffix_folder . $file_name;
 
         if (rename($source_file, $dest_folder . $file_name)) {
+            $this->undo_list[$path_file] = [
+                'source_file'      => $source_file,
+                'destination_file' => $dest_folder . $file_name,
+            ];
+
             return Response::data([
                 'file_name' => $path_file,
             ]);
@@ -151,6 +188,10 @@ class FileAdd extends Action
             /** @var DataChangeLog $datachangelog */
             $datachangelog = $this->dic['datachangelog'];
             $datachangelog->insert('files', 'insert', $item->id, $data);
+
+            if (isset($this->undo_list[$file_name])) {
+                $this->undo_list[$file_name]['id'] = $item->id;
+            }
 
             return Response::data([
                 'id' => $item->id,
