@@ -2,7 +2,7 @@
 /**
  * Переносим файл в постоянное хранилище и добавляем в базу
  *
- * @version 28.03.2019
+ * @version 06.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -64,12 +64,22 @@ class FileAdd extends Action
      *
      * @return array
      *
-     * @version 08.01.2019
+     * @version 06.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function moveToStorage($source_file_name)
     {
         $source_file = SettingsFile::TEMP_FOLDER . $source_file_name;
+
+        if (!is_file($source_file) || !is_readable($source_file)) {
+            $this->log->error('File: Файл не был перемещён', [
+                'source_file_name' => $source_file_name,
+            ]);
+
+            return Response::error500('Файл отсутствует или не может быть прочитан, попробуйте загрузить файл снова', [
+                'source_file_name' => $source_file_name,
+            ]);
+        }
 
         $info = pathinfo($source_file_name);
 
@@ -98,7 +108,7 @@ class FileAdd extends Action
                 'file_name'        => $path_file,
             ]);
 
-            return Response::error500('Файл не был перемещён, попробуйте ещё раз', [
+            return Response::error500('Файл не был перемещён, попробуйте загрузить файл снова', [
                 'source_file_name' => $source_file_name,
             ]);
         }
@@ -114,7 +124,7 @@ class FileAdd extends Action
      *
      * @return array
      *
-     * @version 08.01.2019
+     * @version 06.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function addToDB($file_name, $orig_name, $container_type, $container_id)
@@ -148,7 +158,7 @@ class FileAdd extends Action
         } else {
             $this->log->error('File: Файл не был добавлен', $data);
 
-            return Response::error500('Файл не был добавлен, попробуйте ещё раз', [
+            return Response::error500('Файл не был добавлен, попробуйте загрузить файл снова', [
                 'file_name'      => $file_name,
                 'orig_name'      => $orig_name,
                 'container_type' => $container_type,
