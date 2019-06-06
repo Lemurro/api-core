@@ -2,7 +2,7 @@
 /**
  * Манипуляции с файлами (добавление и удаление)
  *
- * @version 28.03.2019
+ * @version 06.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -26,7 +26,7 @@ class FileManipulate extends Action
      *
      * @return array
      *
-     * @version 08.01.2019
+     * @version 06.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($files, $container_type = 'default', $container_id = null)
@@ -72,8 +72,9 @@ class FileManipulate extends Action
         }
 
         return [
-            'ids'    => $files_ids,
-            'errors' => $files_errors,
+            'ids'            => $files_ids,
+            'errors'         => $files_errors,
+            'class_file_add' => $file_add,
         ];
     }
 }
