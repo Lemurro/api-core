@@ -2,7 +2,7 @@
 /**
  * Генератор ответа
  *
- * @version 29.12.2018
+ * @version 17.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  * @author  Евгений Кулагин <ekulagin59@gmail.com>
  */
@@ -163,7 +163,7 @@ class Response
      *
      * @return array
      *
-     * @version 29.12.2018
+     * @version 17.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     static function errors($errors)
@@ -174,17 +174,21 @@ class Response
             $many_errors = [];
 
             foreach ($errors as $error) {
-                $one_error = [
-                    'status' => empty($error[0]) ? '500 Internal Server Error' : $error[0],
-                    'code'   => empty($error[1]) ? 'danger' : $error[1],
-                    'title'  => empty($error[2]) ? 'Ошибка при выполнении запроса' : $error[2],
-                ];
+                if (isset($error['errors']) && is_array($error['errors']) && !empty($error['errors'])) {
+                    $error = $error['errors'][0];
 
-                if (!empty($error[3])) {
-                    $one_error['meta'] = $error[3];
+                    $one_error = [
+                        'status' => empty($error['status']) ? '500 Internal Server Error' : $error['status'],
+                        'code'   => empty($error['code']) ? 'danger' : $error['code'],
+                        'title'  => empty($error['title']) ? 'Ошибка при выполнении запроса' : $error['title'],
+                    ];
+
+                    if (!empty($error['meta'])) {
+                        $one_error['meta'] = $error['meta'];
+                    }
+
+                    $many_errors[] = $one_error;
                 }
-
-                $many_errors[] = $one_error;
             }
 
             return [
