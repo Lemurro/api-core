@@ -1,6 +1,6 @@
 <?php
 /**
- * Получение серверного времени из времени переданного в виде параметра
+ * Получение серверного времени из локального времени переданного в виде параметра
  *
  * @version 13.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
@@ -19,7 +19,7 @@ use Lemurro\Api\Core\Abstracts\Action;
 class ServerDateTime extends Action
 {
     /**
-     * Сгенерируем число
+     * Получим серверное время
      *
      * @param string $input_value   Входная строка
      * @param string $input_format  Входной формат
@@ -33,12 +33,11 @@ class ServerDateTime extends Action
     public function get($input_value, $input_format, $output_format = 'Y-m-d H:i:s')
     {
         $utc_offset = $this->dic['utc_offset'];
+        $dt = Carbon::createFromFormat($input_format, $input_value);
 
         if ($utc_offset == 0) {
-            return $this->dic['datetimenow'];
+            return $dt->format($output_format);
         }
-
-        $dt = Carbon::createFromFormat($input_format, $input_value);
 
         if ($utc_offset > 0) {
             $dt->subMinutes($utc_offset);
