@@ -2,7 +2,7 @@
 /**
  * Отправка электронных писем
  *
- * @version 30.04.2019
+ * @version 16.07.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -29,6 +29,11 @@ class Mailer
     protected $phpmailer;
 
     /**
+     * @var PHPMailer
+     */
+    protected $phpmailer_reserve;
+
+    /**
      * @var Logger
      */
     protected $log;
@@ -50,7 +55,7 @@ class Mailer
      * @param string $header HTML-код шапки письма
      * @param string $footer HTML-код подвала письма
      *
-     * @version 16.03.2019
+     * @version 16.07.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function __construct($dic, $header = EmailTemplates::HEADER, $footer = EmailTemplates::FOOTER)
@@ -59,6 +64,10 @@ class Mailer
         $this->log = LoggerFactory::create('Mailer');
         $this->header = $header;
         $this->footer = $footer;
+
+        if (SettingsMail::RESERVE) {
+            $this->phpmailer_reserve = $dic['phpmailer_reserve'];
+        }
     }
 
     /**
@@ -73,7 +82,7 @@ class Mailer
      *
      * @return boolean
      *
-     * @version 30.04.2019
+     * @version 16.07.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function send($template_name, $subject, $email_tos, $template_data, $images = [], $files = [])
@@ -89,6 +98,13 @@ class Mailer
                 $this->phpmailer->ClearCustomHeaders();
                 $this->phpmailer->ClearReplyTos();
 
+                if (SettingsMail::RESERVE) {
+                    $this->phpmailer_reserve->ClearAllRecipients();
+                    $this->phpmailer_reserve->ClearAttachments();
+                    $this->phpmailer_reserve->ClearCustomHeaders();
+                    $this->phpmailer_reserve->ClearReplyTos();
+                }
+
                 // Прикрепляем другие изображения при необходимости
                 if (is_array($images) && count($images) > 0) {
                     foreach ($images as $image_code => $image_filename) {
@@ -96,7 +112,24 @@ class Mailer
                         if (is_readable($filename)) {
                             $basename = pathinfo($filename, PATHINFO_BASENAME);
                             $imagetype = getimagesize($filename)['mime'];
-                            $this->phpmailer->AddEmbeddedImage($filename, $image_code, $basename, 'base64', $imagetype);
+
+                            $this->phpmailer->AddEmbeddedImage(
+                                $filename,
+                                $image_code,
+                                $basename,
+                                'base64',
+                                $imagetype
+                            );
+
+                            if (SettingsMail::RESERVE) {
+                                $this->phpmailer_reserve->AddEmbeddedImage(
+                                    $filename,
+                                    $image_code,
+                                    $basename,
+                                    'base64',
+                                    $imagetype
+                                );
+                            }
                         }
                     }
                 }
@@ -107,6 +140,10 @@ class Mailer
                         if (is_readable($filename)) {
                             try {
                                 $this->phpmailer->addAttachment($filename);
+
+                                if (SettingsMail::RESERVE) {
+                                    $this->phpmailer_reserve->addAttachment($filename);
+                                }
                             } catch (Exception $e) {
                             }
                         }
@@ -123,9 +160,18 @@ class Mailer
                 $this->phpmailer->Subject = iconv('utf-8', 'windows-1251', $subject);
                 $this->phpmailer->MsgHTML(iconv('utf-8', 'windows-1251', $message));
 
+                if (SettingsMail::RESERVE) {
+                    $this->phpmailer_reserve->Subject = iconv('utf-8', 'windows-1251', $subject);
+                    $this->phpmailer_reserve->MsgHTML(iconv('utf-8', 'windows-1251', $message));
+                }
+
                 if (is_array($email_tos) && count($email_tos) > 0) {
                     foreach ($email_tos as $one_email) {
                         $this->phpmailer->addAddress($one_email);
+
+                        if (SettingsMail::RESERVE) {
+                            $this->phpmailer_reserve->addAddress($one_email);
+                        }
                     }
                 } else {
                     $this->log->warning('Массив адресов отправки пуст.');
@@ -135,15 +181,27 @@ class Mailer
 
                 try {
                     if (!$this->phpmailer->Send()) {
-                        $this->log->warning('При отправке письма произошла ошибка: "' . $this->phpmailer->ErrorInfo . '".');
-
-                        return false;
+                        $this->log->warning('При отправке письма через основной канал произошла ошибка: "' . $this->phpmailer->ErrorInfo . '".');
                     } else {
                         return true;
                     }
                 } catch (Exception $e) {
-                    return false;
+                    LogException::write($this->log, $e);
                 }
+
+                if (SettingsMail::RESERVE) {
+                    try {
+                        if (!$this->phpmailer_reserve->Send()) {
+                            $this->log->warning('При отправке письма через резервный канал произошла ошибка: "' . $this->phpmailer_reserve->ErrorInfo . '".');
+                        } else {
+                            return true;
+                        }
+                    } catch (Exception $e) {
+                        LogException::write($this->log, $e);
+                    }
+                }
+
+                return false;
             }
         } else {
             $this->log->warning('При отправке письма не найден шаблон: "' . $template_name . '".');
