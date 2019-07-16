@@ -2,12 +2,14 @@
 /**
  * Генератор ответа
  *
- * @version 17.06.2019
+ * @version 16.07.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  * @author  Евгений Кулагин <ekulagin59@gmail.com>
  */
 
 namespace Lemurro\Api\Core\Helpers;
+
+use Exception;
 
 /**
  * Class Response
@@ -195,5 +197,31 @@ class Response
                 'errors' => $many_errors,
             ];
         }
+    }
+
+    /**
+     * Сгенерируем ошибку на основании Exception
+     *
+     * @param Exception $e Объект ошибки (используются поля: code и message)
+     *
+     * @return array
+     *
+     * @version 16.07.2019
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     */
+    static function exception($e)
+    {
+        $error_method = 'error500';
+
+        switch ($e->getCode()) {
+            case 400:
+            case 401:
+            case 403:
+            case 404:
+                $error_method = 'error' . $e->getCode();
+                break;
+        }
+
+        return self::$error_method($e->getMessage());
     }
 }
