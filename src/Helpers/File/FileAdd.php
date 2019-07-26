@@ -2,7 +2,7 @@
 /**
  * Переносим файл в постоянное хранилище и добавляем в базу
  *
- * @version 06.06.2019
+ * @version 26.07.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -161,17 +161,15 @@ class FileAdd extends Action
      *
      * @return array
      *
-     * @version 06.06.2019
+     * @version 26.07.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function addToDB($file_name, $orig_name, $container_type, $container_id)
     {
-        $pathinfo = pathinfo($orig_name);
-
         $data = [
             'path'           => $file_name,
-            'name'           => $pathinfo['filename'],
-            'ext'            => $pathinfo['extension'],
+            'name'           => pathinfo($orig_name, PATHINFO_FILENAME),
+            'ext'            => pathinfo($file_name, PATHINFO_EXTENSION),
             'container_type' => $container_type,
             'container_id'   => $container_id,
         ];
