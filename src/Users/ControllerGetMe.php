@@ -1,33 +1,34 @@
 <?php
 /**
- * Информация о пользователе
+ * Информация о пользователе под которым пришёл запрос
  *
- * @version 16.01.2019
+ * @version 26.07.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
-namespace Lemurro\Api\Core\User;
+namespace Lemurro\Api\Core\Users;
 
 use Lemurro\Api\App\RunAfter\Users\Get as RunAfterGet;
 use Lemurro\Api\Core\Abstracts\Controller;
 use Lemurro\Api\Core\Helpers\Response;
 
 /**
- * Class ControllerGet
+ * Class ControllerGetMe
  *
- * @package Lemurro\Api\Core\User
+ * @package Lemurro\Api\Core\Users
  */
-class ControllerGet extends Controller
+class ControllerGetMe extends Controller
 {
     /**
      * Стартовый метод
      *
-     * @version 16.01.2019
+     * @version 26.07.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
     {
         $user_info = $this->dic['user'];
+
         if (is_array($user_info) && count($user_info) > 0) {
             $this->response->setData((new RunAfterGet($this->dic))->run($user_info));
         } else {
