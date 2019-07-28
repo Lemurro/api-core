@@ -2,7 +2,7 @@
 /**
  * Подготовка файла к скачиванию
  *
- * @version 15.05.2019
+ * @version 28.07.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -27,12 +27,12 @@ class ActionDownloadPrepare extends Action
      *
      * @return array
      *
-     * @version 15.05.2019
+     * @version 28.07.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($fileid, $filename = '')
     {
-        if (is_int($fileid)) {
+        if (preg_match('/^\d+$/', $fileid)) {
             return $this->permanentFile($fileid, $filename);
         } else {
             return $this->temporaryFile($fileid, $filename);
