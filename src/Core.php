@@ -2,7 +2,7 @@
 /**
  * Инициализация приложения
  *
- * @version 03.06.2019
+ * @version 02.08.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -103,7 +103,7 @@ class Core
     /**
      * Инициализация DIC
      *
-     * @version 29.12.2018
+     * @version 02.08.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function initDIC()
@@ -111,7 +111,7 @@ class Core
         $this->dic = DIC::init();
 
         $this->dic['session_id'] = $this->request->server->get('HTTP_X_SESSION_ID');
-        $this->dic['utc_offset'] = $this->request->server->get('HTTP_X_UTC_OFFSET');
+        $this->dic['utc_offset'] = $this->request->server->get('HTTP_X_UTC_OFFSET', 0);
 
         $this->dic['user'] = function ($c) {
             $result_session_check = (new Session())->check($c['session_id']);
