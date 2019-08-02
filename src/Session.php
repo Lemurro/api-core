@@ -2,7 +2,7 @@
 /**
  * Проверка валидности сессии
  *
- * @version 29.12.2018
+ * @version 02.08.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -27,7 +27,7 @@ class Session
      *
      * @return array
      *
-     * @version 29.12.2018
+     * @version 02.08.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function check($session_id)
@@ -38,6 +38,10 @@ class Session
         ORM::for_table('sessions')
             ->where_lt('checked_at', $now->subDays(SettingsAuth::SESSIONS_OLDER_THAN))
             ->delete_many();
+
+        if (empty($session_id)) {
+            return Response::error401('Необходимо авторизоваться');
+        }
 
         $session = ORM::for_table('sessions')
             ->where_equal('session', $session_id)
