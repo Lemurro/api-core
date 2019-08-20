@@ -2,7 +2,7 @@
 /**
  * Инициализация приложения
  *
- * @version 02.08.2019
+ * @version 20.08.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -21,6 +21,7 @@ use Pimple\Container;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Loader\YamlFileLoader;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
@@ -133,7 +134,7 @@ class Core
     /**
      * Старт
      *
-     * @version 03.06.2019
+     * @version 20.08.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function start()
@@ -157,7 +158,10 @@ class Core
                 call_user_func([$controller, 'start']);
             }
         } catch (ResourceNotFoundException $e) {
-            $this->response->setData(Response::error404('Неопределённый запрос'));
+            $this->response->setData(Response::error404('Маршрут отсутствует'));
+            $this->response->send();
+        } catch (MethodNotAllowedException $e) {
+            $this->response->setData(Response::error400('Неверный метод маршрута'));
             $this->response->send();
         } catch (Exception $e) {
             LogException::write($this->dic['log'], $e);
