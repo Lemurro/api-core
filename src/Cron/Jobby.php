@@ -2,7 +2,7 @@
 /**
  * Инициализация Jobby
  *
- * @version 30.04.2019
+ * @version 23.08.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -64,13 +64,18 @@ class Jobby
     /**
      * Инициализация
      *
-     * @version 29.03.2019
+     * @version 23.08.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function init()
     {
-        $this->fileOlderTokens();
-        $this->fileOlderFiles();
+        if (SettingsCron::FILE_OLDER_TOKENS_ENABLED) {
+            $this->fileOlderTokens();
+        }
+
+        if (SettingsCron::FILE_OLDER_FILES_ENABLED) {
+            $this->fileOlderFiles();
+        }
 
         return $this->jobby;
     }
