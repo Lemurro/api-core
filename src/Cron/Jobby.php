@@ -21,7 +21,7 @@ use Monolog\Logger;
 /**
  * Class Jobby
  *
- * @package Lemurro\Api\Core
+ * @package Lemurro\Api\Core\Cron
  */
 class Jobby
 {
@@ -77,18 +77,21 @@ class Jobby
             $this->fileOlderFiles();
         }
 
+        if (SettingsCron::DATA_CHANGE_LOGS_ROTATOR_ENABLED) {
+            $this->dataChangeLogsRotator();
+        }
+
         return $this->jobby;
     }
 
     /**
      * Очистим устаревшие токены для скачивания
      *
-     * @version 30.04.2019
+     * @version 23.08.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function fileOlderTokens()
     {
-        // Выполняем задачу каждые 5 минут
         try {
             $this->jobby->add(SettingsCron::NAME_PREFIX . 'FileOlderTokens', [
                 'enabled'  => true,
@@ -109,18 +112,43 @@ class Jobby
     /**
      * Очистим устаревшие файлы во временном каталоге
      *
-     * @version 29.04.2019
+     * @version 23.08.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     protected function fileOlderFiles()
     {
-        // Выполняем задачу каждый день в 0:00 UTC
         try {
             $this->jobby->add(SettingsCron::NAME_PREFIX . 'FileOlderFiles', [
                 'enabled'  => true,
-                'schedule' => '0 0 * * *', // Каждый день в 0:00
+                'schedule' => '0 0 * * *', // Каждый день в 0:00 UTC
                 'closure'  => function () {
                     (new FileOlderFiles)->clear();
+
+                    return true;
+                },
+            ]);
+        } catch (Exception $e) {
+            $this->log->error($e->getFile() . '(' . $e->getLine() . '): ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Ротация таблицы data_change_logs
+     *
+     * @version 23.08.2019
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     */
+    protected function dataChangeLogsRotator()
+    {
+        try {
+            $this->jobby->add(SettingsCron::NAME_PREFIX . 'DataChangeLogsRotator', [
+                'enabled'  => true,
+                'schedule' => '0 0 1 1 *', // Каждый год 1 января в 0:00
+                'closure'  => function () {
+                    $cron = new Console();
+                    $dic = $cron->getDIC();
+
+                    (new DataChangeLogsRotator($dic))->execute();
 
                     return true;
                 },
