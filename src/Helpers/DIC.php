@@ -2,7 +2,7 @@
 /**
  * Инициализация Dependency Injection Container
  *
- * @version 16.07.2019
+ * @version 27.08.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
@@ -28,7 +28,7 @@ class DIC
      *
      * @return Container
      *
-     * @version 16.07.2019
+     * @version 27.08.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     static function init()
@@ -69,7 +69,7 @@ class DIC
                 $phpmailer = new PHPMailer();
                 $phpmailer->isHTML(true);
                 $phpmailer->CharSet = 'windows-1251';
-                $phpmailer->From = SettingsMail::APP_EMAIL;
+                $phpmailer->From = SettingsMail::RESERVE_APP_EMAIL;
                 $phpmailer->FromName = iconv('utf-8', 'windows-1251', SettingsGeneral::APP_NAME);
 
                 $phpmailer->isSMTP();
