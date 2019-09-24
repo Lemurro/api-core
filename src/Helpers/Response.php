@@ -2,9 +2,9 @@
 /**
  * Генератор ответа
  *
- * @version 16.07.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  * @author  Евгений Кулагин <ekulagin59@gmail.com>
+ * @version 24.09.2019
  */
 
 namespace Lemurro\Api\Core\Helpers;
@@ -206,17 +206,20 @@ class Response
      *
      * @return array
      *
-     * @version 16.07.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 24.09.2019
      */
     static function exception($e)
     {
         $error_method = 'error500';
 
         switch ($e->getCode()) {
+            case 403:
+                return self::error403($e->getMessage(), false);
+                break;
+
             case 400:
             case 401:
-            case 403:
             case 404:
                 $error_method = 'error' . $e->getCode();
                 break;
