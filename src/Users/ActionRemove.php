@@ -2,8 +2,8 @@
 /**
  * Удаление пользователя
  *
- * @version 03.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 15.10.2019
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -28,14 +28,14 @@ class ActionRemove extends Action
      *
      * @return array
      *
-     * @version 03.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 15.10.2019
      */
     public function run($id)
     {
         $user = ORM::for_table('users')
             ->find_one($id);
-        if (is_object($user)) {
+        if (is_object($user) && $user->id == $id) {
             if ($id == 1) {
                 return Response::error403('Пользователь с id=1 не может быть удалён', false);
             }
@@ -43,7 +43,7 @@ class ActionRemove extends Action
             $info = ORM::for_table('info_users')
                 ->where_equal('user_id', $id)
                 ->find_one();
-            if (is_object($info)) {
+            if (is_object($info) && $info->user_id == $id) {
                 $info->deleted_at = $this->dic['datetimenow'];
                 $info->save();
                 if (is_object($info) && isset($info->id)) {

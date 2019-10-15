@@ -3,7 +3,7 @@
  * Переносим файл в постоянное хранилище и добавляем в базу
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 16.09.2019
+ * @version 15.10.2019
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -67,8 +67,8 @@ class FileAdd extends Action
      *
      * @return boolean
      *
-     * @version 06.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 15.10.2019
      */
     public function undo()
     {
@@ -79,7 +79,7 @@ class FileAdd extends Action
                 if (isset($item['id'])) {
                     $file = ORM::for_table('files')
                         ->find_one($item['id']);
-                    if (is_object($file)) {
+                    if (is_object($file) && $file->id == $item['id']) {
                         $file->delete();
                     }
                 }

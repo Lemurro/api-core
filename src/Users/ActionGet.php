@@ -2,8 +2,8 @@
 /**
  * Получение пользователя
  *
- * @version 16.01.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 15.10.2019
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -27,8 +27,8 @@ class ActionGet extends Action
      *
      * @return array
      *
-     * @version 16.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 15.10.2019
      */
     public function run($id)
     {
@@ -38,7 +38,7 @@ class ActionGet extends Action
             ->where_equal('iu.user_id', $id)
             ->where_null('iu.deleted_at')
             ->find_one();
-        if (is_object($record)) {
+        if (is_object($record) && $record->user_id == $id) {
             $record = $record->as_array();
 
             $record['id'] = $record['user_id'];

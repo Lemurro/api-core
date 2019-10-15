@@ -2,8 +2,8 @@
 /**
  * Изменение пользователя
  *
- * @version 03.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 15.10.2019
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -30,8 +30,8 @@ class ActionSave extends Action
      *
      * @return array
      *
-     * @version 03.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 15.10.2019
      */
     public function run($id, $data)
     {
@@ -48,7 +48,7 @@ class ActionSave extends Action
 
         $user = ORM::for_table('users')
             ->find_one($id);
-        if (is_object($user)) {
+        if (is_object($user) && $user->id == $id) {
             if ($id == 1) {
                 $data['auth_id'] = 'lemurro@lemurro';
                 $data['roles'] = ['admin' => 'true'];
@@ -63,7 +63,7 @@ class ActionSave extends Action
                 $info = ORM::for_table('info_users')
                     ->where_equal('user_id', $id)
                     ->find_one();
-                if (is_object($info)) {
+                if (is_object($info) && $info->user_id == $id) {
                     if (isset($data['info_users']) && is_array($data['info_users']) && count($data['info_users']) > 0) {
                         foreach ($data['info_users'] as $key => $value) {
                             $info[$key] = $value;
@@ -116,8 +116,8 @@ class ActionSave extends Action
      *
      * @return string
      *
-     * @version 30.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 15.10.2019
      */
     protected function getLastActionDate($id)
     {
@@ -127,7 +127,7 @@ class ActionSave extends Action
             ->order_by_desc('checked_at')
             ->limit(1)
             ->find_one();
-        if (is_object($item)) {
+        if (is_object($item) && $item->user_id == $id) {
             return $item->checked_at;
         } else {
             return null;
