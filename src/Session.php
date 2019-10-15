@@ -2,8 +2,8 @@
 /**
  * Проверка валидности сессии
  *
- * @version 02.08.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 15.10.2019
  */
 
 namespace Lemurro\Api\Core;
@@ -27,8 +27,8 @@ class Session
      *
      * @return array
      *
-     * @version 02.08.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 15.10.2019
      */
     public function check($session_id)
     {
@@ -46,7 +46,7 @@ class Session
         $session = ORM::for_table('sessions')
             ->where_equal('session', $session_id)
             ->find_one();
-        if (is_object($session)) {
+        if (is_object($session) && $session->session == $session_id) {
             if (SettingsAuth::SESSIONS_BINDING_TO_IP && $session->ip !== $_SERVER['REMOTE_ADDR']) {
                 $session->delete();
 

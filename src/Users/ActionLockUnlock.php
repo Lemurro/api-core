@@ -2,8 +2,8 @@
 /**
  * Заблокировать \ Разблокировать пользователя
  *
- * @version 03.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 15.10.2019
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -29,14 +29,14 @@ class ActionLockUnlock extends Action
      *
      * @return array
      *
-     * @version 03.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 15.10.2019
      */
     public function run($id, $locked)
     {
         $user = ORM::for_table('users')
             ->find_one($id);
-        if (is_object($user)) {
+        if (is_object($user) && $user->id == $id) {
             if ($id == 1 && $locked) {
                 return Response::error403('Пользователь с id=1 не может быть заблокирован', false);
             }

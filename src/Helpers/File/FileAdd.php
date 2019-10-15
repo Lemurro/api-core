@@ -2,8 +2,8 @@
 /**
  * Переносим файл в постоянное хранилище и добавляем в базу
  *
- * @version 26.07.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 15.10.2019
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -67,8 +67,8 @@ class FileAdd extends Action
      *
      * @return boolean
      *
-     * @version 06.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 15.10.2019
      */
     public function undo()
     {
@@ -79,7 +79,7 @@ class FileAdd extends Action
                 if (isset($item['id'])) {
                     $file = ORM::for_table('files')
                         ->find_one($item['id']);
-                    if (is_object($file)) {
+                    if (is_object($file) && $file->id == $item['id']) {
                         $file->delete();
                     }
                 }
@@ -96,15 +96,15 @@ class FileAdd extends Action
      *
      * @return array
      *
-     * @version 06.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 16.09.2019
      */
     protected function moveToStorage($source_file_name)
     {
         $source_file = SettingsFile::TEMP_FOLDER . $source_file_name;
 
         if (!is_file($source_file) || !is_readable($source_file)) {
-            $this->log->error('File: Файл не был перемещён', [
+            $this->log->error('File: Файл отсутствует или не может быть прочитан', [
                 'source_file_name' => $source_file_name,
             ]);
 

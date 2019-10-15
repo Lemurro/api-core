@@ -2,8 +2,8 @@
 /**
  * Получим информацию по одному или нескольким файлам
  *
- * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 15.10.2019
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -25,15 +25,15 @@ class FileInfo
      *
      * @return ORM|array
      *
-     * @version 08.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 15.10.2019
      */
     public function getOneORM($id)
     {
         $info = ORM::for_table('files')
             ->where_null('deleted_at')
             ->find_one($id);
-        if (is_object($info)) {
+        if (is_object($info) && $info->id == $id) {
             return $info;
         } else {
             return Response::error404('Файл не найден');
@@ -47,8 +47,8 @@ class FileInfo
      *
      * @return array
      *
-     * @version 08.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 15.10.2019
      */
     public function getOne($id)
     {
@@ -61,7 +61,7 @@ class FileInfo
             )
             ->where_null('deleted_at')
             ->find_one($id);
-        if (is_object($info)) {
+        if (is_object($info) && $info->id == $id) {
             return Response::data($info->as_array());
         } else {
             return Response::error404('Файл не найден');
