@@ -69,4 +69,37 @@ class Phone
 
         return null;
     }
+
+    /**
+     * Это телефон?
+     *
+     * @param string $phone Номер телефона получателя
+     *
+     * @return boolean
+     *
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 24.10.2019
+     */
+    public function isPhone($phone)
+    {
+        $phoneUtil = PhoneNumberUtil::getInstance();
+
+        try {
+            $phoneNumber = $phoneUtil->parse($phone, 'RU');
+
+            if (
+                $phoneUtil->isPossibleNumber($phoneNumber)
+                &&
+                $phoneUtil->isValidNumber($phoneNumber)
+                &&
+                $phoneUtil->getNumberType($phoneNumber) === PhoneNumberType::MOBILE
+            ) {
+                return true;
+            }
+        } catch (NumberParseException $e) {
+            return false;
+        }
+
+        return false;
+    }
 }

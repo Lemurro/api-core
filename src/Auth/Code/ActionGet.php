@@ -158,12 +158,10 @@ class ActionGet extends Action
                         break;
 
                     case 'mixed':
-                        $phone_validate = $this->phone_validator->validate($this->auth_id);
-
-                        if (empty($phone_validate)) {
-                            return $this->sendEmail();
-                        } else {
+                        if ($this->phone_validator->isPhone($this->auth_id)) {
                             return $this->sendSms();
+                        } else {
+                            return $this->sendEmail();
                         }
                         break;
 
