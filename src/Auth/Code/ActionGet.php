@@ -14,10 +14,12 @@ use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\Mailer;
 use Lemurro\Api\Core\Helpers\RandomNumber;
 use Lemurro\Api\Core\Helpers\Response;
+use Lemurro\Api\Core\Helpers\SMS\Phone;
 use Lemurro\Api\Core\Helpers\SMS\SMS;
 use Lemurro\Api\Core\Users\ActionInsert as InsertUser;
 use Lemurro\Api\Core\Users\Find as FindUser;
 use ORM;
+use Pimple\Container;
 
 /**
  * Class ActionGet
@@ -26,6 +28,66 @@ use ORM;
  */
 class ActionGet extends Action
 {
+    /**
+     * @var Mailer
+     */
+    protected $mailer;
+
+    /**
+     * @var SMS
+     */
+    protected $sms;
+
+    /**
+     * @var Code
+     */
+    protected $code_cleaner;
+
+    /**
+     * @var FindUser
+     */
+    protected $user_finder;
+
+    /**
+     * @var InsertUser
+     */
+    protected $user_inserter;
+
+    /**
+     * @var Phone
+     */
+    protected $phone_validator;
+
+    /**
+     * @var string
+     */
+    protected $auth_id;
+
+    /**
+     * @var integer
+     */
+    protected $secret;
+
+    /**
+     * ActionGet constructor.
+     *
+     * @param Container $dic
+     *
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 24.10.2019
+     */
+    public function __construct($dic)
+    {
+        parent::__construct($dic);
+
+        $this->mailer = $dic['mailer'];
+        $this->sms = $dic['sms'];
+        $this->code_cleaner = new Code();
+        $this->user_finder = new FindUser();
+        $this->user_inserter = new InsertUser($dic);
+        $this->phone_validator = new Phone();
+    }
+
     /**
      * Выполним действие
      *
@@ -38,13 +100,15 @@ class ActionGet extends Action
      */
     public function run($auth_id)
     {
-        (new Code())->clear($auth_id);
+        $this->auth_id = $auth_id;
 
-        $user = (new FindUser())->run($auth_id);
+        $this->code_cleaner->clear($this->auth_id);
+
+        $user = $this->user_finder->run($this->auth_id);
         if (is_array($user) && empty($user)) {
             if (SettingsAuth::CAN_REGISTRATION_USERS) {
-                $insert_user = (new InsertUser($this->dic))->run([
-                    'auth_id' => $auth_id,
+                $insert_user = $this->user_inserter->run([
+                    'auth_id' => $this->auth_id,
                 ]);
                 if (isset($insert_user['errors'])) {
                     return $insert_user;
@@ -57,7 +121,8 @@ class ActionGet extends Action
         }
 
         if ($user['locked'] == 1) {
-            return Response::error403('Пользователь заблокирован и недоступен для входа, пожалуйста обратитесь к администратору', false);
+            return Response::error403('Пользователь заблокирован и недоступен для входа, пожалуйста обратитесь к администратору',
+                false);
         }
 
         $all_codes = [];
@@ -70,14 +135,14 @@ class ActionGet extends Action
             }
         }
 
-        $secret = RandomNumber::generate(4);
-        while (in_array($secret, $all_codes)) {
-            $secret = RandomNumber::generate(4);
+        $this->secret = RandomNumber::generate(4);
+        while (in_array($this->secret, $all_codes)) {
+            $this->secret = RandomNumber::generate(4);
         }
 
         $auth_code = ORM::for_table('auth_codes')->create();
-        $auth_code->auth_id = $auth_id;
-        $auth_code->code = $secret;
+        $auth_code->auth_id = $this->auth_id;
+        $auth_code->code = $this->secret;
         $auth_code->user_id = $user['id'];
         $auth_code->created_at = $this->dic['datetimenow'];
         $auth_code->save();
@@ -85,47 +150,89 @@ class ActionGet extends Action
             if (SettingsGeneral::PRODUCTION) {
                 switch (SettingsAuth::TYPE) {
                     case 'email':
-                        $message = 'Письмо, с кодом для входа, успешно отправлено на указанную электронную почту';
-
-                        /** @var Mailer $mailer */
-                        $mailer = $this->dic['mailer'];
-
-                        $template_name = 'AUTH_CODE';
-                        $subject = 'Код для входа в приложение для пользователя: ' . $auth_id;
-                        $email_tos = [$auth_id];
-                        $template_data = ['[APP_NAME]' => SettingsGeneral::APP_NAME, '[SECRET]' => $secret];
-
-                        $result = $mailer->send($template_name, $subject, $email_tos, $template_data);
+                        return $this->sendEmail();
                         break;
 
                     case 'phone':
-                        $message = 'СМС, с кодом для входа, отправлено на указанный номер телефона';
+                        return $this->sendSms();
+                        break;
 
-                        /** @var SMS $sms */
-                        $sms = $this->dic['sms'];
+                    case 'mixed':
+                        $phone_validate = $this->phone_validator->validate($this->auth_id);
 
-                        $result = $sms->send($auth_id, 'Код для входа: ' . $secret . ', ' . SettingsGeneral::APP_NAME);
+                        if (empty($phone_validate)) {
+                            return $this->sendEmail();
+                        } else {
+                            return $this->sendSms();
+                        }
                         break;
 
                     default:
                         return Response::error400('Неверный вид аутентификации, проверьте настройки');
                         break;
                 }
-
-                if ($result) {
-                    return Response::data([
-                        'message' => $message,
-                    ]);
-                } else {
-                    return Response::error500('Произошла ошибка при отправке кода, попробуйте ещё раз');
-                }
             } else {
                 return Response::data([
-                    'message' => $secret,
+                    'message' => $this->secret,
                 ]);
             }
         } else {
             return Response::error500('Произошла ошибка при создании кода, попробуйте ещё раз');
+        }
+    }
+
+    /**
+     * Отправка кода на электронную почту
+     *
+     * @return array
+     *
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 24.10.2019
+     */
+    protected function sendEmail()
+    {
+        $result = $this->mailer->send(
+            'AUTH_CODE',
+            'Код для входа в приложение для пользователя: ' . $this->auth_id,
+            [
+                $this->auth_id,
+            ],
+            [
+                '[APP_NAME]' => SettingsGeneral::APP_NAME,
+                '[SECRET]'   => $this->secret,
+            ]
+        );
+
+        if ($result) {
+            return Response::data([
+                'message' => 'Письмо, с кодом для входа, успешно отправлено на указанную электронную почту',
+            ]);
+        } else {
+            return Response::error500('Произошла ошибка при отправке кода, попробуйте ещё раз');
+        }
+    }
+
+    /**
+     * Отправка кода в виде смс
+     *
+     * @return array
+     *
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 24.10.2019
+     */
+    protected function sendSms()
+    {
+        $result = $this->sms->send(
+            $this->auth_id,
+            'Код для входа: ' . $this->secret . ', ' . SettingsGeneral::APP_NAME
+        );
+
+        if ($result) {
+            return Response::data([
+                'message' => 'СМС, с кодом для входа, отправлено на указанный номер телефона',
+            ]);
+        } else {
+            return Response::error500('Произошла ошибка при отправке кода, попробуйте ещё раз');
         }
     }
 }
