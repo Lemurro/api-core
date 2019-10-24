@@ -2,8 +2,8 @@
 /**
  * Получение кода аутентификации
  *
- * @version 03.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 24.10.2019
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
@@ -33,8 +33,8 @@ class ActionGet extends Action
      *
      * @return array
      *
-     * @version 03.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 24.10.2019
      */
     public function run($auth_id)
     {
@@ -85,6 +85,8 @@ class ActionGet extends Action
             if (SettingsGeneral::PRODUCTION) {
                 switch (SettingsAuth::TYPE) {
                     case 'email':
+                        $message = 'Письмо, с кодом для входа, успешно отправлено на указанную электронную почту';
+
                         /** @var Mailer $mailer */
                         $mailer = $this->dic['mailer'];
 
@@ -97,6 +99,8 @@ class ActionGet extends Action
                         break;
 
                     case 'phone':
+                        $message = 'СМС, с кодом для входа, отправлено на указанный номер телефона';
+
                         /** @var SMS $sms */
                         $sms = $this->dic['sms'];
 
@@ -110,7 +114,7 @@ class ActionGet extends Action
 
                 if ($result) {
                     return Response::data([
-                        'message' => 'Письмо с кодом успешно отправлено на указанную электронную почту',
+                        'message' => $message,
                     ]);
                 } else {
                     return Response::error500('Произошла ошибка при отправке кода, попробуйте ещё раз');
