@@ -2,18 +2,14 @@
 /**
  * Шлюз для отправки sms: sms.ru
  *
- * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 24.10.2019
  */
 
 namespace Lemurro\Api\Core\Helpers\SMS;
 
 use Lemurro\Api\App\Configs\SettingsSMS;
 use Lemurro\Api\Core\Abstracts\GatewaySMS;
-use Lemurro\Api\Core\Helpers\LoggerFactory;
-use libphonenumber\NumberParseException;
-use libphonenumber\PhoneNumberType;
-use libphonenumber\PhoneNumberUtil;
 
 /**
  * Class GatewaySMSRU
@@ -30,12 +26,12 @@ class GatewaySMSRU implements GatewaySMS
      *
      * @return array
      *
-     * @version 18.02.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 24.10.2019
      */
     public function send($phone, $message)
     {
-        $phone_number = $this->validatePhone($phone);
+        $phone_number = (new Phone())->validate($phone);
 
         if (empty($phone_number)) {
             return [
@@ -74,39 +70,5 @@ class GatewaySMSRU implements GatewaySMS
                 'message' => 'Ошибка запроса к API',
             ];
         }
-    }
-
-    /**
-     * Валидация телефона
-     *
-     * @param string $phone Номер телефона получателя
-     *
-     * @return string|null
-     *
-     * @version 16.03.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     */
-    protected function validatePhone($phone)
-    {
-        $phoneUtil = PhoneNumberUtil::getInstance();
-
-        try {
-            $phoneNumber = $phoneUtil->parse($phone, 'RU');
-
-            if (
-                $phoneUtil->isPossibleNumber($phoneNumber)
-                &&
-                $phoneUtil->isValidNumber($phoneNumber)
-                &&
-                $phoneUtil->getNumberType($phoneNumber) === PhoneNumberType::MOBILE
-            ) {
-                return $phoneNumber->getCountryCode() . $phoneNumber->getNationalNumber();
-            }
-        } catch (NumberParseException $e) {
-            $log = LoggerFactory::create('SMS');
-            $log->error('GatewaySMSRU->validatePhone(): ' . $e->getMessage());
-        }
-
-        return null;
     }
 }
