@@ -64,7 +64,7 @@ class Phone
                 return $phoneNumber->getCountryCode() . $phoneNumber->getNationalNumber();
             }
         } catch (NumberParseException $e) {
-            $this->log->error('Phone->validate(): ' . $e->getMessage());
+            $this->log->error('Phone->validate("' . $phone . '"): ' . $e->getMessage());
         }
 
         return null;
