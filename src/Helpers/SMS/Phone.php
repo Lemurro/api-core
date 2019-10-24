@@ -40,19 +40,20 @@ class Phone
     /**
      * Валидация телефона
      *
-     * @param string $phone Номер телефона получателя
+     * @param string $phone  Номер телефона получателя
+     * @param string $region Возможный регион номера телефона (по умолчанию: 'RU')
      *
      * @return string|null
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      * @version 24.10.2019
      */
-    public function validate($phone)
+    public function validate($phone, $region = 'RU')
     {
         $phoneUtil = PhoneNumberUtil::getInstance();
 
         try {
-            $phoneNumber = $phoneUtil->parse($phone, 'RU');
+            $phoneNumber = $phoneUtil->parse($phone, $region);
 
             if (
                 $phoneUtil->isPossibleNumber($phoneNumber)
@@ -73,19 +74,20 @@ class Phone
     /**
      * Это телефон?
      *
-     * @param string $phone Номер телефона получателя
+     * @param string $phone  Номер телефона получателя
+     * @param string $region Возможный регион номера телефона (по умолчанию: 'RU')
      *
      * @return boolean
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      * @version 24.10.2019
      */
-    public function isPhone($phone)
+    public function isPhone($phone, $region = 'RU')
     {
         $phoneUtil = PhoneNumberUtil::getInstance();
 
         try {
-            $phoneNumber = $phoneUtil->parse($phone, 'RU');
+            $phoneNumber = $phoneUtil->parse($phone, $region);
 
             if (
                 $phoneUtil->isPossibleNumber($phoneNumber)
