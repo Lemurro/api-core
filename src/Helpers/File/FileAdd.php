@@ -3,7 +3,7 @@
  * Переносим файл в постоянное хранилище и добавляем в базу
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 24.10.2019
+ * @version 30.10.2019
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -162,7 +162,7 @@ class FileAdd extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 24.10.2019
+     * @version 30.10.2019
      */
     protected function addToDB($file_name, $orig_name, $container_type, $container_id)
     {
@@ -184,9 +184,9 @@ class FileAdd extends Action
 
         $item = ORM::for_table('files')->create();
         $item->path = $data['path'];
-        $item->name = $data['name'];
+        $item->name = mb_substr($data['name'], 0, 255, 'UTF-8');
         $item->ext = $data['ext'];
-        $item->container_type = $container_type;
+        $item->container_type = mb_substr($container_type, 0, 255, 'UTF-8');
         $item->container_id = $container_id;
         $item->created_at = $this->dic['datetimenow'];
         $item->save();
