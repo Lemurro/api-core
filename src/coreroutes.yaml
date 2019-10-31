@@ -1,3 +1,5 @@
+# main
+
 root:
   path: /
   controller: '\Lemurro\Api\Core\Version\ControllerGet'
@@ -7,6 +9,39 @@ jserrors:
   path: /jserrors
   controller: '\Lemurro\Api\Core\JSErr\ControllerReciever'
   methods: [GET, OPTIONS]
+
+# access_sets
+
+access_sets_index:
+  path: /access_sets
+  controller: '\Lemurro\Api\Core\AccessSets\ControllerIndex'
+  methods: [GET, OPTIONS]
+
+access_sets_insert:
+  path: /access_sets
+  controller: '\Lemurro\Api\Core\AccessSets\ControllerInsert'
+  methods: [POST, OPTIONS]
+
+access_sets_get:
+  path: /access_sets/{id}
+  controller: '\Lemurro\Api\Core\AccessSets\ControllerGet'
+  methods: [GET, OPTIONS]
+  requirements:
+    id: '\d+'
+
+access_sets_save:
+  path: /access_sets/{id}
+  controller: '\Lemurro\Api\Core\AccessSets\ControllerSave'
+  methods: [POST, OPTIONS]
+  requirements:
+    id: '\d+'
+
+access_sets_remove:
+  path: /access_sets/{id}/remove
+  controller: '\Lemurro\Api\Core\AccessSets\ControllerRemove'
+  methods: [POST, OPTIONS]
+  requirements:
+    id: '\d+'
 
 # /auth
 
@@ -25,7 +60,7 @@ auth_code_check:
   controller: '\Lemurro\Api\Core\Auth\Code\ControllerCheck'
   methods: [POST, OPTIONS]
 
-# file
+# /file
 
 file_upload:
   path: /file/upload
@@ -113,11 +148,6 @@ users_remove:
   requirements:
     id: '\d+'
 
-users_login_by_user:
-  path: /users/login_by_user
-  controller: '\Lemurro\Api\Core\Users\ControllerLoginByUser'
-  methods: [POST, OPTIONS]
-
 users_lock:
   path: /users/{id}/lock
   controller: '\Lemurro\Api\Core\Users\ControllerLock'
@@ -132,38 +162,15 @@ users_unlock:
   requirements:
     id: '\d+'
 
-# access_sets
-
-access_sets_index:
-  path: /access_sets
-  controller: '\Lemurro\Api\Core\AccessSets\ControllerIndex'
-  methods: [GET, OPTIONS]
-
-access_sets_insert:
-  path: /access_sets
-  controller: '\Lemurro\Api\Core\AccessSets\ControllerInsert'
+users_login_by_user:
+  path: /users/login_by_user
+  controller: '\Lemurro\Api\Core\Users\ControllerLoginByUser'
   methods: [POST, OPTIONS]
 
-access_sets_get:
-  path: /access_sets/{id}
-  controller: '\Lemurro\Api\Core\AccessSets\ControllerGet'
-  methods: [GET, OPTIONS]
-  requirements:
-    id: '\d+'
-
-access_sets_save:
-  path: /access_sets/{id}
-  controller: '\Lemurro\Api\Core\AccessSets\ControllerSave'
+users_filter:
+  path: /users/filter
+  controller: '\Lemurro\Api\Core\Users\ControllerFilter'
   methods: [POST, OPTIONS]
-  requirements:
-    id: '\d+'
-
-access_sets_remove:
-  path: /access_sets/{id}/remove
-  controller: '\Lemurro\Api\Core\AccessSets\ControllerRemove'
-  methods: [POST, OPTIONS]
-  requirements:
-    id: '\d+'
 
 # app routes
 
