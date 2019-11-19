@@ -11,7 +11,6 @@ namespace Lemurro\Api\Core\Users;
 use Lemurro\Api\App\RunAfter\Users\Save as RunAfterSave;
 use Lemurro\Api\App\RunBefore\Users\Save as RunBeforeSave;
 use Lemurro\Api\Core\Abstracts\Action;
-use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
@@ -60,7 +59,7 @@ class ActionSave extends Action
             }
 
             $user->auth_id = $data['auth_id'];
-            $user->updated_at = $this->dic['datetimenow'];
+            $user->updated_at = $this->date_time_now;
             $user->save();
             if (is_object($user) && isset($user->id)) {
                 $info = ORM::for_table('info_users')
@@ -80,12 +79,10 @@ class ActionSave extends Action
                     $json_roles = json_encode($data['roles']);
 
                     $info->roles = $json_roles;
-                    $info->updated_at = $this->dic['datetimenow'];
+                    $info->updated_at = $this->date_time_now;
                     $info->save();
                     if (is_object($info) && isset($info->id)) {
-                        /** @var DataChangeLog $data_change_log */
-                        $data_change_log = $this->dic['datachangelog'];
-                        $data_change_log->insert('users', 'update', $id, $data);
+                        $this->data_change_log->insert('users', 'update', $id, $data);
 
                         $data['id'] = $id;
                         $data['locked'] = ($user->locked === '1');

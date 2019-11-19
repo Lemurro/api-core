@@ -2,14 +2,13 @@
 /**
  * Удаление
  *
- * @version 05.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 19.11.2019
  */
 
 namespace Lemurro\Api\Core\AccessSets;
 
 use Lemurro\Api\Core\Abstracts\Action;
-use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
 
 /**
@@ -26,8 +25,8 @@ class ActionRemove extends Action
      *
      * @return array
      *
-     * @version 05.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 19.11.2019
      */
     public function run($id)
     {
@@ -36,12 +35,10 @@ class ActionRemove extends Action
             return Response::error404('Набор не найден');
         }
 
-        $record->deleted_at = $this->dic['datetimenow'];
+        $record->deleted_at = $this->date_time_now;
         $record->save();
         if (is_object($record) && isset($record->id)) {
-            /** @var DataChangeLog $data_change_log */
-            $data_change_log = $this->dic['datachangelog'];
-            $data_change_log->insert('access_sets', 'delete', $id);
+            $this->data_change_log->insert('access_sets', 'delete', $id);
 
             return Response::data([
                 'id' => $id,

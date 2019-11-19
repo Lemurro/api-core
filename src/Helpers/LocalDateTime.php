@@ -2,14 +2,15 @@
 /**
  * Получение локального времени из серверного времени переданного в виде параметра
  *
- * @version 19.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 19.11.2019
  */
 
 namespace Lemurro\Api\Core\Helpers;
 
 use Carbon\Carbon;
 use Lemurro\Api\Core\Abstracts\Action;
+use Pimple\Container;
 
 /**
  * Class LocalDateTime
@@ -19,6 +20,26 @@ use Lemurro\Api\Core\Abstracts\Action;
 class LocalDateTime extends Action
 {
     /**
+     * @var array
+     */
+    protected $utc_offset;
+
+    /**
+     * LocalDateTime constructor.
+     *
+     * @param Container $dic Объект контейнера зависимостей
+     *
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 19.11.2019
+     */
+    public function __construct($dic)
+    {
+        parent::__construct($dic);
+
+        $this->utc_offset = $this->dic['utc_offset'];
+    }
+
+    /**
      * Получим серверное время
      *
      * @param string $input_value   Входная строка
@@ -27,22 +48,21 @@ class LocalDateTime extends Action
      *
      * @return string
      *
-     * @version 19.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 19.11.2019
      */
     public function get($input_value, $input_format, $output_format = 'Y-m-d H:i:s')
     {
-        $utc_offset = $this->dic['utc_offset'];
         $dt = Carbon::createFromFormat($input_format, $input_value);
 
-        if ($utc_offset == 0) {
+        if ($this->utc_offset == 0) {
             return $dt->format($output_format);
         }
 
-        if ($utc_offset > 0) {
-            $dt->addMinutes($utc_offset);
+        if ($this->utc_offset > 0) {
+            $dt->addMinutes($this->utc_offset);
         } else {
-            $dt->subMinutes($utc_offset);
+            $dt->subMinutes($this->utc_offset);
         }
 
         return $dt->format($output_format);

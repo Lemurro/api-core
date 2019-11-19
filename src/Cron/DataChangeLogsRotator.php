@@ -2,8 +2,8 @@
 /**
  * Ротация таблицы data_change_logs
  *
- * @version 23.08.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 19.11.2019
  */
 
 namespace Lemurro\Api\Core\Cron;
@@ -13,6 +13,7 @@ use Lemurro\Api\App\Configs\SettingsCron;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\Mailer;
 use ORM;
+use Pimple\Container;
 
 /**
  * Class DataChangeLogsRotator
@@ -22,10 +23,30 @@ use ORM;
 class DataChangeLogsRotator extends Action
 {
     /**
+     * @var Mailer
+     */
+    protected $mailer;
+
+    /**
+     * FileToken constructor.
+     *
+     * @param Container $dic Объект контейнера зависимостей
+     *
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 19.11.2019
+     */
+    public function __construct($dic)
+    {
+        parent::__construct($dic);
+
+        $this->mailer = $this->dic['mailer'];
+    }
+
+    /**
      * Выполним ротацию
      *
-     * @version 23.08.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 19.11.2019
      */
     public function execute()
     {
@@ -50,9 +71,7 @@ class DataChangeLogsRotator extends Action
             $message = 'Произошла ошибка при ротации таблицы data_change_logs';
         }
 
-        /** @var Mailer $mailer */
-        $mailer = $this->dic['mailer'];
-        $mailer->send('SIMPLE_MESSAGE', $subject, SettingsCron::ERRORS_EMAILS, [
+        $this->mailer->send('SIMPLE_MESSAGE', $subject, SettingsCron::ERRORS_EMAILS, [
             '[CONTENT]' => $message,
         ]);
     }

@@ -9,7 +9,9 @@
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\Core\Abstracts\Action;
+use Lemurro\Api\Core\Helpers\LoggerFactory;
 use Monolog\Logger;
+use Pimple\Container;
 
 /**
  * Class FileRights
@@ -19,6 +21,26 @@ use Monolog\Logger;
 class FileRights extends Action
 {
     /**
+     * @var Logger
+     */
+    protected $log;
+
+    /**
+     * FileRights constructor.
+     *
+     * @param Container $dic Объект контейнера зависимостей
+     *
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 19.11.2019
+     */
+    public function __construct($dic)
+    {
+        parent::__construct($dic);
+
+        $this->log = LoggerFactory::create('File');
+    }
+
+    /**
      * Выполним действие
      *
      * @param string $container_type Тип контейнера
@@ -26,8 +48,8 @@ class FileRights extends Action
      *
      * @return boolean
      *
-     * @version 08.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 19.11.2019
      */
     public function check($container_type, $container_id)
     {
@@ -42,10 +64,7 @@ class FileRights extends Action
 
             return call_user_func([$class, 'check'], $container_id);
         } else {
-            /** @var Logger $log */
-            $log = $this->dic['log'];
-
-            $log->error('/File/FileRights.php: Unknown class "' . $classname . '"');
+            $this->log->error('/File/FileRights.php: Unknown class "' . $classname . '"');
 
             return false;
         }

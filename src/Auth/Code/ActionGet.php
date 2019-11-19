@@ -3,7 +3,7 @@
  * Получение кода аутентификации
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 24.10.2019
+ * @version 19.11.2019
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
@@ -96,7 +96,7 @@ class ActionGet extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 24.10.2019
+     * @version 19.11.2019
      */
     public function run($auth_id)
     {
@@ -144,7 +144,7 @@ class ActionGet extends Action
         $auth_code->auth_id = $this->auth_id;
         $auth_code->code = $this->secret;
         $auth_code->user_id = $user['id'];
-        $auth_code->created_at = $this->dic['datetimenow'];
+        $auth_code->created_at = $this->date_time_now;
         $auth_code->save();
         if (is_object($auth_code)) {
             if (SettingsGeneral::PRODUCTION) {

@@ -10,7 +10,6 @@ namespace Lemurro\Api\Core\Users;
 
 use Lemurro\Api\App\RunAfter\Users\LockUnlock as RunAfterLockUnlock;
 use Lemurro\Api\Core\Abstracts\Action;
-use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
@@ -48,12 +47,10 @@ class ActionLockUnlock extends Action
             }
 
             $user->locked = $locked;
-            $user->updated_at = $this->dic['datetimenow'];
+            $user->updated_at = $this->date_time_now;
             $user->save();
             if (is_object($user) && isset($user->id)) {
-                /** @var DataChangeLog $data_change_log */
-                $data_change_log = $this->dic['datachangelog'];
-                $data_change_log->insert('users', 'update', $id, $user->as_array());
+                $this->data_change_log->insert('users', 'update', $id, $user->as_array());
 
                 $user_info['data']['locked'] = $locked;
 

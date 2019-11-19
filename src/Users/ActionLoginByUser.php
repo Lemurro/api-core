@@ -2,8 +2,8 @@
 /**
  * Вход под указанным пользователем
  *
- * @version 03.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 19.11.2019
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -28,8 +28,8 @@ class ActionLoginByUser extends Action
      *
      * @return array
      *
-     * @version 03.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 19.11.2019
      */
     public function run($user_id)
     {
@@ -47,13 +47,12 @@ class ActionLoginByUser extends Action
         }
 
         $secret = RandomKey::generate(100);
-        $created_at = $this->dic['datetimenow'];
 
         $session = ORM::for_table('sessions')->create();
         $session->session = $secret;
         $session->user_id = $user_id;
-        $session->created_at = $created_at;
-        $session->checked_at = $created_at;
+        $session->created_at = $this->date_time_now;
+        $session->checked_at = $this->date_time_now;
 
         if (SettingsAuth::SESSIONS_BINDING_TO_IP) {
             $session->ip = $_SERVER['REMOTE_ADDR'];

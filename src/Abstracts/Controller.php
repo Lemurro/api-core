@@ -2,12 +2,13 @@
 /**
  * Шаблон контроллера
  *
- * @version 10.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 19.11.2019
  */
 
 namespace Lemurro\Api\Core\Abstracts;
 
+use Lemurro\Api\Core\Checker\Checker;
 use Pimple\Container;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -35,27 +36,33 @@ abstract class Controller
     protected $dic;
 
     /**
+     * @var Checker
+     */
+    protected $checker;
+
+    /**
      * Конструктор
      *
      * @param Request      $request  Объект запроса
      * @param JsonResponse $response Объект ответа
      * @param Container    $dic      Объект контейнера зависимостей
      *
-     * @version 10.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 19.11.2019
      */
     public function __construct($request, $response, $dic)
     {
         $this->request = $request;
         $this->response = $response;
         $this->dic = $dic;
+        $this->checker = $dic['checker'];
     }
 
     /**
      * Стартовый метод
      *
-     * @version 26.05.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 26.05.2018
      */
     abstract public function start();
 }
