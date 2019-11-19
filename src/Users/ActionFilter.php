@@ -3,7 +3,7 @@
  * Поиск пользователей по фильтру
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 27.09.2019
+ * @version 19.11.2019
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -177,23 +177,24 @@ class ActionFilter extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 27.09.2019
+     * @version 19.11.2019
      */
     protected function getInfoUsers($sql_where)
     {
         $users = ORM::for_table('info_users')
-            ->table_alias('iu')
-            ->select_many(
-                'iu.*',
-                'u.*',
-                's.checked_at'
-            )
-            ->left_outer_join('users', ['u.id', '=', 'iu.user_id'], 'u')
-            ->left_outer_join('sessions', ['s.user_id', '=', 'iu.user_id'], 's')
-            ->where_raw($sql_where['query'], $sql_where['params'])
-            ->where_null('iu.deleted_at')
-            ->order_by_desc('s.checked_at')
-            ->limit($sql_where['limit'])
+            ->raw_query('SELECT
+                `iu`.*,
+                `u`.*,
+                `s1`.`checked_at`
+                FROM `info_users` `iu`
+                    LEFT JOIN `users` `u` ON `u`.`id` = `iu`.`user_id`
+                    LEFT JOIN `sessions` `s1` ON `s1`.`user_id` = `iu`.`user_id`
+                    LEFT JOIN `sessions` `s2` ON `s1`.`user_id` = `s2`.`user_id` AND `s1`.`checked_at` < `s2`.`checked_at`
+                WHERE ' . $sql_where['query'] . '
+                    AND `iu`.`deleted_at` IS NULL
+                    AND `s2`.`id` IS NULL
+                ORDER BY `s1`.`checked_at` DESC
+                LIMIT ' . $sql_where['limit'], $sql_where['params'])
             ->find_array();
 
         if (!is_array($users)) {
