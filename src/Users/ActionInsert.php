@@ -2,8 +2,8 @@
 /**
  * Добавление пользователя
  *
- * @version 03.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 19.11.2019
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -29,8 +29,8 @@ class ActionInsert extends Action
      *
      * @return array
      *
-     * @version 03.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 19.11.2019
      */
     public function run($data)
     {
@@ -39,6 +39,7 @@ class ActionInsert extends Action
         $check_auth_id = ORM::for_table('users')
             ->select('id')
             ->where_equal('auth_id', $data['auth_id'])
+            ->where_null('deleted_at')
             ->find_one();
         if (is_object($check_auth_id)) {
             return Response::error400('Пользователь с такими данными для входа уже существует');

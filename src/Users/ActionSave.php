@@ -3,7 +3,7 @@
  * Изменение пользователя
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 15.10.2019
+ * @version 19.11.2019
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -31,7 +31,7 @@ class ActionSave extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.10.2019
+     * @version 19.11.2019
      */
     public function run($id, $data)
     {
@@ -41,12 +41,14 @@ class ActionSave extends Action
             ->select('id')
             ->where_equal('auth_id', $data['auth_id'])
             ->where_not_equal('id', $id)
+            ->where_null('deleted_at')
             ->find_one();
         if (is_object($check_auth_id)) {
             return Response::error400('Пользователь с такими данными для входа уже существует');
         }
 
         $user = ORM::for_table('users')
+            ->where_null('deleted_at')
             ->find_one($id);
         if (is_object($user) && $user->id == $id) {
             if ($id == 1) {
@@ -58,6 +60,7 @@ class ActionSave extends Action
             }
 
             $user->auth_id = $data['auth_id'];
+            $user->updated_at = $this->dic['datetimenow'];
             $user->save();
             if (is_object($user) && isset($user->id)) {
                 $info = ORM::for_table('info_users')

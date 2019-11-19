@@ -3,7 +3,7 @@
  * Заблокировать \ Разблокировать пользователя
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 15.10.2019
+ * @version 19.11.2019
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -30,11 +30,12 @@ class ActionLockUnlock extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.10.2019
+     * @version 19.11.2019
      */
     public function run($id, $locked)
     {
         $user = ORM::for_table('users')
+            ->where_null('deleted_at')
             ->find_one($id);
         if (is_object($user) && $user->id == $id) {
             if ($id == 1 && $locked) {
@@ -47,6 +48,7 @@ class ActionLockUnlock extends Action
             }
 
             $user->locked = $locked;
+            $user->updated_at = $this->dic['datetimenow'];
             $user->save();
             if (is_object($user) && isset($user->id)) {
                 /** @var DataChangeLog $data_change_log */
