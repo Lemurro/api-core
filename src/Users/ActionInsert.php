@@ -11,6 +11,7 @@ namespace Lemurro\Api\Core\Users;
 use Lemurro\Api\App\RunAfter\Users\Insert as RunAfterInsert;
 use Lemurro\Api\App\RunBefore\Users\Insert as RunBeforeInsert;
 use Lemurro\Api\Core\Abstracts\Action;
+use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
@@ -46,7 +47,7 @@ class ActionInsert extends Action
 
         $new_user = ORM::for_table('users')->create();
         $new_user->auth_id = $data['auth_id'];
-        $new_user->created_at = $this->date_time_now;
+        $new_user->created_at = $this->dic['datetimenow'];
         $new_user->save();
         if (is_object($new_user) && isset($new_user->id)) {
             $new_user_info = ORM::for_table('info_users')->create();
@@ -65,10 +66,12 @@ class ActionInsert extends Action
 
             $new_user_info->user_id = $new_user->id;
             $new_user_info->roles = $json_roles;
-            $new_user_info->created_at = $this->date_time_now;
+            $new_user_info->created_at = $this->dic['datetimenow'];
             $new_user_info->save();
             if (is_object($new_user_info) && isset($new_user_info->id)) {
-                $this->data_change_log->insert('users', 'insert', $new_user->id, $data);
+                /** @var DataChangeLog $data_change_log */
+                $data_change_log = $this->dic['datachangelog'];
+                $data_change_log->insert('users', 'insert', $new_user->id, $data);
 
                 $data['id'] = $new_user->id;
                 $data['locked'] = false;

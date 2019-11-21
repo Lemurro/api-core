@@ -11,11 +11,10 @@ namespace Lemurro\Api\Core\Users;
 use Exception;
 use Lemurro\Api\App\RunAfter\Users\Remove as RunAfterRemove;
 use Lemurro\Api\Core\Abstracts\Action;
+use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\LogException;
 use Lemurro\Api\Core\Helpers\Response;
-use Monolog\Logger;
 use ORM;
-use Pimple\Container;
 
 /**
  * Class ActionRemove
@@ -24,26 +23,6 @@ use Pimple\Container;
  */
 class ActionRemove extends Action
 {
-    /**
-     * @var Logger
-     */
-    protected $log;
-
-    /**
-     * ActionRemove constructor.
-     *
-     * @param Container $dic Объект контейнера зависимостей
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
-     */
-    public function __construct($dic)
-    {
-        parent::__construct($dic);
-
-        $this->log = $dic['log'];
-    }
-
     /**
      * Выполним действие
      *
@@ -71,10 +50,10 @@ class ActionRemove extends Action
                 try {
                     ORM::get_db()->beginTransaction();
 
-                    $user->deleted_at = $this->date_time_now;
+                    $user->deleted_at = $this->dic['datetimenow'];
                     $user->save();
 
-                    $info->deleted_at = $this->date_time_now;
+                    $info->deleted_at = $this->dic['datetimenow'];
                     $info->save();
 
                     ORM::for_table('auth_codes')
@@ -89,12 +68,14 @@ class ActionRemove extends Action
                 } catch (Exception $e) {
                     ORM::get_db()->rollBack();
 
-                    LogException::write($this->log, $e);
+                    LogException::write($this->dic['log'], $e);
 
                     return Response::error500('Произошла ошибка при удалении пользователя, попробуйте ещё раз');
                 }
 
-                $this->data_change_log->insert('users', 'delete', $id);
+                /** @var DataChangeLog $data_change_log */
+                $data_change_log = $this->dic['datachangelog'];
+                $data_change_log->insert('users', 'delete', $id);
 
                 return (new RunAfterRemove($this->dic))->run([
                     'id' => $id,

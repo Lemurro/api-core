@@ -2,13 +2,14 @@
 /**
  * Добавление
  *
+ * @version 05.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 19.11.2019
  */
 
 namespace Lemurro\Api\Core\AccessSets;
 
 use Lemurro\Api\Core\Abstracts\Action;
+use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
@@ -26,8 +27,8 @@ class ActionInsert extends Action
      *
      * @return array
      *
+     * @version 05.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
      */
     public function run($data)
     {
@@ -43,13 +44,15 @@ class ActionInsert extends Action
         $record = ORM::for_table('access_sets')->create();
         $record->name = $data['name'];
         $record->roles = json_encode($data['roles']);
-        $record->created_at = $this->date_time_now;
+        $record->created_at = $this->dic['datetimenow'];
         $record->save();
         if (is_object($record) && isset($record->id)) {
             $result = $record->as_array();
             $result['roles'] = $data['roles'];
 
-            $this->data_change_log->insert('access_sets', 'insert', $record->id, $result);
+            /** @var DataChangeLog $data_change_log */
+            $data_change_log = $this->dic['datachangelog'];
+            $data_change_log->insert('access_sets', 'insert', $record->id, $result);
 
             return Response::data($result);
         } else {

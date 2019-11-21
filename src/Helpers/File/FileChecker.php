@@ -2,13 +2,12 @@
 /**
  * Интерфейс проверки доступа к файлу
  *
+ * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 19.11.2019
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
-use Lemurro\Api\Core\Checker\Checker;
 use Pimple\Container;
 
 /**
@@ -26,22 +25,16 @@ abstract class FileChecker
     protected $dic;
 
     /**
-     * @var Checker
-     */
-    protected $checker;
-
-    /**
      * Конструктор
      *
      * @param Container $dic Контейнер
      *
+     * @version 08.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
      */
     public function __construct($dic)
     {
         $this->dic = $dic;
-        $this->checker = $dic['checker'];
     }
 
     /**
@@ -51,8 +44,8 @@ abstract class FileChecker
      *
      * @return boolean
      *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      * @version 08.01.2019
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     abstract public function check($container_id);
 }

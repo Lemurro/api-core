@@ -2,14 +2,15 @@
 /**
  * Удаление файла
  *
+ * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 19.11.2019
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\App\Configs\SettingsFile;
 use Lemurro\Api\Core\Abstracts\Action;
+use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
 use Pimple\Container;
 
@@ -53,8 +54,8 @@ class FileRemove extends Action
      *
      * @return array
      *
+     * @version 08.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
      */
     public function run($fileid)
     {
@@ -74,12 +75,14 @@ class FileRemove extends Action
         if (SettingsFile::FULL_REMOVE) {
             $info->delete();
         } else {
-            $info->deleted_at = $this->date_time_now;
+            $info->deleted_at = $this->dic['datetimenow'];
             $info->save();
         }
 
         if (is_object($info)) {
-            $this->data_change_log->insert('files', 'delete', $info->id, $info->as_array());
+            /** @var DataChangeLog $datachangelog */
+            $datachangelog = $this->dic['datachangelog'];
+            $datachangelog->insert('files', 'delete', $info->id, $info->as_array());
 
             if (SettingsFile::FULL_REMOVE) {
                 @unlink($file_path);

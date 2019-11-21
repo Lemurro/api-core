@@ -2,8 +2,8 @@
 /**
  * Токены для скачивания файлов
  *
+ * @version 15.05.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 19.11.2019
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -11,7 +11,6 @@ namespace Lemurro\Api\Core\Helpers\File;
 use Lemurro\Api\Core\Helpers\Response;
 use Lemurro\Api\Core\Abstracts\Action;
 use ORM;
-use Pimple\Container;
 
 /**
  * Class FileToken
@@ -21,26 +20,6 @@ use Pimple\Container;
 class FileToken extends Action
 {
     /**
-     * @var array
-     */
-    protected $user_info;
-
-    /**
-     * FileToken constructor.
-     *
-     * @param Container $dic Объект контейнера зависимостей
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
-     */
-    public function __construct($dic)
-    {
-        parent::__construct($dic);
-
-        $this->user_info = $this->dic['user'];
-    }
-
-    /**
      * Создание токена для скачивания файла (с проверкой на дубликаты)
      *
      * @param string $type Тип файла (permanent|temporary)
@@ -49,19 +28,19 @@ class FileToken extends Action
      *
      * @return string
      *
+     * @version 15.05.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
      */
     public function generate($type, $path, $name)
     {
-        $token = md5(uniqid($this->user_info['id'], true));
+        $token = md5(uniqid($this->dic['user']['id'], true));
 
         $record = ORM::for_table('files_downloads')->create();
         $record->type = $type;
         $record->path = $path;
         $record->name = $name;
         $record->token = $token;
-        $record->created_at = $this->date_time_now;
+        $record->created_at = $this->dic['datetimenow'];
         $record->save();
         if (is_object($record)) {
             return $token;

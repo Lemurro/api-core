@@ -2,18 +2,16 @@
 /**
  * Загрузка файла во временный каталог
  *
+ * @version 06.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 19.11.2019
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\App\Configs\SettingsFile;
-use Lemurro\Api\Core\Helpers\LoggerFactory;
 use Lemurro\Api\Core\Helpers\Response;
 use Lemurro\Api\Core\Abstracts\Action;
 use Monolog\Logger;
-use Pimple\Container;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\FileBag;
 
@@ -25,43 +23,20 @@ use Symfony\Component\HttpFoundation\FileBag;
 class ActionUpload extends Action
 {
     /**
-     * @var array
-     */
-    protected $user_info;
-
-    /**
-     * @var Logger
-     */
-    protected $log;
-
-    /**
-     * ActionUpload constructor.
-     *
-     * @param Container $dic Объект контейнера зависимостей
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
-     */
-    public function __construct($dic)
-    {
-        parent::__construct($dic);
-
-        $this->user_info = $this->dic['user'];
-        $this->log = LoggerFactory::create('File');
-    }
-
-    /**
      * Выполним действие
      *
      * @param FileBag $file Загруженный файл
      *
      * @return array
      *
+     * @version 06.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
      */
     public function run($file)
     {
+        /** @var Logger $log */
+        $log = $this->dic['log'];
+
         /** @var UploadedFile $uploaded_file */
         $uploaded_file = $file->get('uploadfile');
 
@@ -80,14 +55,14 @@ class ActionUpload extends Action
                 break;
 
             default:
-                $this->log->info('File: Неверный вид проверки типа файла: ' . SettingsFile::CHECK_FILE_BY);
+                $log->info('File: Неверный вид проверки типа файла: ' . SettingsFile::CHECK_FILE_BY);
 
                 return Response::error400('Неверные настройки приложения, пожалуйста обратитесь к администратору');
                 break;
         }
 
         if ($type_corrected === false) {
-            $this->log->info('File: Попытка загрузки неразрешённого файла .' . $orig_ext . ': ' . $orig_mime);
+            $log->info('File: Попытка загрузки неразрешённого файла .' . $orig_ext . ': ' . $orig_mime);
 
             $allowed_extensions = implode(', ', SettingsFile::ALLOWED_EXTENSIONS);
 
@@ -104,8 +79,8 @@ class ActionUpload extends Action
         $dest_folder = SettingsFile::TEMP_FOLDER;
         $dest_name = md5_file($orig_tmp);
 
-        if (isset($this->user_info['id'])) {
-            $dest_name .= '-' . $this->user_info['id'];
+        if (isset($this->dic['user']['id'])) {
+            $dest_name .= '-' . $this->dic['user']['id'];
         } else {
             $dest_name .= '-' . str_replace('.', '', uniqid('', true));
         }
@@ -115,7 +90,7 @@ class ActionUpload extends Action
         $uploaded_file->move($dest_folder, $file_id);
 
         if (!is_readable($dest_folder . $file_id) || !is_file($dest_folder . $file_id)) {
-            $this->log->error('File: Файл не был загружен', [
+            $log->error('File: Файл не был загружен', [
                 'mime'    => $orig_mime,
                 'size'    => $orig_size,
                 'ext'     => $orig_ext,

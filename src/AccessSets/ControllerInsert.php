@@ -2,8 +2,8 @@
 /**
  * Добавление
  *
+ * @version 05.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 19.11.2019
  */
 
 namespace Lemurro\Api\Core\AccessSets;
@@ -20,8 +20,8 @@ class ControllerInsert extends Controller
     /**
      * Стартовый метод
      *
+     * @version 05.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
      */
     public function start()
     {
@@ -29,7 +29,7 @@ class ControllerInsert extends Controller
             'auth' => '',
             'role' => [],
         ];
-        $checker_result = $this->checker->run($checker_checks);
+        $checker_result = $this->dic['checker']->run($checker_checks);
         if (is_array($checker_result) && count($checker_result) == 0) {
             $this->response->setData((new ActionInsert($this->dic))->run(
                 $this->request->get('data')

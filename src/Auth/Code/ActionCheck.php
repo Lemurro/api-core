@@ -2,8 +2,8 @@
 /**
  * Проверка кода аутентификации
  *
+ * @version 29.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 19.11.2019
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
@@ -30,8 +30,8 @@ class ActionCheck extends Action
      *
      * @return array
      *
+     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
      */
     public function run($auth_id, $auth_code, $device_info)
     {
@@ -45,12 +45,13 @@ class ActionCheck extends Action
         if (is_object($auth)) {
             if ($auth->code === $auth_code) {
                 $secret = RandomKey::generate(100);
+                $created_at = $this->dic['datetimenow'];
 
                 $session = ORM::for_table('sessions')->create();
                 $session->session = $secret;
                 $session->user_id = $auth->user_id;
-                $session->created_at = $this->date_time_now;
-                $session->checked_at = $this->date_time_now;
+                $session->created_at = $created_at;
+                $session->checked_at = $created_at;
 
                 if (SettingsAuth::SESSIONS_BINDING_TO_IP) {
                     $session->ip = $_SERVER['REMOTE_ADDR'];
@@ -65,7 +66,7 @@ class ActionCheck extends Action
                     $history_registration->device_version = (isset($device_info['version']) ? $device_info['version'] : 'unknown');
                     $history_registration->device_manufacturer = (isset($device_info['manufacturer']) ? $device_info['manufacturer'] : 'unknown');
                     $history_registration->device_model = (isset($device_info['model']) ? $device_info['model'] : 'unknown');
-                    $history_registration->created_at = $this->date_time_now;
+                    $history_registration->created_at = $created_at;
                     $history_registration->save();
 
                     $cleaner->clear($auth_id);

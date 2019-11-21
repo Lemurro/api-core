@@ -3,18 +3,17 @@
  * Переносим файл в постоянное хранилище и добавляем в базу
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 19.11.2019
+ * @version 30.10.2019
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\App\Configs\SettingsFile;
 use Lemurro\Api\Core\Abstracts\Action;
-use Lemurro\Api\Core\Helpers\LoggerFactory;
+use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
 use Monolog\Logger;
 use ORM;
-use Pimple\Container;
 
 /**
  * Class FileAdd
@@ -34,21 +33,6 @@ class FileAdd extends Action
     protected $undo_list = [];
 
     /**
-     * FileAdd constructor.
-     *
-     * @param Container $dic Объект контейнера зависимостей
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
-     */
-    public function __construct($dic)
-    {
-        parent::__construct($dic);
-
-        $this->log = LoggerFactory::create('File');
-    }
-
-    /**
      * Выполним действие
      *
      * @param string $file_name      Имя файла во временном каталоге
@@ -58,11 +42,13 @@ class FileAdd extends Action
      *
      * @return array
      *
+     * @version 08.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
      */
     public function run($file_name, $orig_name, $container_type = 'default', $container_id = null)
     {
+        $this->log = $this->dic['log'];
+
         $move_result = $this->moveToStorage($file_name);
         if (isset($move_result['errors'])) {
             return $move_result;
@@ -176,7 +162,7 @@ class FileAdd extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
+     * @version 30.10.2019
      */
     protected function addToDB($file_name, $orig_name, $container_type, $container_id)
     {
@@ -202,10 +188,12 @@ class FileAdd extends Action
         $item->ext = $data['ext'];
         $item->container_type = mb_substr($container_type, 0, 255, 'UTF-8');
         $item->container_id = $container_id;
-        $item->created_at = $this->date_time_now;
+        $item->created_at = $this->dic['datetimenow'];
         $item->save();
         if (is_object($item) && isset($item->id)) {
-            $this->data_change_log->insert('files', 'insert', $item->id, $data);
+            /** @var DataChangeLog $datachangelog */
+            $datachangelog = $this->dic['datachangelog'];
+            $datachangelog->insert('files', 'insert', $item->id, $data);
 
             if (isset($this->undo_list[$file_name])) {
                 $this->undo_list[$file_name]['id'] = $item->id;

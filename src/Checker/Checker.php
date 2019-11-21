@@ -2,14 +2,13 @@
 /**
  * Какие-либо проверки перед запуском контроллера маршрута
  *
+ * @version 29.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 19.11.2019
  */
 
 namespace Lemurro\Api\Core\Checker;
 
 use Lemurro\Api\Core\Abstracts\Action;
-use Pimple\Container;
 
 /**
  * Class Checker
@@ -19,40 +18,14 @@ use Pimple\Container;
 class Checker extends Action
 {
     /**
-     * @var array
-     */
-    protected $user_info;
-
-    /**
-     * @var string
-     */
-    protected $session_id;
-
-    /**
-     * Checker constructor.
-     *
-     * @param Container $dic Объект контейнера зависимостей
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
-     */
-    public function __construct($dic)
-    {
-        parent::__construct($dic);
-
-        $this->user_info = $this->dic['user'];
-        $this->session_id = $this->dic['session_id'];
-    }
-
-    /**
      * Зарегистрируем пользователя по идентификатору
      *
      * @param array $checks Массив проверок
      *
      * @return array
      *
+     * @version 29.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
      */
     public function run($checks)
     {
@@ -60,11 +33,11 @@ class Checker extends Action
             foreach ($checks as $check_type => $check_info) {
                 switch ($check_type) {
                     case 'auth':
-                        $check_result = (new Auth())->run($this->session_id);
+                        $check_result = (new Auth())->run($this->dic['session_id']);
                         break;
 
                     case 'role':
-                        $check_result = (new Role())->run($check_info, $this->user_info['roles']);
+                        $check_result = (new Role())->run($check_info, $this->dic['user']['roles']);
                         break;
 
                     default:
