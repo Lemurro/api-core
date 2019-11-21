@@ -2,21 +2,24 @@
 /**
  * Инициализация приложения
  *
- * @version 20.08.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 21.11.2019
  */
 
 namespace Lemurro\Api\Core;
 
 use Exception;
+use Lemurro\Api\App\Configs\SettingsMaintenance;
 use Lemurro\Api\App\Configs\SettingsPath;
 use Lemurro\Api\App\Overrides\DIC as AppDIC;
 use Lemurro\Api\App\Overrides\Response as AppResponse;
 use Lemurro\Api\Core\Helpers\DB;
 use Lemurro\Api\Core\Helpers\DIC;
 use Lemurro\Api\Core\Helpers\LogException;
+use Lemurro\Api\Core\Helpers\LoggerFactory;
 use Lemurro\Api\Core\Helpers\Response;
 use Lemurro\Api\Core\Users\ActionGet as GetUser;
+use Monolog\Logger;
 use Pimple\Container;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -55,10 +58,15 @@ class Core
     protected $response;
 
     /**
+     * @var Logger
+     */
+    protected $core_log;
+
+    /**
      * Конструктор
      *
-     * @version 29.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 21.11.2019
      */
     public function __construct()
     {
@@ -68,13 +76,68 @@ class Core
 
         $this->initRoutes();
         $this->initDIC();
+
+        $this->core_log = LoggerFactory::create('Core');
+    }
+
+    /**
+     * Старт
+     *
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 21.11.2019
+     */
+    public function start()
+    {
+        try {
+            $matcher = $this->url_matcher->match($this->request->getPathInfo());
+            $this->request->attributes->add($matcher);
+
+            (new AppResponse())->run($this->response);
+
+            if ($this->request->getMethod() == 'OPTIONS') {
+                $allow_methods = 'OPTIONS, ' . $this->request->headers->get('access-control-request-method');
+
+                $this->response->headers->set('Access-Control-Allow-Methods', $allow_methods);
+                $this->response->send();
+            } else {
+                (new AppDIC())->run($this->dic);
+
+                if ($this->maintenance()) {
+                    $this->response->setData(Response::error(
+                        '503 Service Unavailable',
+                        'warning',
+                        SettingsMaintenance::MESSAGE
+                    ));
+                    $this->response->send();
+                } else {
+                    $class = $this->request->get('_controller');
+                    $controller = new $class($this->request, $this->response, $this->dic);
+                    call_user_func([$controller, 'start']);
+                }
+            }
+        } catch (ResourceNotFoundException $e) {
+            LogException::write($this->core_log, $e);
+
+            $this->response->setData(Response::error404('Маршрут отсутствует'));
+            $this->response->send();
+        } catch (MethodNotAllowedException $e) {
+            LogException::write($this->core_log, $e);
+
+            $this->response->setData(Response::error400('Неверный метод маршрута'));
+            $this->response->send();
+        } catch (Exception $e) {
+            LogException::write($this->core_log, $e);
+
+            $this->response->setData(Response::error500('Непредвиденная ошибка,<br>подробности в лог-файле'));
+            $this->response->send();
+        }
     }
 
     /**
      * Инициализация маршрутов
      *
-     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 29.12.2018
      */
     protected function initRoutes()
     {
@@ -104,8 +167,8 @@ class Core
     /**
      * Инициализация DIC
      *
-     * @version 02.08.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 02.08.2019
      */
     protected function initDIC()
     {
@@ -132,42 +195,23 @@ class Core
     }
 
     /**
-     * Старт
+     * Проверка на обслуживание проекта
      *
-     * @version 20.08.2019
+     * @return boolean
+     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 21.11.2019
      */
-    public function start()
+    protected function maintenance()
     {
-        try {
-            $matcher = $this->url_matcher->match($this->request->getPathInfo());
-            $this->request->attributes->add($matcher);
-
-            (new AppResponse())->run($this->response);
-
-            if ($this->request->getMethod() == 'OPTIONS') {
-                $allow_methods = 'OPTIONS, ' . $this->request->headers->get('access-control-request-method');
-
-                $this->response->headers->set('Access-Control-Allow-Methods', $allow_methods);
-                $this->response->send();
-            } else {
-                (new AppDIC())->run($this->dic);
-
-                $class = $this->request->get('_controller');
-                $controller = new $class($this->request, $this->response, $this->dic);
-                call_user_func([$controller, 'start']);
-            }
-        } catch (ResourceNotFoundException $e) {
-            $this->response->setData(Response::error404('Маршрут отсутствует'));
-            $this->response->send();
-        } catch (MethodNotAllowedException $e) {
-            $this->response->setData(Response::error400('Неверный метод маршрута'));
-            $this->response->send();
-        } catch (Exception $e) {
-            LogException::write($this->dic['log'], $e);
-
-            $this->response->setData(Response::error500('Непредвиденная ошибка,<br>подробности в лог-файле'));
-            $this->response->send();
+        if (isset($this->dic['user']['admin']) && $this->dic['user']['admin']) {
+            return false;
         }
+
+        if (SettingsMaintenance::ACTIVE) {
+            return true;
+        }
+
+        return false;
     }
 }
