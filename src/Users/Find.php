@@ -3,7 +3,7 @@
  * Поиск пользователя
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 19.11.2019
+ * @version 22.11.2019
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -25,7 +25,7 @@ class Find
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
+     * @version 22.11.2019
      */
     public function run($auth_id)
     {
@@ -33,7 +33,7 @@ class Find
             ->where_equal('auth_id', $auth_id)
             ->where_null('deleted_at')
             ->find_one();
-        if (is_object($user) && $user->auth_id == $auth_id) {
+        if (is_object($user) && mb_strtolower($user->auth_id, 'UTF-8') == mb_strtolower($auth_id, 'UTF-8')) {
             return $user->as_array();
         } else {
             return [];
