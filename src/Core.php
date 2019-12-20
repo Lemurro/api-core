@@ -3,7 +3,7 @@
  * Инициализация приложения
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 21.11.2019
+ * @version 20.12.2019
  */
 
 namespace Lemurro\Api\Core;
@@ -66,18 +66,18 @@ class Core
      * Конструктор
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 21.11.2019
+     * @version 20.12.2019
      */
     public function __construct()
     {
         date_default_timezone_set('UTC');
 
+        $this->core_log = LoggerFactory::create('Core');
+
         DB::init();
 
         $this->initRoutes();
         $this->initDIC();
-
-        $this->core_log = LoggerFactory::create('Core');
     }
 
     /**
