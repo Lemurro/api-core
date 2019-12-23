@@ -3,7 +3,7 @@
  * Получение кода аутентификации
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 24.10.2019
+ * @version 23.12.2019
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
@@ -96,19 +96,17 @@ class ActionGet extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 24.10.2019
+     * @version 23.12.2019
      */
     public function run($auth_id)
     {
-        $this->auth_id = $auth_id;
+        $this->code_cleaner->clear($auth_id);
 
-        $this->code_cleaner->clear($this->auth_id);
-
-        $user = $this->user_finder->run($this->auth_id);
+        $user = $this->user_finder->run($auth_id);
         if (is_array($user) && empty($user)) {
             if (SettingsAuth::CAN_REGISTRATION_USERS) {
                 $insert_user = $this->user_inserter->run([
-                    'auth_id' => $this->auth_id,
+                    'auth_id' => $auth_id,
                 ]);
                 if (isset($insert_user['errors'])) {
                     return $insert_user;
@@ -124,6 +122,8 @@ class ActionGet extends Action
             return Response::error403('Пользователь заблокирован и недоступен для входа, пожалуйста обратитесь к администратору',
                 false);
         }
+
+        $this->auth_id = $user['auth_id'];
 
         $all_codes = [];
         $auth_codes = ORM::for_table('auth_codes')
