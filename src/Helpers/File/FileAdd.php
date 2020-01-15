@@ -3,7 +3,7 @@
  * Переносим файл в постоянное хранилище и добавляем в базу
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 30.10.2019
+ * @version 15.01.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -42,8 +42,8 @@ class FileAdd extends Action
      *
      * @return array
      *
-     * @version 08.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 15.01.2020
      */
     public function run($file_name, $orig_name, $container_type = 'default', $container_id = null)
     {
@@ -52,14 +52,14 @@ class FileAdd extends Action
         $move_result = $this->moveToStorage($file_name);
         if (isset($move_result['errors'])) {
             return $move_result;
-        } else {
-            return $this->addToDB(
-                $move_result['data']['file_name'],
-                $orig_name,
-                $container_type,
-                $container_id
-            );
         }
+
+        return $this->addToDB(
+            $move_result['data']['file_name'],
+            $orig_name,
+            $container_type,
+            $container_id
+        );
     }
 
     /**
@@ -97,7 +97,7 @@ class FileAdd extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 16.09.2019
+     * @version 15.01.2020
      */
     protected function moveToStorage($source_file_name)
     {
@@ -122,24 +122,15 @@ class FileAdd extends Action
 
         $dest_folder = SettingsFile::FILE_FOLDER . $suffix_folder;
 
-        if (!is_dir($dest_folder)) {
-            mkdir($dest_folder, 0755, true);
+        if (!is_dir($dest_folder) && !mkdir($dest_folder, 0755, true) && !is_dir($dest_folder)) {
+            return Response::error500('Каталог "' . $dest_folder . '" не был создан, обратитесь к разработчику');
         }
 
         $file_name = (new FileName())->generate($dest_folder, $info['filename'], $info['extension']);
 
         $path_file = $suffix_folder . $file_name;
 
-        if (rename($source_file, $dest_folder . $file_name)) {
-            $this->undo_list[$path_file] = [
-                'source_file'      => $source_file,
-                'destination_file' => $dest_folder . $file_name,
-            ];
-
-            return Response::data([
-                'file_name' => $path_file,
-            ]);
-        } else {
+        if (!rename($source_file, $dest_folder . $file_name)) {
             $this->log->error('File: Файл не был перемещён', [
                 'source_file_name' => $source_file_name,
                 'file_name'        => $path_file,
@@ -149,6 +140,15 @@ class FileAdd extends Action
                 'source_file_name' => $source_file_name,
             ]);
         }
+
+        $this->undo_list[$path_file] = [
+            'source_file'      => $source_file,
+            'destination_file' => $dest_folder . $file_name,
+        ];
+
+        return Response::data([
+            'file_name' => $path_file,
+        ]);
     }
 
     /**
@@ -162,7 +162,7 @@ class FileAdd extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 30.10.2019
+     * @version 15.01.2020
      */
     protected function addToDB($file_name, $orig_name, $container_type, $container_id)
     {
@@ -190,19 +190,8 @@ class FileAdd extends Action
         $item->container_id = $container_id;
         $item->created_at = $this->dic['datetimenow'];
         $item->save();
-        if (is_object($item) && isset($item->id)) {
-            /** @var DataChangeLog $datachangelog */
-            $datachangelog = $this->dic['datachangelog'];
-            $datachangelog->insert('files', 'insert', $item->id, $data);
 
-            if (isset($this->undo_list[$file_name])) {
-                $this->undo_list[$file_name]['id'] = $item->id;
-            }
-
-            return Response::data([
-                'id' => $item->id,
-            ]);
-        } else {
+        if (!is_object($item) || !isset($item->id)) {
             $this->log->error('File: Файл не был добавлен', $data);
 
             return Response::error500('Файл не был добавлен, попробуйте загрузить файл снова', [
@@ -212,5 +201,17 @@ class FileAdd extends Action
                 'container_id'   => $container_id,
             ]);
         }
+
+        /** @var DataChangeLog $datachangelog */
+        $datachangelog = $this->dic['datachangelog'];
+        $datachangelog->insert('files', 'insert', $item->id, $data);
+
+        if (isset($this->undo_list[$file_name])) {
+            $this->undo_list[$file_name]['id'] = $item->id;
+        }
+
+        return Response::data([
+            'id' => $item->id,
+        ]);
     }
 }
