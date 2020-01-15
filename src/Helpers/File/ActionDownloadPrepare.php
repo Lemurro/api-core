@@ -2,8 +2,8 @@
 /**
  * Подготовка файла к скачиванию
  *
- * @version 28.07.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 15.01.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -23,32 +23,32 @@ class ActionDownloadPrepare extends Action
      * Выполним действие
      *
      * @param integer|string $fileid   ИД постоянного файла или имя временого файла
-     * @param string         $filename Имя файла без расширения (для браузера)
+     * @param string         $filename Имя файла (для браузера)
      *
      * @return array
      *
-     * @version 28.07.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 15.01.2020
      */
     public function run($fileid, $filename = '')
     {
         if (preg_match('/^\d+$/', $fileid)) {
             return $this->permanentFile($fileid, $filename);
-        } else {
-            return $this->temporaryFile($fileid, $filename);
         }
+
+        return $this->temporaryFile($fileid, $filename);
     }
 
     /**
      * Постоянный файл
      *
      * @param integer $fileid   ИД постоянного файла
-     * @param string  $filename Имя файла без расширения (для браузера)
+     * @param string  $filename Имя файла (для браузера)
      *
      * @return array
      *
-     * @version 15.05.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 15.01.2020
      */
     protected function permanentFile($fileid, $filename)
     {
@@ -63,42 +63,32 @@ class ActionDownloadPrepare extends Action
 
         $file_path = SettingsFile::FILE_FOLDER . $info->path;
 
-        if (is_readable($file_path) && is_file($file_path)) {
-            if (empty($filename)) {
-                $name = $info->name . '.' . $info->ext;
-            } else {
-                $pathinfo = pathinfo($filename);
-
-                if ($pathinfo['extension'] === $info->ext) {
-                    $name = $filename;
-                } else {
-                    $name = $filename . '.' . $info->ext;
-                }
-            }
-
-            $token = (new FileToken($this->dic))->generate('permanent', $info->path, $name);
-            if (empty($token)) {
-                return Response::error500('Ключ для скачивания файла не был создан, попробуйте ещё раз');
-            }
-
-            return Response::data([
-                'token' => $token,
-            ]);
-        } else {
+        if (!is_readable($file_path) || !is_file($file_path)) {
             return Response::error404('Файл не найден');
         }
+
+        $name = $this->getFilename($info->name . '.' . $info->ext, $filename);
+
+        $token = (new FileToken($this->dic))->generate('permanent', $info->path, $name);
+        if (empty($token)) {
+            return Response::error500('Ключ для скачивания файла не был создан, попробуйте ещё раз');
+        }
+
+        return Response::data([
+            'token' => $token,
+        ]);
     }
 
     /**
      * Временный файл
      *
      * @param string $fileid   Имя временого файла
-     * @param string $filename Имя файла без расширения (для браузера)
+     * @param string $filename Имя файла (для браузера)
      *
      * @return array
      *
-     * @version 15.05.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 15.01.2020
      */
     protected function temporaryFile($fileid, $filename)
     {
@@ -122,18 +112,7 @@ class ActionDownloadPrepare extends Action
             return Response::error404('Файл не найден');
         }
 
-        if (empty($filename)) {
-            $name = $fileid;
-        } else {
-            $fileid_ext = pathinfo($fileid, PATHINFO_EXTENSION);
-            $filename_ext = pathinfo($filename, PATHINFO_EXTENSION);
-
-            if ($fileid_ext === $filename_ext) {
-                $name = $filename;
-            } else {
-                $name = $filename . '.' . $filename_ext;
-            }
-        }
+        $name = $this->getFilename($fileid, $filename);
 
         $token = (new FileToken($this->dic))->generate('temporary', $fileid, $name);
         if (empty($token)) {
@@ -143,5 +122,51 @@ class ActionDownloadPrepare extends Action
         return Response::data([
             'token' => $token,
         ]);
+    }
+
+    /**
+     * Определим имя файла
+     *
+     * @param string $orig_filename Оригинальное имя файла
+     * @param string $new_filename  Имя файла (для браузера)
+     *
+     * @return string
+     *
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 15.01.2020
+     */
+    private function getFilename($orig_filename, $new_filename)
+    {
+        if (!empty($new_filename)) {
+            $name = pathinfo($new_filename, PATHINFO_FILENAME);
+        } else {
+            $name = pathinfo($orig_filename, PATHINFO_FILENAME);
+        }
+
+        $name = $this->cleanFilename($name);
+        $ext = pathinfo($orig_filename, PATHINFO_EXTENSION);
+
+        return $name . '.' . $ext;
+    }
+
+    /**
+     * Очистим имя файла
+     *
+     * @param string $name Имя файла (без расширения)
+     *
+     * @return string
+     *
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 15.01.2020
+     */
+    private function cleanFilename($name)
+    {
+        // Обрезаем специальные символы :"<>*?|\/
+        $name = preg_replace('/[:"<>*?|\\\\\/]/', '', $name);
+
+        // Обрезаем длину до 100 символов
+        $name = mb_substr($name, 0, 100, 'UTF-8');
+
+        return $name;
     }
 }
