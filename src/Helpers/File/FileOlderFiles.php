@@ -2,8 +2,8 @@
 /**
  * Очистим устаревшие файлы во временном каталоге
  *
- * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 20.01.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -21,27 +21,29 @@ class FileOlderFiles
     /**
      * Выполним очистку
      *
-     * @version 10.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 20.01.2020
      */
     public function clear()
     {
         $now = Carbon::now('UTC');
 
-        if ($handle = opendir(SettingsFile::TEMP_FOLDER)) {
-            while (false !== ($file = readdir($handle))) {
-                if ($file !== '.' && $file !== '..') {
-                    $file_path = SettingsFile::TEMP_FOLDER . $file;
-                    $file_time = filemtime($file_path);
-                    $file_date = Carbon::createFromTimestamp($file_time, 'UTC');
+        if (is_dir(SettingsFile::TEMP_FOLDER)) {
+            if ($handle = opendir(SettingsFile::TEMP_FOLDER)) {
+                while (false !== ($file = readdir($handle))) {
+                    if ($file !== '.' && $file !== '..') {
+                        $file_path = SettingsFile::TEMP_FOLDER . $file;
+                        $file_time = filemtime($file_path);
+                        $file_date = Carbon::createFromTimestamp($file_time, 'UTC');
 
-                    if ($file_date->diffInDays($now) >= SettingsFile::OUTDATED_FILE_DAYS) {
-                        @unlink($file_path);
+                        if ($file_date->diffInDays($now) >= SettingsFile::OUTDATED_FILE_DAYS) {
+                            @unlink($file_path);
+                        }
                     }
                 }
-            }
 
-            closedir($handle);
+                closedir($handle);
+            }
         }
     }
 }
