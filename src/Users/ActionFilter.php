@@ -3,7 +3,7 @@
  * Поиск пользователей по фильтру
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 19.11.2019
+ * @version 31.01.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -177,10 +177,12 @@ class ActionFilter extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
+     * @version 31.01.2020
      */
     protected function getInfoUsers($sql_where)
     {
+        $limit = empty($sql_where['limit']) ? '' : 'LIMIT ' . $sql_where['limit'];
+
         $users = ORM::for_table('info_users')
             ->raw_query('SELECT
                 `iu`.*,
@@ -194,7 +196,7 @@ class ActionFilter extends Action
                     AND `iu`.`deleted_at` IS NULL
                     AND `s2`.`id` IS NULL
                 ORDER BY `s1`.`checked_at` DESC
-                LIMIT ' . $sql_where['limit'], $sql_where['params'])
+                ' . $limit, $sql_where['params'])
             ->find_array();
 
         if (!is_array($users)) {
