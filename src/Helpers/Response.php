@@ -4,7 +4,8 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  * @author  Евгений Кулагин <ekulagin59@gmail.com>
- * @version 24.09.2019
+ *
+ * @version 17.04.2020
  */
 
 namespace Lemurro\Api\Core\Helpers;
@@ -25,21 +26,22 @@ class Response
      *
      * @return array
      *
-     * @version 24.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      * @author  Евгений Кулагин <ekulagin59@gmail.com>
+     *
+     * @version 17.04.2020
      */
-    static function data($data)
+    public static function data($data): array
     {
         if (empty($data)) {
             return [
                 'data' => [],
             ];
-        } else {
-            return [
-                'data' => $data,
-            ];
         }
+
+        return [
+            'data' => $data,
+        ];
     }
 
     /**
@@ -50,10 +52,11 @@ class Response
      *
      * @return array
      *
-     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 17.04.2020
      */
-    static function error400($title, $meta = [])
+    public static function error400($title, $meta = []): array
     {
         return self::error('400 Bad Request', 'warning', $title, $meta);
     }
@@ -66,10 +69,11 @@ class Response
      *
      * @return array
      *
-     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 17.04.2020
      */
-    static function error401($title, $meta = [])
+    public static function error401($title, $meta = []): array
     {
         return self::error('401 Unauthorized', 'warning', $title, $meta);
     }
@@ -83,10 +87,11 @@ class Response
      *
      * @return array
      *
-     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 17.04.2020
      */
-    static function error403($title, $redirect, $meta = [])
+    public static function error403($title, $redirect, $meta = []): array
     {
         $meta['redirect'] = $redirect;
 
@@ -101,10 +106,11 @@ class Response
      *
      * @return array
      *
-     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 17.04.2020
      */
-    static function error404($title, $meta = [])
+    public static function error404($title, $meta = []): array
     {
         return self::error('404 Not Found', 'info', $title, $meta);
     }
@@ -117,10 +123,11 @@ class Response
      *
      * @return array
      *
-     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 17.04.2020
      */
-    static function error500($title, $meta = [])
+    public static function error500($title, $meta = []): array
     {
         return self::error('500 Internal Server Error', 'danger', $title, $meta);
     }
@@ -135,11 +142,12 @@ class Response
      *
      * @return array
      *
-     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      * @author  Евгений Кулагин <ekulagin59@gmail.com>
+     *
+     * @version 17.04.2020
      */
-    static function error($status, $code, $title, $meta = [])
+    public static function error($status, $code, $title, $meta = []): array
     {
         $error = [
             'status' => empty($status) ? '500 Internal Server Error' : $status,
@@ -161,6 +169,8 @@ class Response
     /**
      * Сгенерируем несколько ошибок
      *
+     * @deprecated Метод будет удалён в v2.0
+     *
      * @param array $errors Массив ошибок
      *
      * @return array
@@ -168,35 +178,35 @@ class Response
      * @version 17.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    static function errors($errors)
+    public static function errors($errors): array
     {
         if (empty($errors)) {
             return self::error500('Ошибка при выполнении запроса');
-        } else {
-            $many_errors = [];
-
-            foreach ($errors as $error) {
-                if (isset($error['errors']) && is_array($error['errors']) && !empty($error['errors'])) {
-                    $error = $error['errors'][0];
-
-                    $one_error = [
-                        'status' => empty($error['status']) ? '500 Internal Server Error' : $error['status'],
-                        'code'   => empty($error['code']) ? 'danger' : $error['code'],
-                        'title'  => empty($error['title']) ? 'Ошибка при выполнении запроса' : $error['title'],
-                    ];
-
-                    if (!empty($error['meta'])) {
-                        $one_error['meta'] = $error['meta'];
-                    }
-
-                    $many_errors[] = $one_error;
-                }
-            }
-
-            return [
-                'errors' => $many_errors,
-            ];
         }
+
+        $many_errors = [];
+
+        foreach ($errors as $error) {
+            if (isset($error['errors']) && is_array($error['errors']) && !empty($error['errors'])) {
+                $error = $error['errors'][0];
+
+                $one_error = [
+                    'status' => empty($error['status']) ? '500 Internal Server Error' : $error['status'],
+                    'code'   => empty($error['code']) ? 'danger' : $error['code'],
+                    'title'  => empty($error['title']) ? 'Ошибка при выполнении запроса' : $error['title'],
+                ];
+
+                if (!empty($error['meta'])) {
+                    $one_error['meta'] = $error['meta'];
+                }
+
+                $many_errors[] = $one_error;
+            }
+        }
+
+        return [
+            'errors' => $many_errors,
+        ];
     }
 
     /**
@@ -207,9 +217,10 @@ class Response
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 24.09.2019
+     *
+     * @version 17.04.2020
      */
-    static function exception($e)
+    public static function exception($e): array
     {
         $error_method = 'error500';
 
