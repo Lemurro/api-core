@@ -60,6 +60,11 @@ auth_code_check:
   controller: '\Lemurro\Api\Core\Auth\Code\ControllerCheck'
   methods: [POST, OPTIONS]
 
+auth_keys_get:
+  path: /auth/keys
+  controller: '\Lemurro\Api\Core\Auth\ControllerGetKeys'
+  methods: [GET, OPTIONS]
+
 # /file
 
 file_upload:
