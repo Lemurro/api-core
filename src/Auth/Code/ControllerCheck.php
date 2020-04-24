@@ -2,8 +2,9 @@
 /**
  * Проверка кода аутентификации
  *
- * @version 10.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 24.04.2020
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
@@ -20,15 +21,17 @@ class ControllerCheck extends Controller
     /**
      * Стартовый метод
      *
-     * @version 10.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 24.04.2020
      */
     public function start()
     {
         $this->response->setData((new ActionCheck($this->dic))->run(
             $this->request->get('auth_id'),
             $this->request->get('auth_code'),
-            $this->request->get('device_info')
+            $this->request->get('device_info'),
+            $this->request->get('geoip')
         ));
         $this->response->send();
     }

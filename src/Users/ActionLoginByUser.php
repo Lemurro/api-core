@@ -2,8 +2,9 @@
 /**
  * Вход под указанным пользователем
  *
- * @version 03.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 24.04.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -28,21 +29,22 @@ class ActionLoginByUser extends Action
      *
      * @return array
      *
-     * @version 03.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 24.04.2020
      */
-    public function run($user_id)
+    public function run($user_id): array
     {
         $user = (new ActionGet($this->dic))->run($user_id);
         if (isset($user['errors'])) {
             return $user;
         }
 
-        if ($user_id == 1) {
+        if ((int)$user_id === 1) {
             return Response::error403('Входить под пользователем с id=1 запрещено', false);
         }
 
-        if ($user['data']['locked'] == 1) {
+        if ((int)$user['data']['locked'] === 1) {
             return Response::error403('Пользователь заблокирован и недоступен для входа', false);
         }
 
@@ -52,6 +54,7 @@ class ActionLoginByUser extends Action
         $session = ORM::for_table('sessions')->create();
         $session->session = $secret;
         $session->user_id = $user_id;
+        $session->admin_entered = 1;
         $session->created_at = $created_at;
         $session->checked_at = $created_at;
 
@@ -61,12 +64,12 @@ class ActionLoginByUser extends Action
 
         $session->save();
 
-        if (is_object($session) AND isset($session->id)) {
+        if (is_object($session) && isset($session->id)) {
             return Response::data([
                 'session' => $secret,
             ]);
-        } else {
-            return Response::error500('Произошла ошибка при аутентификации, попробуйте ещё раз');
         }
+
+        return Response::error500('Произошла ошибка при аутентификации, попробуйте ещё раз');
     }
 }
