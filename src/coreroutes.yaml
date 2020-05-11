@@ -1,4 +1,4 @@
-# main
+# general
 
 root:
   path: /
@@ -10,7 +10,7 @@ jserrors:
   controller: '\Lemurro\Api\Core\JSErr\ControllerReciever'
   methods: [GET, OPTIONS]
 
-# access_sets
+# /access_sets
 
 access_sets_index:
   path: /access_sets
@@ -115,12 +115,26 @@ guide_remove:
   requirements:
     id: '\d+'
 
-# /users
+# /profile
 
-users_get_me:
+profile_index:
+  path: /profile
+  controller: '\Lemurro\Api\Core\Profile\ControllerIndex'
+  methods: [GET, OPTIONS]
+
+profile_session_reset:
+  path: /profile/session/reset
+  controller: '\Lemurro\Api\Core\Profile\Session\ControllerReset'
+  methods: [POST, OPTIONS]
+
+# /user
+
+user_get_me:
   path: /user
   controller: '\Lemurro\Api\Core\Users\ControllerGetMe'
   methods: [GET, OPTIONS]
+
+# /users
 
 users_index:
   path: /users
