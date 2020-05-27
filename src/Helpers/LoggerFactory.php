@@ -1,14 +1,17 @@
 <?php
+
 /**
  * Фабрика создания логгеров Monolog
  *
- * @version 31.01.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 27.05.2020
  */
 
 namespace Lemurro\Api\Core\Helpers;
 
 use Lemurro\Api\App\Configs\SettingsPath;
+use Lemurro\Api\Core\Helpers\File\FileNameCleaner;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 
@@ -26,11 +29,19 @@ class LoggerFactory
      *
      * @return Logger
      *
-     * @version 31.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 27.05.2020
      */
-    static function create($name)
+    public static function create($name)
     {
+        $name = FileNameCleaner::clean((string) $name);
+        $name = trim($name);
+
+        if (empty($name)) {
+            $name = 'Main';
+        }
+
         $logger = new Logger($name);
         $filename = SettingsPath::LOGS . mb_strtolower($name, 'UTF-8') . '.log';
         $handler = new RotatingFileHandler($filename);
