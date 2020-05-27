@@ -1,11 +1,12 @@
 <?php
+
 /**
  * Генератор ответа
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  * @author  Евгений Кулагин <ekulagin59@gmail.com>
  *
- * @version 17.04.2020
+ * @version 27.05.2020
  */
 
 namespace Lemurro\Api\Core\Helpers;
@@ -237,5 +238,22 @@ class Response
         }
 
         return self::$error_method($e->getMessage());
+    }
+
+    /**
+     * Сгенерируем ошибку некорректных данных
+     *
+     * @param string $title Краткое, понятное для человека описание проблемы
+     * @param array  $meta  Массив дополнительных данных об ошибке для приложения
+     *
+     * @return array
+     *
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 27.05.2020
+     */
+    public static function invalidData($title = 'Некорректные входные данные', $meta = []): array
+    {
+        return self::error400($title, $meta);
     }
 }
