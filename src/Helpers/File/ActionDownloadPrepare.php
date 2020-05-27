@@ -1,16 +1,18 @@
 <?php
+
 /**
  * Подготовка файла к скачиванию
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 15.01.2020
+ *
+ * @version 27.05.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\App\Configs\SettingsFile;
-use Lemurro\Api\Core\Helpers\Response;
 use Lemurro\Api\Core\Abstracts\Action;
+use Lemurro\Api\Core\Helpers\Response;
 
 /**
  * Class ActionDownloadPrepare
@@ -133,7 +135,8 @@ class ActionDownloadPrepare extends Action
      * @return string
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.01.2020
+     *
+     * @version 27.05.2020
      */
     private function getFilename($orig_filename, $new_filename)
     {
@@ -143,30 +146,9 @@ class ActionDownloadPrepare extends Action
             $name = pathinfo($orig_filename, PATHINFO_FILENAME);
         }
 
-        $name = $this->cleanFilename($name);
+        $name = FileNameCleaner::clean($name);
         $ext = pathinfo($orig_filename, PATHINFO_EXTENSION);
 
         return $name . '.' . $ext;
-    }
-
-    /**
-     * Очистим имя файла
-     *
-     * @param string $name Имя файла (без расширения)
-     *
-     * @return string
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.01.2020
-     */
-    private function cleanFilename($name)
-    {
-        // Обрезаем специальные символы :"<>*?|\/
-        $name = preg_replace('/[:"<>*?|\\\\\/]/', '', $name);
-
-        // Обрезаем длину до 100 символов
-        $name = mb_substr($name, 0, 100, 'UTF-8');
-
-        return $name;
     }
 }
