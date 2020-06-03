@@ -1,9 +1,11 @@
 <?php
+
 /**
  * Получение кода аутентификации
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 23.12.2019
+ *
+ * @version 03.06.2020
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
@@ -96,7 +98,8 @@ class ActionGet extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 23.12.2019
+     *
+     * @version 03.06.2020
      */
     public function run($auth_id)
     {
@@ -119,8 +122,10 @@ class ActionGet extends Action
         }
 
         if ($user['locked'] == 1) {
-            return Response::error403('Пользователь заблокирован и недоступен для входа, пожалуйста обратитесь к администратору',
-                false);
+            return Response::error403(
+                'Пользователь заблокирован и недоступен для входа, пожалуйста обратитесь к администратору',
+                false
+            );
         }
 
         $this->auth_id = $user['auth_id'];
@@ -146,36 +151,37 @@ class ActionGet extends Action
         $auth_code->user_id = $user['id'];
         $auth_code->created_at = $this->dic['datetimenow'];
         $auth_code->save();
-        if (is_object($auth_code)) {
-            if (SettingsGeneral::PRODUCTION) {
-                switch (SettingsAuth::TYPE) {
-                    case 'email':
-                        return $this->sendEmail();
-                        break;
 
-                    case 'phone':
-                        return $this->sendSms();
-                        break;
-
-                    case 'mixed':
-                        if ($this->phone_validator->isPhone($this->auth_id)) {
-                            return $this->sendSms();
-                        } else {
-                            return $this->sendEmail();
-                        }
-                        break;
-
-                    default:
-                        return Response::error400('Неверный вид аутентификации, проверьте настройки');
-                        break;
-                }
-            } else {
-                return Response::data([
-                    'message' => $this->secret,
-                ]);
-            }
-        } else {
+        if (!is_object($auth_code)) {
             return Response::error500('Произошла ошибка при создании кода, попробуйте ещё раз');
+        }
+
+        if (!SettingsGeneral::PRODUCTION) {
+            return Response::data([
+                'message' => $this->secret,
+            ]);
+        }
+
+        switch (SettingsAuth::TYPE) {
+            case 'email':
+                return $this->sendEmail();
+                break;
+
+            case 'phone':
+                return $this->sendSms();
+                break;
+
+            case 'mixed':
+                if ($this->phone_validator->isPhone($this->auth_id)) {
+                    return $this->sendSms();
+                } else {
+                    return $this->sendEmail();
+                }
+                break;
+
+            default:
+                return Response::error400('Неверный вид аутентификации, проверьте настройки');
+                break;
         }
     }
 
@@ -185,11 +191,12 @@ class ActionGet extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 24.10.2019
+     *
+     * @version 03.06.2020
      */
     protected function sendEmail()
     {
-        $result = $this->mailer->send(
+        $this->mailer->send(
             'AUTH_CODE',
             'Код для входа в приложение для пользователя: ' . $this->auth_id,
             [
@@ -201,13 +208,9 @@ class ActionGet extends Action
             ]
         );
 
-        if ($result) {
-            return Response::data([
-                'message' => 'Письмо, с кодом для входа, успешно отправлено на указанную электронную почту',
-            ]);
-        } else {
-            return Response::error500('Произошла ошибка при отправке кода, попробуйте ещё раз');
-        }
+        return Response::data([
+            'message' => 'Письмо, с кодом для входа, успешно отправлено на указанную электронную почту',
+        ]);
     }
 
     /**
@@ -216,21 +219,18 @@ class ActionGet extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 24.10.2019
+     *
+     * @version 03.06.2020
      */
     protected function sendSms()
     {
-        $result = $this->sms->send(
+        $this->sms->send(
             $this->auth_id,
             'Код для входа: ' . $this->secret . ', ' . SettingsGeneral::APP_NAME
         );
 
-        if ($result) {
-            return Response::data([
-                'message' => 'СМС, с кодом для входа, отправлено на указанный номер телефона',
-            ]);
-        } else {
-            return Response::error500('Произошла ошибка при отправке кода, попробуйте ещё раз');
-        }
+        return Response::data([
+            'message' => 'СМС, с кодом для входа, отправлено на указанный номер телефона',
+        ]);
     }
 }
