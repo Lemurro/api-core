@@ -30,7 +30,7 @@
     "monolog/monolog": "1.24.*",
     "nesbot/carbon": "2.18.*",
     "php": ">=7.0.0",
-    "phpmailer/phpmailer": "6.0.*",
+    "phpmailer/phpmailer": "6.1.*",
     "pimple/pimple": "3.2.*",
     "symfony/http-foundation": "4.3.*",
     "symfony/http-kernel": "4.3.*",
