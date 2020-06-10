@@ -10,6 +10,7 @@
 
 namespace Lemurro\Api\Core\Auth\Code;
 
+use Carbon\Carbon;
 use Exception;
 use Lemurro\Api\App\Configs\SettingsAuth;
 use Lemurro\Api\App\Configs\SettingsGeneral;
@@ -138,6 +139,7 @@ class ActionGet extends Action
             $this->auth_id = $user['auth_id'];
             $this->user_id = $user['id'];
 
+            $this->bruteForceProtection();
             $this->generateCode();
             $this->saveCode();
         } catch (Exception $e) {
@@ -181,6 +183,44 @@ class ActionGet extends Action
         }
 
         return $insert_user['data'];
+    }
+
+    /**
+     * Защита от брутфорса
+     *
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 10.06.2020
+     */
+    private function bruteForceProtection(): void
+    {
+        $dt = Carbon::now();
+
+        $count = ORM::for_table('auth_codes_lasts')
+            ->where_equal('user_id', $this->user_id)
+            ->where_gte('created_at', $dt->clone()->subDay()->toDateTimeString())
+            ->count();
+        if ($count <= SettingsAuth::ATTEMPTS_PER_DAY) {
+            return;
+        }
+
+        $count = ORM::for_table('auth_codes_lasts')
+            ->where_equal('user_id', $this->user_id)
+            ->where_gte('created_at', $dt->clone()->subHour()->toDateTimeString())
+            ->count();
+        if ($count <= SettingsAuth::ATTEMPTS_PER_HOUR) {
+            return;
+        }
+
+        $count = ORM::for_table('auth_codes_lasts')
+            ->where_equal('user_id', $this->user_id)
+            ->where_gte('created_at', $dt->clone()->subMinute()->toDateTimeString())
+            ->count();
+        if ($count <= SettingsAuth::ATTEMPTS_PER_MINUTE) {
+            return;
+        }
+
+        throw new RuntimeException('Попытка брутфорса', 403);
     }
 
     /**
@@ -235,15 +275,26 @@ class ActionGet extends Action
      */
     private function saveCode(): void
     {
-        $auth_code = ORM::for_table('auth_codes')->create();
-        $auth_code->auth_id = $this->auth_id;
-        $auth_code->code = $this->secret;
-        $auth_code->user_id = $this->user_id;
-        $auth_code->created_at = $this->datetimenow;
-        $auth_code->save();
+        try {
+            ORM::get_db()->beginTransaction();
 
-        if (!is_object($auth_code)) {
-            throw new RuntimeException('Произошла ошибка при создании кода', 500);
+            $auth_code = ORM::for_table('auth_codes')->create();
+            $auth_code->auth_id = $this->auth_id;
+            $auth_code->code = $this->secret;
+            $auth_code->user_id = $this->user_id;
+            $auth_code->created_at = $this->datetimenow;
+            $auth_code->save();
+
+            $auth_code_last = ORM::for_table('auth_codes_lasts')->create();
+            $auth_code_last->user_id = $this->user_id;
+            $auth_code_last->created_at = $this->datetimenow;
+            $auth_code_last->save();
+
+            ORM::get_db()->commit();
+        } catch (Exception $e) {
+            ORM::get_db()->rollBack();
+
+            throw new RuntimeException('Произошла ошибка при сохранении в БД', 500, $e);
         }
     }
 
