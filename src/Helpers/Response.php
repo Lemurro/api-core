@@ -6,12 +6,13 @@
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  * @author  Евгений Кулагин <ekulagin59@gmail.com>
  *
- * @version 27.05.2020
+ * @version 16.06.2020
  */
 
 namespace Lemurro\Api\Core\Helpers;
 
 use Exception;
+use RuntimeException;
 
 /**
  * Class Response
@@ -255,5 +256,31 @@ class Response
     public static function invalidData($title = 'Некорректные входные данные', $meta = []): array
     {
         return self::error400($title, $meta);
+    }
+
+    /**
+     * Превратим ошибку в RuntimeException
+     *
+     * @param array $errors Результат от методов error*
+     *
+     * @throws RuntimeException
+     *
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 16.06.2020
+     */
+    public static function errorToException($errors): array
+    {
+        $one_error = $errors['errors'][0];
+
+        preg_match_all('/^\d{3}/', $one_error['status'], $matches);
+
+        if (is_array($matches) && isset($matches[0]) && isset($matches[0][0])) {
+            $code = $matches[0][0];
+        } else {
+            $code = 500;
+        }
+
+        throw new RuntimeException($one_error['title'], $code);
     }
 }
