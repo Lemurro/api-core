@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 10.06.2020
+ * @version 17.06.2020
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
@@ -190,37 +190,19 @@ class ActionGet extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 10.06.2020
+     * @version 17.06.2020
      */
     private function bruteForceProtection(): void
     {
-        $dt = Carbon::now();
+        $lastday = Carbon::now()->subDay()->toDateTimeString();
 
         $count = ORM::for_table('auth_codes_lasts')
             ->where_equal('user_id', $this->user_id)
-            ->where_gte('created_at', $dt->clone()->subDay()->toDateTimeString())
+            ->where_gte('created_at', $lastday)
             ->count();
-        if ($count <= SettingsAuth::ATTEMPTS_PER_DAY) {
-            return;
+        if ($count >= SettingsAuth::ATTEMPTS_PER_DAY) {
+            throw new RuntimeException('Попытка брутфорса (user_id: ' . $this->user_id . ')', 403);
         }
-
-        $count = ORM::for_table('auth_codes_lasts')
-            ->where_equal('user_id', $this->user_id)
-            ->where_gte('created_at', $dt->clone()->subHour()->toDateTimeString())
-            ->count();
-        if ($count <= SettingsAuth::ATTEMPTS_PER_HOUR) {
-            return;
-        }
-
-        $count = ORM::for_table('auth_codes_lasts')
-            ->where_equal('user_id', $this->user_id)
-            ->where_gte('created_at', $dt->clone()->subMinute()->toDateTimeString())
-            ->count();
-        if ($count <= SettingsAuth::ATTEMPTS_PER_MINUTE) {
-            return;
-        }
-
-        throw new RuntimeException('Попытка брутфорса', 403);
     }
 
     /**
@@ -271,7 +253,7 @@ class ActionGet extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 10.06.2020
+     * @version 17.06.2020
      */
     private function saveCode(): void
     {
@@ -294,7 +276,9 @@ class ActionGet extends Action
         } catch (Exception $e) {
             ORM::get_db()->rollBack();
 
-            throw new RuntimeException('Произошла ошибка при сохранении в БД', 500, $e);
+            LogException::write($this->log, $e);
+
+            throw new RuntimeException('Произошла ошибка при сохранении в БД', 500);
         }
     }
 
