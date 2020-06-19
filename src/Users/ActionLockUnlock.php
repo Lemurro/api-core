@@ -1,9 +1,11 @@
 <?php
+
 /**
  * Заблокировать \ Разблокировать пользователя
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 19.11.2019
+ *
+ * @version 19.06.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -30,7 +32,8 @@ class ActionLockUnlock extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
+     *
+     * @version 19.06.2020
      */
     public function run($id, $locked)
     {
@@ -43,7 +46,7 @@ class ActionLockUnlock extends Action
             }
 
             $user_info = (new ActionGet($this->dic))->run($id);
-            if (isset($user_info['errors'])) {
+            if (!$user_info['success']) {
                 return $user_info;
             }
 

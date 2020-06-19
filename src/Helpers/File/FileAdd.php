@@ -1,9 +1,11 @@
 <?php
+
 /**
  * Переносим файл в постоянное хранилище и добавляем в базу
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 15.01.2020
+ *
+ * @version 19.06.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -43,14 +45,15 @@ class FileAdd extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.01.2020
+     *
+     * @version 19.06.2020
      */
     public function run($file_name, $orig_name, $container_type = 'default', $container_id = null)
     {
         $this->log = $this->dic['log'];
 
         $move_result = $this->moveToStorage($file_name);
-        if (isset($move_result['errors'])) {
+        if (!$move_result['success']) {
             return $move_result;
         }
 

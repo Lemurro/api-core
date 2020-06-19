@@ -1,9 +1,11 @@
 <?php
+
 /**
  * Манипуляции с файлами (добавление и удаление)
  *
- * @version 06.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 19.06.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -26,8 +28,9 @@ class FileManipulate extends Action
      *
      * @return array
      *
-     * @version 06.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 19.06.2020
      */
     public function run($files, $container_type = 'default', $container_id = null)
     {
@@ -48,7 +51,7 @@ class FileManipulate extends Action
                             $container_id
                         );
 
-                        if (isset($result['errors'])) {
+                        if (!$result['success']) {
                             $files_errors[] = array_merge($file, $result);
                         } else {
                             $files_ids[] = $result['data']['id'];
@@ -58,7 +61,7 @@ class FileManipulate extends Action
                     case 'remove':
                         $result = $file_remove->run($file['file_id']);
 
-                        if (isset($result['errors'])) {
+                        if (!$result['success']) {
                             $files_ids[] = $file['file_id'];
                             $files_errors[] = array_merge($file, $result);
                         }
@@ -72,8 +75,8 @@ class FileManipulate extends Action
         }
 
         return [
-            'ids'            => $files_ids,
-            'errors'         => $files_errors,
+            'ids' => $files_ids,
+            'errors' => $files_errors,
             'class_file_add' => $file_add,
         ];
     }
