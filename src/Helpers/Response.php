@@ -272,10 +272,14 @@ class Response
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 16.06.2020
+     * @version 19.06.2020
      */
     public static function errorToException($errors): array
     {
+        if ($errors['success']) {
+            return;
+        }
+
         $one_error = $errors['errors'][0];
 
         preg_match_all('/^\d{3}/', $one_error['status'], $matches);
