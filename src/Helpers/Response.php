@@ -6,7 +6,7 @@
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  * @author  Евгений Кулагин <ekulagin59@gmail.com>
  *
- * @version 16.06.2020
+ * @version 19.06.2020
  */
 
 namespace Lemurro\Api\Core\Helpers;
@@ -31,17 +31,19 @@ class Response
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      * @author  Евгений Кулагин <ekulagin59@gmail.com>
      *
-     * @version 17.04.2020
+     * @version 19.06.2020
      */
     public static function data($data): array
     {
         if (empty($data)) {
             return [
+                'success' => true,
                 'data' => [],
             ];
         }
 
         return [
+            'success' => true,
             'data' => $data,
         ];
     }
@@ -147,7 +149,7 @@ class Response
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      * @author  Евгений Кулагин <ekulagin59@gmail.com>
      *
-     * @version 17.04.2020
+     * @version 19.06.2020
      */
     public static function error($status, $code, $title, $meta = []): array
     {
@@ -162,6 +164,7 @@ class Response
         }
 
         return [
+            'success' => false,
             'errors' => [
                 $error,
             ],
@@ -177,8 +180,9 @@ class Response
      *
      * @return array
      *
-     * @version 17.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 19.06.2019
      */
     public static function errors($errors): array
     {
@@ -207,6 +211,7 @@ class Response
         }
 
         return [
+            'success' => false,
             'errors' => $many_errors,
         ];
     }
