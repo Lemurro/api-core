@@ -274,7 +274,7 @@ class Response
      *
      * @version 19.06.2020
      */
-    public static function errorToException($errors): array
+    public static function errorToException($errors): void
     {
         if ($errors['success']) {
             return;
