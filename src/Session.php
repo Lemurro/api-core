@@ -3,7 +3,8 @@
  * Проверка валидности сессии
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 15.10.2019
+ *
+ * @version 30.07.2020
  */
 
 namespace Lemurro\Api\Core;
@@ -28,20 +29,21 @@ class Session
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.10.2019
+     *
+     * @version 30.07.2020
      */
     public function check($session_id)
     {
+        if (empty($session_id)) {
+            return Response::error401('Необходимо авторизоваться [#1]');
+        }
+
         $now = Carbon::now('UTC');
         $checked_at = $now->toDateTimeString();
 
         ORM::for_table('sessions')
             ->where_lt('checked_at', $now->subDays(SettingsAuth::SESSIONS_OLDER_THAN))
             ->delete_many();
-
-        if (empty($session_id)) {
-            return Response::error401('Необходимо авторизоваться');
-        }
 
         $session = ORM::for_table('sessions')
             ->where_equal('session', $session_id)
@@ -50,7 +52,7 @@ class Session
             if (SettingsAuth::SESSIONS_BINDING_TO_IP && $session->ip !== $_SERVER['REMOTE_ADDR']) {
                 $session->delete();
 
-                return Response::error401('Необходимо авторизоваться');
+                return Response::error401('Необходимо авторизоваться [#2]');
             }
 
             $session->checked_at = $checked_at;
@@ -58,7 +60,7 @@ class Session
 
             return $session->as_array();
         } else {
-            return Response::error401('Необходимо авторизоваться');
+            return Response::error401('Необходимо авторизоваться [#3]');
         }
     }
 }
