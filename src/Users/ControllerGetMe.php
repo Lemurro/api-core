@@ -32,7 +32,7 @@ class ControllerGetMe extends Controller
         if (is_array($user_info) && count($user_info) > 0) {
             $this->response->setData((new RunAfterGet($this->dic))->run($user_info));
         } else {
-            $this->response->setData(Response::error401('Необходимо авторизоваться'));
+            $this->response->setData(Response::error401('Необходимо авторизоваться [#4]'));
         }
 
         $this->response->send();
