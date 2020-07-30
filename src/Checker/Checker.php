@@ -1,11 +1,9 @@
 <?php
-
 /**
  * Какие-либо проверки перед запуском контроллера маршрута
  *
+ * @version 29.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- *
- * @version 19.06.2020
  */
 
 namespace Lemurro\Api\Core\Checker;
@@ -26,9 +24,8 @@ class Checker extends Action
      *
      * @return array
      *
+     * @version 29.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 19.06.2020
      */
     public function run($checks)
     {
@@ -50,7 +47,7 @@ class Checker extends Action
                         break;
                 }
 
-                if (!$check_result['success']) {
+                if (isset($check_result['errors'])) {
                     return $check_result;
                 }
             }

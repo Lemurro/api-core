@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Вход под указанным пользователем
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 19.06.2020
+ * @version 24.04.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -32,20 +31,20 @@ class ActionLoginByUser extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 19.06.2020
+     * @version 24.04.2020
      */
     public function run($user_id): array
     {
         $user = (new ActionGet($this->dic))->run($user_id);
-        if (!$user['success']) {
+        if (isset($user['errors'])) {
             return $user;
         }
 
-        if ((int) $user_id === 1) {
+        if ((int)$user_id === 1) {
             return Response::error403('Входить под пользователем с id=1 запрещено', false);
         }
 
-        if ((int) $user['data']['locked'] === 1) {
+        if ((int)$user['data']['locked'] === 1) {
             return Response::error403('Пользователь заблокирован и недоступен для входа', false);
         }
 
