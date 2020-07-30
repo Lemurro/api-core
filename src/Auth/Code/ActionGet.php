@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 17.06.2020
+ * @version 30.07.2020
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
@@ -160,7 +160,7 @@ class ActionGet extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 10.06.2020
+     * @version 30.07.2020
      */
     private function findUser($auth_id): array
     {
@@ -179,7 +179,7 @@ class ActionGet extends Action
         ]);
 
         if (isset($insert_user['errors'])) {
-            throw new RuntimeException($insert_user['errors'][0]['title'], 500);
+            Response::errorToException($insert_user);
         }
 
         return $insert_user['data'];
