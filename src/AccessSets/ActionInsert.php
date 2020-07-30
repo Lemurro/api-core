@@ -1,11 +1,9 @@
 <?php
-
 /**
  * Добавление
  *
+ * @version 05.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- *
- * @version 19.06.2020
  */
 
 namespace Lemurro\Api\Core\AccessSets;
@@ -29,14 +27,13 @@ class ActionInsert extends Action
      *
      * @return array
      *
+     * @version 05.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 19.06.2020
      */
     public function run($data)
     {
         $exist = Exist::check(0, $data['name']);
-        if (!$exist['success']) {
+        if (isset($exist['errors'])) {
             return $exist;
         }
 

@@ -1,11 +1,9 @@
 <?php
-
 /**
  * Скачивание файла
  *
+ * @version 26.07.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- *
- * @version 19.06.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -24,15 +22,14 @@ class ControllerDownloadRun extends Controller
     /**
      * Стартовый метод
      *
+     * @version 26.07.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 19.06.2020
      */
     public function start()
     {
         $file_info = (new ActionDownloadRun($this->dic))->run($this->request->get('token'));
 
-        if (!$file_info['success']) {
+        if (isset($file_info['errors'])) {
             $this->response->setData($file_info);
             $this->response->send();
         }

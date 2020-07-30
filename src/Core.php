@@ -1,11 +1,9 @@
 <?php
-
 /**
  * Инициализация приложения
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- *
- * @version 19.06.2020
+ * @version 20.12.2019
  */
 
 namespace Lemurro\Api\Core;
@@ -170,8 +168,7 @@ class Core
      * Инициализация DIC
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 19.06.2020
+     * @version 02.08.2019
      */
     protected function initDIC()
     {
@@ -182,16 +179,18 @@ class Core
 
         $this->dic['user'] = function ($c) {
             $result_session_check = (new Session())->check($c['session_id']);
-            if ($result_session_check['success']) {
+            if (isset($result_session_check['errors'])) {
+                return [];
+            } else {
                 $user_info = (new GetUser($c))->run($result_session_check['user_id']);
-                if ($user_info['success']) {
+                if (isset($user_info['data'])) {
                     $user_info['data']['admin'] = (isset($user_info['data']['roles']['admin']) ? true : false);
 
                     return $user_info['data'];
+                } else {
+                    return [];
                 }
             }
-
-            return [];
         };
     }
 
