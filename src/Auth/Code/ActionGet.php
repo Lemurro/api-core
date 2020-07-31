@@ -5,13 +5,12 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 30.07.2020
+ * @version 31.07.2020
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
 
 use Carbon\Carbon;
-use Exception;
 use Lemurro\Api\App\Configs\SettingsAuth;
 use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\Core\Abstracts\Action;
@@ -28,6 +27,7 @@ use Monolog\Logger;
 use ORM;
 use Pimple\Container;
 use RuntimeException;
+use Throwable;
 
 /**
  * Class ActionGet
@@ -123,7 +123,7 @@ class ActionGet extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 10.06.2020
+     * @version 31.07.2020
      */
     public function run($auth_id): array
     {
@@ -142,8 +142,8 @@ class ActionGet extends Action
             $this->bruteForceProtection();
             $this->generateCode();
             $this->saveCode();
-        } catch (Exception $e) {
-            LogException::write($this->log, $e);
+        } catch (Throwable $t) {
+            LogException::write($this->log, $t);
 
             return Response::error500('При получении кода произошла ошибка, пожалуйста обратитесь к администратору');
         }
@@ -253,7 +253,7 @@ class ActionGet extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 17.06.2020
+     * @version 31.07.2020
      */
     private function saveCode(): void
     {
@@ -273,10 +273,10 @@ class ActionGet extends Action
             $auth_code_last->save();
 
             ORM::get_db()->commit();
-        } catch (Exception $e) {
+        } catch (Throwable $t) {
             ORM::get_db()->rollBack();
 
-            LogException::write($this->log, $e);
+            LogException::write($this->log, $t);
 
             throw new RuntimeException('Произошла ошибка при сохранении в БД', 500);
         }

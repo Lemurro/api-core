@@ -1,14 +1,15 @@
 <?php
+
 /**
  * Инициализация приложения
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 20.12.2019
+ *
+ * @version 31.07.2020
  */
 
 namespace Lemurro\Api\Core;
 
-use Exception;
 use Lemurro\Api\App\Configs\SettingsMaintenance;
 use Lemurro\Api\App\Configs\SettingsPath;
 use Lemurro\Api\App\Overrides\DIC as AppDIC;
@@ -29,6 +30,7 @@ use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Loader\YamlFileLoader;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
+use Throwable;
 
 /**
  * Class Core
@@ -84,7 +86,8 @@ class Core
      * Старт
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 21.11.2019
+     *
+     * @version 31.07.2020
      */
     public function start()
     {
@@ -125,8 +128,8 @@ class Core
 
             $this->response->setData(Response::error400('Неверный метод маршрута'));
             $this->response->send();
-        } catch (Exception $e) {
-            LogException::write($this->core_log, $e);
+        } catch (Throwable $t) {
+            LogException::write($this->core_log, $t);
 
             $this->response->setData(Response::error500('Непредвиденная ошибка,<br>подробности в лог-файле'));
             $this->response->send();

@@ -1,22 +1,25 @@
 <?php
+
 /**
  * Инициализация Jobby
  *
- * @version 23.08.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 31.07.2020
  */
 
 namespace Lemurro\Api\Core\Cron;
 
-use Exception;
 use Jobby\Jobby as JobbyJobby;
 use Lemurro\Api\App\Configs\SettingsCron;
 use Lemurro\Api\App\Configs\SettingsMail;
 use Lemurro\Api\Core\Helpers\Console;
 use Lemurro\Api\Core\Helpers\File\FileOlderFiles;
 use Lemurro\Api\Core\Helpers\File\FileOlderTokens;
+use Lemurro\Api\Core\Helpers\LogException;
 use Lemurro\Api\Core\Helpers\LoggerFactory;
 use Monolog\Logger;
+use Throwable;
 
 /**
  * Class Jobby
@@ -87,8 +90,9 @@ class Jobby
     /**
      * Очистим устаревшие токены для скачивания
      *
-     * @version 23.08.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 31.07.2020
      */
     protected function fileOlderTokens()
     {
@@ -104,16 +108,17 @@ class Jobby
                     return true;
                 },
             ]);
-        } catch (Exception $e) {
-            $this->log->error($e->getFile() . '(' . $e->getLine() . '): ' . $e->getMessage());
+        } catch (Throwable $t) {
+            LogException::write($this->log, $t);
         }
     }
 
     /**
      * Очистим устаревшие файлы во временном каталоге
      *
-     * @version 23.08.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 31.07.2020
      */
     protected function fileOlderFiles()
     {
@@ -127,16 +132,17 @@ class Jobby
                     return true;
                 },
             ]);
-        } catch (Exception $e) {
-            $this->log->error($e->getFile() . '(' . $e->getLine() . '): ' . $e->getMessage());
+        } catch (Throwable $t) {
+            LogException::write($this->log, $t);
         }
     }
 
     /**
      * Ротация таблицы data_change_logs
      *
-     * @version 23.08.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 31.07.2020
      */
     protected function dataChangeLogsRotator()
     {
@@ -153,8 +159,8 @@ class Jobby
                     return true;
                 },
             ]);
-        } catch (Exception $e) {
-            $this->log->error($e->getFile() . '(' . $e->getLine() . '): ' . $e->getMessage());
+        } catch (Throwable $t) {
+            LogException::write($this->log, $t);
         }
     }
 }

@@ -1,20 +1,22 @@
 <?php
+
 /**
  * Удаление пользователя
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 19.11.2019
+ *
+ * @version 31.07.2020
  */
 
 namespace Lemurro\Api\Core\Users;
 
-use Exception;
 use Lemurro\Api\App\RunAfter\Users\Remove as RunAfterRemove;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\LogException;
 use Lemurro\Api\Core\Helpers\Response;
 use ORM;
+use Throwable;
 
 /**
  * Class ActionRemove
@@ -31,7 +33,8 @@ class ActionRemove extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
+     *
+     * @version 31.07.2020
      */
     public function run($id)
     {
@@ -65,10 +68,10 @@ class ActionRemove extends Action
                         ->delete_many();
 
                     ORM::get_db()->commit();
-                } catch (Exception $e) {
+                } catch (Throwable $t) {
                     ORM::get_db()->rollBack();
 
-                    LogException::write($this->dic['log'], $e);
+                    LogException::write($this->dic['log'], $t);
 
                     return Response::error500('Произошла ошибка при удалении пользователя, попробуйте ещё раз');
                 }

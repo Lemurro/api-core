@@ -1,9 +1,11 @@
 <?php
+
 /**
  * Отправка электронных писем
  *
- * @version 16.07.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 31.07.2020
  */
 
 namespace Lemurro\Api\Core\Helpers;
@@ -13,8 +15,8 @@ use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\App\Configs\SettingsMail;
 use Lemurro\Api\App\Configs\SettingsPath;
 use Monolog\Logger;
-use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
+use Throwable;
 
 /**
  * Class Mailer
@@ -82,8 +84,9 @@ class Mailer
      *
      * @return boolean
      *
-     * @version 16.07.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 31.07.2020
      */
     public function send($template_name, $subject, $email_tos, $template_data, $images = [], $files = [])
     {
@@ -144,7 +147,7 @@ class Mailer
                                 if (SettingsMail::RESERVE) {
                                     $this->phpmailer_reserve->addAttachment($filename);
                                 }
-                            } catch (Exception $e) {
+                            } catch (Throwable $t) {
                             }
                         }
                     }
@@ -185,8 +188,8 @@ class Mailer
                     } else {
                         return true;
                     }
-                } catch (Exception $e) {
-                    LogException::write($this->log, $e);
+                } catch (Throwable $t) {
+                    LogException::write($this->log, $t);
                 }
 
                 if (SettingsMail::RESERVE) {
@@ -196,8 +199,8 @@ class Mailer
                         } else {
                             return true;
                         }
-                    } catch (Exception $e) {
-                        LogException::write($this->log, $e);
+                    } catch (Throwable $t) {
+                        LogException::write($this->log, $t);
                     }
                 }
 
