@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 31.07.2020
+ * @version 14.08.2020
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
@@ -289,11 +289,11 @@ class ActionGet extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 10.06.2020
+     * @version 14.08.2020
      */
     private function sendCode(): array
     {
-        if (!SettingsGeneral::PRODUCTION) {
+        if (SettingsGeneral::SERVER_TYPE === SettingsGeneral::SERVER_TYPE_DEV) {
             return Response::data([
                 'message' => $this->secret,
             ]);

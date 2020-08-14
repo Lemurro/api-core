@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 31.07.2020
+ * @version 14.08.2020
  */
 
 namespace Lemurro\Api\Core\Helpers;
@@ -86,13 +86,13 @@ class Mailer
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 31.07.2020
+     * @version 14.08.2020
      */
     public function send($template_name, $subject, $email_tos, $template_data, $images = [], $files = [])
     {
         // Проверяем наличие шаблона
         if (constant('\Lemurro\Api\App\Configs\EmailTemplates::' . $template_name) !== null) {
-            if (SettingsGeneral::PRODUCTION === false AND SettingsMail::SMTP === false) {
+            if (SettingsGeneral::SERVER_TYPE === SettingsGeneral::SERVER_TYPE_DEV AND SettingsMail::SMTP === false) {
                 return true;
             } else {
                 // Очищаемся от старых данных
