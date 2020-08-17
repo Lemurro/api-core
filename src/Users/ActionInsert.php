@@ -1,9 +1,11 @@
 <?php
+
 /**
  * Добавление пользователя
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 19.11.2019
+ *
+ * @version 17.08.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -30,7 +32,8 @@ class ActionInsert extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
+     *
+     * @version 17.08.2020
      */
     public function run($data)
     {
@@ -71,7 +74,7 @@ class ActionInsert extends Action
             if (is_object($new_user_info) && isset($new_user_info->id)) {
                 /** @var DataChangeLog $data_change_log */
                 $data_change_log = $this->dic['datachangelog'];
-                $data_change_log->insert('users', 'insert', $new_user->id, $data);
+                $data_change_log->insert('users', $data_change_log::ACTION_INSERT, $new_user->id, $data);
 
                 $data['id'] = $new_user->id;
                 $data['locked'] = false;

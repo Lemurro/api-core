@@ -1,9 +1,11 @@
 <?php
+
 /**
  * Переносим файл в постоянное хранилище и добавляем в базу
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 15.01.2020
+ *
+ * @version 17.08.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -162,7 +164,8 @@ class FileAdd extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.01.2020
+     *
+     * @version 17.08.2020
      */
     protected function addToDB($file_name, $orig_name, $container_type, $container_id)
     {
@@ -204,7 +207,7 @@ class FileAdd extends Action
 
         /** @var DataChangeLog $datachangelog */
         $datachangelog = $this->dic['datachangelog'];
-        $datachangelog->insert('files', 'insert', $item->id, $data);
+        $datachangelog->insert('files', $datachangelog::ACTION_INSERT, $item->id, $data);
 
         if (isset($this->undo_list[$file_name])) {
             $this->undo_list[$file_name]['id'] = $item->id;

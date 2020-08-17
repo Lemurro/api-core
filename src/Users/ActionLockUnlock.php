@@ -1,9 +1,11 @@
 <?php
+
 /**
  * Заблокировать \ Разблокировать пользователя
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 19.11.2019
+ *
+ * @version 17.08.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -30,7 +32,8 @@ class ActionLockUnlock extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
+     *
+     * @version 17.08.2020
      */
     public function run($id, $locked)
     {
@@ -53,7 +56,7 @@ class ActionLockUnlock extends Action
             if (is_object($user) && isset($user->id)) {
                 /** @var DataChangeLog $data_change_log */
                 $data_change_log = $this->dic['datachangelog'];
-                $data_change_log->insert('users', 'update', $id, $user->as_array());
+                $data_change_log->insert('users', $data_change_log::ACTION_UPDATE, $id, $user->as_array());
 
                 $user_info['data']['locked'] = $locked;
 

@@ -1,9 +1,11 @@
 <?php
+
 /**
  * Добавление
  *
- * @version 05.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 17.08.2020
  */
 
 namespace Lemurro\Api\Core\AccessSets;
@@ -27,8 +29,9 @@ class ActionInsert extends Action
      *
      * @return array
      *
-     * @version 05.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 17.08.2020
      */
     public function run($data)
     {
@@ -52,7 +55,7 @@ class ActionInsert extends Action
 
             /** @var DataChangeLog $data_change_log */
             $data_change_log = $this->dic['datachangelog'];
-            $data_change_log->insert('access_sets', 'insert', $record->id, $result);
+            $data_change_log->insert('access_sets', $data_change_log::ACTION_INSERT, $record->id, $result);
 
             return Response::data($result);
         } else {

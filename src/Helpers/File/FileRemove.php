@@ -1,9 +1,11 @@
 <?php
+
 /**
  * Удаление файла
  *
- * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 17.08.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -54,8 +56,9 @@ class FileRemove extends Action
      *
      * @return array
      *
-     * @version 08.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 17.08.2020
      */
     public function run($fileid)
     {
@@ -82,7 +85,7 @@ class FileRemove extends Action
         if (is_object($info)) {
             /** @var DataChangeLog $datachangelog */
             $datachangelog = $this->dic['datachangelog'];
-            $datachangelog->insert('files', 'delete', $info->id, $info->as_array());
+            $datachangelog->insert('files', $datachangelog::ACTION_DELETE, $info->id, $info->as_array());
 
             if (SettingsFile::FULL_REMOVE) {
                 @unlink($file_path);

@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 31.07.2020
+ * @version 17.08.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -34,7 +34,7 @@ class ActionRemove extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 31.07.2020
+     * @version 17.08.2020
      */
     public function run($id)
     {
@@ -78,7 +78,7 @@ class ActionRemove extends Action
 
                 /** @var DataChangeLog $data_change_log */
                 $data_change_log = $this->dic['datachangelog'];
-                $data_change_log->insert('users', 'delete', $id);
+                $data_change_log->insert('users', $data_change_log::ACTION_DELETE, $id);
 
                 return (new RunAfterRemove($this->dic))->run([
                     'id' => $id,

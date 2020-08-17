@@ -1,9 +1,11 @@
 <?php
+
 /**
  * Удаление
  *
- * @version 05.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 17.08.2020
  */
 
 namespace Lemurro\Api\Core\AccessSets;
@@ -26,8 +28,9 @@ class ActionRemove extends Action
      *
      * @return array
      *
-     * @version 05.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 17.08.2020
      */
     public function run($id)
     {
@@ -41,7 +44,7 @@ class ActionRemove extends Action
         if (is_object($record) && isset($record->id)) {
             /** @var DataChangeLog $data_change_log */
             $data_change_log = $this->dic['datachangelog'];
-            $data_change_log->insert('access_sets', 'delete', $id);
+            $data_change_log->insert('access_sets', $data_change_log::ACTION_DELETE, $id);
 
             return Response::data([
                 'id' => $id,

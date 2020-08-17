@@ -1,9 +1,11 @@
 <?php
+
 /**
  * Изменение пользователя
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 19.11.2019
+ *
+ * @version 17.08.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -31,7 +33,8 @@ class ActionSave extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
+     *
+     * @version 17.08.2020
      */
     public function run($id, $data)
     {
@@ -85,7 +88,7 @@ class ActionSave extends Action
                     if (is_object($info) && isset($info->id)) {
                         /** @var DataChangeLog $data_change_log */
                         $data_change_log = $this->dic['datachangelog'];
-                        $data_change_log->insert('users', 'update', $id, $data);
+                        $data_change_log->insert('users', $data_change_log::ACTION_UPDATE, $id, $data);
 
                         $data['id'] = $id;
                         $data['locked'] = ($user->locked === '1');
