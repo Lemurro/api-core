@@ -1,9 +1,11 @@
 <?php
+
 /**
  * Добавление записи в лог действий
  *
- * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 17.08.2020
  */
 
 namespace Lemurro\Api\Core\Helpers;
@@ -18,6 +20,21 @@ use ORM;
  */
 class DataChangeLog extends Action
 {
+    /**
+     * @var string
+     */
+    public const ACTION_INSERT = 'insert';
+
+    /**
+     * @var string
+     */
+    public const ACTION_UPDATE = 'update';
+
+    /**
+     * @var string
+     */
+    public const ACTION_DELETE = 'delete';
+
     /**
      * Выполним действие
      *
