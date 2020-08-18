@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 17.08.2020
+ * @version 18.08.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -34,7 +34,7 @@ class ActionSave extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 17.08.2020
+     * @version 18.08.2020
      */
     public function run($id, $data)
     {
@@ -57,6 +57,7 @@ class ActionSave extends Action
             if ($id == 1) {
                 $data['auth_id'] = 'lemurro@lemurro';
                 $data['roles'] = ['admin' => 'true'];
+                $data['info_users']['email'] = 'lemurro@lemurro';
                 $data['info_users']['last_name'] = 'Пользователь';
                 $data['info_users']['first_name'] = 'для';
                 $data['info_users']['second_name'] = 'cli-скриптов';
