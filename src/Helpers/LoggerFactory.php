@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 27.05.2020
+ * @version 18.08.2020
  */
 
 namespace Lemurro\Api\Core\Helpers;
@@ -23,28 +23,26 @@ use Monolog\Logger;
 class LoggerFactory
 {
     /**
-     * Создание логгера
-     *
-     * @param string $name Имя логгера (используется также для имени файла)
-     *
-     * @return Logger
-     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 27.05.2020
+     * @version 18.08.2020
      */
-    public static function create($name)
+    public static function create(string $file_name = 'Main', string $channel_name = 'Main'): Logger
     {
-        $name = FileNameCleaner::clean((string) $name);
-        $name = trim($name);
+        $file_name = FileNameCleaner::clean($file_name);
+        $file_name = trim($file_name);
 
-        if (empty($name)) {
-            $name = 'Main';
+        if (empty($file_name)) {
+            $file_name = 'Main';
         }
 
-        $logger = new Logger($name);
-        $filename = SettingsPath::LOGS . mb_strtolower($name, 'UTF-8') . '.log';
-        $handler = new RotatingFileHandler($filename);
+        if (empty($channel_name)) {
+            $channel_name = 'Main';
+        }
+
+        $logger = new Logger($channel_name);
+        $file_path = SettingsPath::LOGS . mb_strtolower($file_name, 'UTF-8') . '.log';
+        $handler = new RotatingFileHandler($file_path);
 
         $handler->setFilenameFormat('{date}-{filename}', 'Y/m/d');
 
