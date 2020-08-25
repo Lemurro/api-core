@@ -1,9 +1,11 @@
 <?php
+
 /**
  * Изменение элемента в справочнике
  *
- * @version 29.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 25.08.2020
  */
 
 namespace Lemurro\Api\Core\Guide;
@@ -20,10 +22,9 @@ use Lemurro\Api\Core\Helpers\Response;
 class ControllerSave extends Controller
 {
     /**
-     * Стартовый метод
-     *
-     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 25.08.2020
      */
     public function start()
     {
@@ -39,10 +40,13 @@ class ControllerSave extends Controller
             if (isset(SettingsGuides::CLASSES[$this->request->get('type')])) {
                 $action = 'Lemurro\\Api\\App\\Guide\\' . SettingsGuides::CLASSES[$this->request->get('type')] . '\\ActionSave';
                 $class = new $action($this->dic);
+
+                $data = json_decode($this->request->get('json'), true, 512, JSON_THROW_ON_ERROR);
+
                 $this->response->setData(call_user_func(
                     [$class, 'run'],
                     $this->request->get('id'),
-                    $this->request->get('data')
+                    $data
                 ));
             } else {
                 $this->response->setData(Response::error404('Неизвестный справочник'));
