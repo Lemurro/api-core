@@ -1,35 +1,31 @@
 <?php
+
 /**
- * Загрузка файла во временный каталог
- *
- * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 09.09.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\Core\Abstracts\Controller;
-use Lemurro\Api\Core\Checker\Checker;
 
 /**
- * Class ControllerUpload
- *
  * @package Lemurro\Api\Core\Helpers\File
  */
 class ControllerUpload extends Controller
 {
     /**
-     * Стартовый метод
-     *
-     * @version 08.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 09.09.2020
      */
     public function start()
     {
         $checker_checks = [
             'auth' => '',
         ];
-        $checker_result = (new Checker($this->dic))->run($checker_checks);
+        $checker_result = $this->checker->run($checker_checks);
         if (count($checker_result) > 0) {
             $this->response->setData($checker_result);
         } else {

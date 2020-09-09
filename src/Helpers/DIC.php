@@ -1,9 +1,11 @@
 <?php
+
 /**
  * Инициализация Dependency Injection Container
  *
- * @version 27.08.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 09.09.2020
  */
 
 namespace Lemurro\Api\Core\Helpers;
@@ -11,27 +13,21 @@ namespace Lemurro\Api\Core\Helpers;
 use Carbon\Carbon;
 use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\App\Configs\SettingsMail;
-use Lemurro\Api\Core\Checker\Checker;
 use Lemurro\Api\Core\Helpers\SMS\SMS;
 use PHPMailer\PHPMailer\PHPMailer;
 use Pimple\Container;
 
 /**
- * Class DIC
- *
  * @package Lemurro\Api\Core\Helpers
  */
 class DIC
 {
     /**
-     * Инициализация
-     *
-     * @return Container
-     *
-     * @version 27.08.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 09.09.2020
      */
-    static function init()
+    static function init(): Container
     {
         $dic = new Container();
 
@@ -99,10 +95,6 @@ class DIC
 
         $dic['log'] = function () {
             return LoggerFactory::create('Main');
-        };
-
-        $dic['checker'] = function ($c) {
-            return new Checker($c);
         };
 
         return $dic;

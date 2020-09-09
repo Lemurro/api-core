@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 25.08.2020
+ * @version 09.09.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -13,8 +13,6 @@ namespace Lemurro\Api\Core\Users;
 use Lemurro\Api\Core\Abstracts\Controller;
 
 /**
- * Class ControllerFilter
- *
  * @package Lemurro\Api\Core\Users
  */
 class ControllerFilter extends Controller
@@ -22,7 +20,7 @@ class ControllerFilter extends Controller
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 25.08.2020
+     * @version 09.09.2020
      */
     public function start()
     {
@@ -30,7 +28,7 @@ class ControllerFilter extends Controller
             'auth' => '',
             'role' => [],
         ];
-        $checker_result = $this->dic['checker']->run($checker_checks);
+        $checker_result = $this->checker->run($checker_checks);
         if (is_array($checker_result) && count($checker_result) == 0) {
             $data = json_decode($this->request->get('json'), true, 512, JSON_THROW_ON_ERROR);
 

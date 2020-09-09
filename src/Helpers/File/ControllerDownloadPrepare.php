@@ -1,35 +1,31 @@
 <?php
+
 /**
- * Подготовка файла к скачиванию
- *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 15.01.2020
+ *
+ * @version 09.09.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\Core\Abstracts\Controller;
-use Lemurro\Api\Core\Checker\Checker;
 
 /**
- * Class ControllerDownloadPrepare
- *
  * @package Lemurro\Api\Core\Helpers\File
  */
 class ControllerDownloadPrepare extends Controller
 {
     /**
-     * Стартовый метод
-     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.01.2020
+     *
+     * @version 09.09.2020
      */
     public function start()
     {
         $checker_checks = [
             'auth' => '',
         ];
-        $checker_result = (new Checker($this->dic))->run($checker_checks);
+        $checker_result = $this->checker->run($checker_checks);
         if (count($checker_result) > 0) {
             $this->response->setData($checker_result);
         } else {
