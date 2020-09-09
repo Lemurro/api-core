@@ -1,10 +1,11 @@
 <?php
+
 /**
  * Вход под указанным пользователем
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 24.04.2020
+ * @version 09.09.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -16,22 +17,18 @@ use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
 /**
- * Class ActionLoginByUser
- *
  * @package Lemurro\Api\Core\Users
  */
 class ActionLoginByUser extends Action
 {
     /**
-     * Выполним действие
-     *
      * @param integer $user_id ИД записи
      *
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 24.04.2020
+     * @version 09.09.2020
      */
     public function run($user_id): array
     {
@@ -49,7 +46,7 @@ class ActionLoginByUser extends Action
         }
 
         $secret = RandomKey::generate(100);
-        $created_at = $this->dic['datetimenow'];
+        $created_at = $this->datetimenow;
 
         $session = ORM::for_table('sessions')->create();
         $session->session = $secret;

@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 17.08.2020
+ * @version 09.09.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -17,15 +17,11 @@ use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
 /**
- * Class ActionLockUnlock
- *
  * @package Lemurro\Api\Core\Users
  */
 class ActionLockUnlock extends Action
 {
     /**
-     * Выполним действие
-     *
      * @param integer $id     ИД записи
      * @param boolean $locked Статус блокировки (true|false)
      *
@@ -33,7 +29,7 @@ class ActionLockUnlock extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 17.08.2020
+     * @version 09.09.2020
      */
     public function run($id, $locked)
     {
@@ -51,7 +47,7 @@ class ActionLockUnlock extends Action
             }
 
             $user->locked = $locked;
-            $user->updated_at = $this->dic['datetimenow'];
+            $user->updated_at = $this->datetimenow;
             $user->save();
             if (is_object($user) && isset($user->id)) {
                 /** @var DataChangeLog $data_change_log */

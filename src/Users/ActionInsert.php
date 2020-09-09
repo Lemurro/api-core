@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Добавление пользователя
- *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 17.08.2020
+ * @version 09.09.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -18,22 +16,18 @@ use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
 /**
- * Class ActionInsert
- *
  * @package Lemurro\Api\Core\Users
  */
 class ActionInsert extends Action
 {
     /**
-     * Выполним действие
-     *
      * @param array $data Массив данных
      *
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 17.08.2020
+     * @version 09.09.2020
      */
     public function run($data)
     {
@@ -50,7 +44,7 @@ class ActionInsert extends Action
 
         $new_user = ORM::for_table('users')->create();
         $new_user->auth_id = $data['auth_id'];
-        $new_user->created_at = $this->dic['datetimenow'];
+        $new_user->created_at = $this->datetimenow;
         $new_user->save();
         if (is_object($new_user) && isset($new_user->id)) {
             $new_user_info = ORM::for_table('info_users')->create();
@@ -69,7 +63,7 @@ class ActionInsert extends Action
 
             $new_user_info->user_id = $new_user->id;
             $new_user_info->roles = $json_roles;
-            $new_user_info->created_at = $this->dic['datetimenow'];
+            $new_user_info->created_at = $this->datetimenow;
             $new_user_info->save();
             if (is_object($new_user_info) && isset($new_user_info->id)) {
                 /** @var DataChangeLog $data_change_log */

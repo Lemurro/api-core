@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 17.08.2020
+ * @version 09.09.2020
  */
 
 namespace Lemurro\Api\Core\Helpers;
@@ -14,8 +14,6 @@ use Lemurro\Api\Core\Abstracts\Action;
 use ORM;
 
 /**
- * Class DataChangeLog
- *
  * @package Lemurro\Api\Core\Helpers
  */
 class DataChangeLog extends Action
@@ -36,8 +34,6 @@ class DataChangeLog extends Action
     public const ACTION_DELETE = 'delete';
 
     /**
-     * Выполним действие
-     *
      * @param string  $table_name  Имя таблицы
      * @param string  $action_name Название действия ('insert'|'update'|'delete')
      * @param integer $record_id   ИД записи
@@ -45,8 +41,9 @@ class DataChangeLog extends Action
      *
      * @return boolean
      *
-     * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 09.09.2020
      */
     public function insert($table_name, $action_name, $record_id, $data = [])
     {
@@ -62,7 +59,7 @@ class DataChangeLog extends Action
         $log->action_name = $action_name;
         $log->record_id = $record_id;
         $log->data = json_encode($data, JSON_UNESCAPED_UNICODE);
-        $log->created_at = $this->dic['datetimenow'];
+        $log->created_at = $this->datetimenow;
         $log->save();
         if (is_object($log) && isset($log->id)) {
             return true;

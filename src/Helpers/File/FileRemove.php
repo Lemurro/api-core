@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Удаление файла
- *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 17.08.2020
+ * @version 09.09.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -17,8 +15,6 @@ use Lemurro\Api\Core\Helpers\Response;
 use Pimple\Container;
 
 /**
- * Class FileRemove
- *
  * @package Lemurro\Api\Core\Helpers\File
  */
 class FileRemove extends Action
@@ -34,8 +30,6 @@ class FileRemove extends Action
     protected $file_rights;
 
     /**
-     * Конструктор
-     *
      * @param Container $dic Контейнер
      *
      * @version 08.01.2019
@@ -50,15 +44,13 @@ class FileRemove extends Action
     }
 
     /**
-     * Выполним действие
-     *
      * @param integer $fileid ИД файла
      *
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 17.08.2020
+     * @version 09.09.2020
      */
     public function run($fileid)
     {
@@ -78,7 +70,7 @@ class FileRemove extends Action
         if (SettingsFile::FULL_REMOVE) {
             $info->delete();
         } else {
-            $info->deleted_at = $this->dic['datetimenow'];
+            $info->deleted_at = $this->datetimenow;
             $info->save();
         }
 

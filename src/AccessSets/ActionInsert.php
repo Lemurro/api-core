@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Добавление
- *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 17.08.2020
+ * @version 09.09.2020
  */
 
 namespace Lemurro\Api\Core\AccessSets;
@@ -16,22 +14,18 @@ use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
 /**
- * Class ActionInsert
- *
  * @package Lemurro\Api\Core\AccessSets
  */
 class ActionInsert extends Action
 {
     /**
-     * Выполним действие
-     *
      * @param array $data Массив данных
      *
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 17.08.2020
+     * @version 09.09.2020
      */
     public function run($data)
     {
@@ -47,7 +41,7 @@ class ActionInsert extends Action
         $record = ORM::for_table('access_sets')->create();
         $record->name = $data['name'];
         $record->roles = json_encode($data['roles']);
-        $record->created_at = $this->dic['datetimenow'];
+        $record->created_at = $this->datetimenow;
         $record->save();
         if (is_object($record) && isset($record->id)) {
             $result = $record->as_array();

@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Получение кода аутентификации
- *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 14.08.2020
+ * @version 09.09.2020
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
@@ -30,75 +28,27 @@ use RuntimeException;
 use Throwable;
 
 /**
- * Class ActionGet
- *
  * @package Lemurro\Api\Core\Auth\Code
  */
 class ActionGet extends Action
 {
-    /**
-     * @var Mailer
-     */
-    private $mailer;
+    private Mailer $mailer;
+    private SMS $sms;
+    private Code $code_cleaner;
+    private FindUser $user_finder;
+    private InsertUser $user_inserter;
+    private Phone $phone_validator;
+    private Logger $log;
+    private string $auth_id;
+    private int $user_id;
+    private int $secret;
 
     /**
-     * @var SMS
-     */
-    private $sms;
-
-    /**
-     * @var string
-     */
-    private $datetimenow;
-
-    /**
-     * @var Code
-     */
-    private $code_cleaner;
-
-    /**
-     * @var FindUser
-     */
-    private $user_finder;
-
-    /**
-     * @var InsertUser
-     */
-    private $user_inserter;
-
-    /**
-     * @var Phone
-     */
-    private $phone_validator;
-
-    /**
-     * @var string
-     */
-    private $auth_id;
-
-    /**
-     * @var int
-     */
-    private $user_id;
-
-    /**
-     * @var integer
-     */
-    private $secret;
-
-    /**
-     * @var Logger
-     */
-    private $log;
-
-    /**
-     * ActionGet constructor.
-     *
      * @param Container $dic
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 10.06.2020
+     * @version 09.09.2020
      */
     public function __construct($dic)
     {
@@ -106,7 +56,7 @@ class ActionGet extends Action
 
         $this->mailer = $dic['mailer'];
         $this->sms = $dic['sms'];
-        $this->datetimenow = $dic['datetimenow'];
+
         $this->code_cleaner = new Code();
         $this->user_finder = new FindUser();
         $this->user_inserter = new InsertUser($dic);

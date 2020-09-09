@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Изменение
- *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 17.08.2020
+ * @version 09.09.2020
  */
 
 namespace Lemurro\Api\Core\AccessSets;
@@ -15,15 +13,11 @@ use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
 
 /**
- * Class ActionSave
- *
  * @package Lemurro\Api\Core\AccessSets
  */
 class ActionSave extends Action
 {
     /**
-     * Выполним действие
-     *
      * @param integer $id   ИД записи
      * @param array   $data Массив данных
      *
@@ -31,7 +25,7 @@ class ActionSave extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 17.08.2020
+     * @version 09.09.2020
      */
     public function run($id, $data)
     {
@@ -51,7 +45,7 @@ class ActionSave extends Action
 
         $record->name = $data['name'];
         $record->roles = json_encode($data['roles']);
-        $record->updated_at = $this->dic['datetimenow'];
+        $record->updated_at = $this->datetimenow;
         $record->save();
         if (is_object($record) && isset($record->id)) {
             $result = $record->as_array();

@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Изменение пользователя
- *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 18.08.2020
+ * @version 09.09.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -18,15 +16,11 @@ use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
 /**
- * Class ActionSave
- *
  * @package Lemurro\Api\Core\Users
  */
 class ActionSave extends Action
 {
     /**
-     * Выполним действие
-     *
      * @param integer $id   ИД записи
      * @param array   $data Массив данных
      *
@@ -34,7 +28,7 @@ class ActionSave extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 18.08.2020
+     * @version 09.09.2020
      */
     public function run($id, $data)
     {
@@ -64,7 +58,7 @@ class ActionSave extends Action
             }
 
             $user->auth_id = $data['auth_id'];
-            $user->updated_at = $this->dic['datetimenow'];
+            $user->updated_at = $this->datetimenow;
             $user->save();
             if (is_object($user) && isset($user->id)) {
                 $info = ORM::for_table('info_users')
@@ -84,7 +78,7 @@ class ActionSave extends Action
                     $json_roles = json_encode($data['roles']);
 
                     $info->roles = $json_roles;
-                    $info->updated_at = $this->dic['datetimenow'];
+                    $info->updated_at = $this->datetimenow;
                     $info->save();
                     if (is_object($info) && isset($info->id)) {
                         /** @var DataChangeLog $data_change_log */

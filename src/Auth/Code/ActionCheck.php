@@ -1,10 +1,9 @@
 <?php
+
 /**
- * Проверка кода аутентификации
- *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 24.04.2020
+ * @version 09.09.2020
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
@@ -16,15 +15,11 @@ use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
 /**
- * Class ActionCheck
- *
  * @package Lemurro\Api\Core\Auth\Code
  */
 class ActionCheck extends Action
 {
     /**
-     * Выполним действие
-     *
      * @param string $auth_id     Номер телефона или электронная почта
      * @param string $auth_code   Код из СМС или письма
      * @param array  $device_info Информация об устройстве
@@ -34,7 +29,7 @@ class ActionCheck extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 24.04.2020
+     * @version 09.09.2020
      */
     public function run($auth_id, $auth_code, $device_info, $geoip): array
     {
@@ -48,7 +43,7 @@ class ActionCheck extends Action
         if (is_object($auth)) {
             if ($auth->code === $auth_code) {
                 $secret = RandomKey::generate(100);
-                $created_at = $this->dic['datetimenow'];
+                $created_at = $this->datetimenow;
 
                 $session = ORM::for_table('sessions')->create();
                 $session->session = $secret;

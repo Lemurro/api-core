@@ -1,9 +1,11 @@
 <?php
+
 /**
  * Токены для скачивания файлов
  *
- * @version 15.05.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 09.09.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -13,8 +15,6 @@ use Lemurro\Api\Core\Abstracts\Action;
 use ORM;
 
 /**
- * Class FileToken
- *
  * @package Lemurro\Api\Core\Helpers\File
  */
 class FileToken extends Action
@@ -28,8 +28,9 @@ class FileToken extends Action
      *
      * @return string
      *
-     * @version 15.05.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 09.09.2020
      */
     public function generate($type, $path, $name)
     {
@@ -40,7 +41,7 @@ class FileToken extends Action
         $record->path = $path;
         $record->name = $name;
         $record->token = $token;
-        $record->created_at = $this->dic['datetimenow'];
+        $record->created_at = $this->datetimenow;
         $record->save();
         if (is_object($record)) {
             return $token;

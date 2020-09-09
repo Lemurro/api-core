@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 17.08.2020
+ * @version 09.09.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -18,8 +18,6 @@ use Monolog\Logger;
 use ORM;
 
 /**
- * Class FileAdd
- *
  * @package Lemurro\Api\Core\Helpers\File
  */
 class FileAdd extends Action
@@ -165,7 +163,7 @@ class FileAdd extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 17.08.2020
+     * @version 09.09.2020
      */
     protected function addToDB($file_name, $orig_name, $container_type, $container_id)
     {
@@ -191,7 +189,7 @@ class FileAdd extends Action
         $item->ext = $data['ext'];
         $item->container_type = mb_substr($container_type, 0, 255, 'UTF-8');
         $item->container_id = $container_id;
-        $item->created_at = $this->dic['datetimenow'];
+        $item->created_at = $this->datetimenow;
         $item->save();
 
         if (!is_object($item) || !isset($item->id)) {

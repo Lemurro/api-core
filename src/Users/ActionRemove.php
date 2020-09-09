@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Удаление пользователя
- *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 17.08.2020
+ * @version 09.09.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -19,22 +17,18 @@ use ORM;
 use Throwable;
 
 /**
- * Class ActionRemove
- *
  * @package Lemurro\Api\Core\Users
  */
 class ActionRemove extends Action
 {
     /**
-     * Выполним действие
-     *
      * @param integer $id ИД записи
      *
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 17.08.2020
+     * @version 09.09.2020
      */
     public function run($id)
     {
@@ -53,10 +47,10 @@ class ActionRemove extends Action
                 try {
                     ORM::get_db()->beginTransaction();
 
-                    $user->deleted_at = $this->dic['datetimenow'];
+                    $user->deleted_at = $this->datetimenow;
                     $user->save();
 
-                    $info->deleted_at = $this->dic['datetimenow'];
+                    $info->deleted_at = $this->datetimenow;
                     $info->save();
 
                     ORM::for_table('auth_codes')
