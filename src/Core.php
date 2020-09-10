@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 31.07.2020
+ * @version 10.09.2020
  */
 
 namespace Lemurro\Api\Core;
@@ -25,6 +25,7 @@ use Pimple\Container;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Loader\YamlFileLoader;
@@ -87,7 +88,7 @@ class Core
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 31.07.2020
+     * @version 10.09.2020
      */
     public function start()
     {
@@ -115,7 +116,10 @@ class Core
                 } else {
                     $class = $this->request->get('_controller');
                     $controller = new $class($this->request, $this->response, $this->dic);
-                    call_user_func([$controller, 'start']);
+
+                    /** @var SymfonyResponse $response */
+                    $response = call_user_func([$controller, 'start']);
+                    $response->send();
                 }
             }
         } catch (ResourceNotFoundException $e) {

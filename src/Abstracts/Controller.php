@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 09.09.2020
+ * @version 10.09.2020
  */
 
 namespace Lemurro\Api\Core\Abstracts;
@@ -14,6 +14,7 @@ use Lemurro\Api\Core\Checker\Checker;
 use Pimple\Container;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @package Lemurro\Api\Core\Abstracts
@@ -40,8 +41,9 @@ abstract class Controller
     }
 
     /**
-     * @version 26.05.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 10.09.2020
      */
-    abstract public function start();
+    abstract public function start(): Response;
 }
