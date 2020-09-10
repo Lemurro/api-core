@@ -11,8 +11,8 @@
 
 namespace Lemurro\Api\Core\Helpers;
 
-use Exception;
-use RuntimeException;
+use Lemurro\Api\Core\Exception\ResponseException;
+use Throwable;
 
 /**
  * @package Lemurro\Api\Core\Helpers
@@ -170,15 +170,15 @@ class Response
     }
 
     /**
-     * Сгенерируем ошибку на основании Exception
+     * Сгенерируем ошибку на основании Throwable
      *
-     * @param Exception $e Объект ошибки (используются поля: code и message)
+     * @param Throwable $e Объект ошибки (используются поля: code и message)
      *
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 17.04.2020
+     * @version 10.09.2020
      */
     public static function exception($e): array
     {
@@ -217,15 +217,15 @@ class Response
     }
 
     /**
-     * Превратим ошибку в RuntimeException
+     * Превратим ошибку в ResponseException
      *
-     * @param array $errors Результат от методов error*
+     * @param $errors Результат от методов error*
      *
-     * @throws RuntimeException
+     * @throws ResponseException
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 19.06.2020
+     * @version 10.09.2020
      */
     public static function errorToException($errors): void
     {
@@ -243,6 +243,6 @@ class Response
             $code = 500;
         }
 
-        throw new RuntimeException($one_error['title'], $code);
+        throw new ResponseException($one_error['title'], $code);
     }
 }
