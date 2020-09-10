@@ -14,6 +14,7 @@ use Lemurro\Api\App\Configs\SettingsMaintenance;
 use Lemurro\Api\App\Configs\SettingsPath;
 use Lemurro\Api\App\Overrides\DIC as AppDIC;
 use Lemurro\Api\App\Overrides\Response as AppResponse;
+use Lemurro\Api\Core\Exception\ResponseException;
 use Lemurro\Api\Core\Helpers\DB;
 use Lemurro\Api\Core\Helpers\DIC;
 use Lemurro\Api\Core\Helpers\LogException;
@@ -131,6 +132,9 @@ class Core
             LogException::write($this->core_log, $e);
 
             $this->response->setData(Response::error400('Неверный метод маршрута'));
+            $this->response->send();
+        } catch (ResponseException $e) {
+            $this->response->setData(Response::exception($e));
             $this->response->send();
         } catch (Throwable $t) {
             LogException::write($this->core_log, $t);
