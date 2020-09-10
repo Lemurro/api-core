@@ -33,14 +33,13 @@ class ControllerRemove extends Controller
             ],
         ]);
 
-        $check_type = $this->checkType($this->request->get('type'));
-        if (isset($check_type['data'])) {
-            $action = 'Lemurro\\Api\\App\\Guide\\' . $check_type['data']['class'] . '\\ActionRemove';
-            $class = new $action($this->dic);
-            $this->response->setData(call_user_func([$class, 'run'], $this->request->get('id')));
-        } else {
-            $this->response->setData($check_type);
-        }
+        $class_name = $this->checkType($this->request->get('type'));
+        $action = 'Lemurro\\Api\\App\\Guide\\' . $class_name . '\\ActionRemove';
+        $class = new $action($this->dic);
+        $this->response->setData(call_user_func(
+            [$class, 'run'],
+            $this->request->get('id')
+        ));
 
         return $this->response;
     }

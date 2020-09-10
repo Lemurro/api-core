@@ -9,7 +9,7 @@
 namespace Lemurro\Api\Core\Guide;
 
 use Lemurro\Api\App\Configs\SettingsGuides;
-use Lemurro\Api\Core\Helpers\Response;
+use Lemurro\Api\Core\Exception\ResponseException;
 
 /**
  * @package Lemurro\Api\Core\Guide
@@ -17,6 +17,8 @@ use Lemurro\Api\Core\Helpers\Response;
 trait CheckType
 {
     /**
+     * @throws ResponseException
+     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
      * @version 10.09.2020
@@ -24,11 +26,9 @@ trait CheckType
     protected function checkType(string $type): array
     {
         if (isset(SettingsGuides::CLASSES[$type])) {
-            return Response::data([
-                'class' => SettingsGuides::CLASSES[$type],
-            ]);
+            return SettingsGuides::CLASSES[$type];
         }
 
-        return Response::error404('Неизвестный справочник');
+        throw new ResponseException('Неизвестный справочник', 404);
     }
 }

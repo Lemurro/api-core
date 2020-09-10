@@ -33,17 +33,13 @@ class ControllerInsert extends Controller
             ],
         ]);
 
-        $check_type = $this->checkType($this->request->get('type'));
-        if (isset($check_type['data'])) {
-            $action = 'Lemurro\\Api\\App\\Guide\\' . $check_type['data']['class'] . '\\ActionInsert';
-            $class = new $action($this->dic);
-            $this->response->setData(call_user_func(
-                [$class, 'run'],
-                json_decode($this->request->get('json'), true, 512, JSON_THROW_ON_ERROR)
-            ));
-        } else {
-            $this->response->setData($check_type);
-        }
+        $class_name = $this->checkType($this->request->get('type'));
+        $action = 'Lemurro\\Api\\App\\Guide\\' . $class_name . '\\ActionInsert';
+        $class = new $action($this->dic);
+        $this->response->setData(call_user_func(
+            [$class, 'run'],
+            json_decode($this->request->get('json'), true, 512, JSON_THROW_ON_ERROR)
+        ));
 
         return $this->response;
     }
