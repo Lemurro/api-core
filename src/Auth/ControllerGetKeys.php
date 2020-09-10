@@ -23,16 +23,12 @@ class ControllerGetKeys extends Controller
      */
     public function start(): Response
     {
-        $checker_checks = [
+        $this->checker->run([
             'auth' => '',
             'role' => [],
-        ];
-        $checker_result = $this->checker->run($checker_checks);
-        if (is_array($checker_result) && empty($checker_result)) {
-            $this->response->setData((new ActionGetKeys($this->dic))->run());
-        } else {
-            $this->response->setData($checker_result);
-        }
+        ]);
+
+        $this->response->setData((new ActionGetKeys($this->dic))->run());
 
         return $this->response;
     }

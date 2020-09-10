@@ -25,15 +25,13 @@ class ControllerReset extends Controller
      */
     public function start(): Response
     {
-        $checker_checks = [
+        $this->checker->run([
             'auth' => '',
-        ];
-        $checker_result = $this->checker->run($checker_checks);
-        if (is_array($checker_result) && empty($checker_result)) {
-            $this->response->setData((new ActionReset($this->dic))->run($this->request->get('session')));
-        } else {
-            $this->response->setData($checker_result);
-        }
+        ]);
+
+        $this->response->setData((new ActionReset($this->dic))->run(
+            $this->request->get('session')
+        ));
 
         return $this->response;
     }

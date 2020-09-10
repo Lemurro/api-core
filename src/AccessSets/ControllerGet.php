@@ -23,18 +23,14 @@ class ControllerGet extends Controller
      */
     public function start(): Response
     {
-        $checker_checks = [
+        $this->checker->run([
             'auth' => '',
             'role' => [],
-        ];
-        $checker_result = $this->checker->run($checker_checks);
-        if (is_array($checker_result) && count($checker_result) == 0) {
-            $this->response->setData((new ActionGet($this->dic))->run(
-                $this->request->get('id')
-            ));
-        } else {
-            $this->response->setData($checker_result);
-        }
+        ]);
+
+        $this->response->setData((new ActionGet($this->dic))->run(
+            $this->request->get('id')
+        ));
 
         return $this->response;
     }

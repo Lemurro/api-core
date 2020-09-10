@@ -25,25 +25,21 @@ class ControllerRemove extends Controller
      */
     public function start(): Response
     {
-        $checker_checks = [
+        $this->checker->run([
             'auth' => '',
             'role' => [
                 'page'   => 'guide',
                 'access' => 'delete',
             ],
-        ];
-        $checker_result = $this->checker->run($checker_checks);
-        if (is_array($checker_result) && count($checker_result) == 0) {
-            $check_type = $this->checkType($this->request->get('type'));
-            if (isset($check_type['data'])) {
-                $action = 'Lemurro\\Api\\App\\Guide\\' . $check_type['data']['class'] . '\\ActionRemove';
-                $class = new $action($this->dic);
-                $this->response->setData(call_user_func([$class, 'run'], $this->request->get('id')));
-            } else {
-                $this->response->setData($check_type);
-            }
+        ]);
+
+        $check_type = $this->checkType($this->request->get('type'));
+        if (isset($check_type['data'])) {
+            $action = 'Lemurro\\Api\\App\\Guide\\' . $check_type['data']['class'] . '\\ActionRemove';
+            $class = new $action($this->dic);
+            $this->response->setData(call_user_func([$class, 'run'], $this->request->get('id')));
         } else {
-            $this->response->setData($checker_result);
+            $this->response->setData($check_type);
         }
 
         return $this->response;

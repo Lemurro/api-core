@@ -1,33 +1,27 @@
 <?php
+
 /**
- * Какие-либо проверки перед запуском контроллера маршрута
- *
- * @version 29.10.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 10.09.2020
  */
 
 namespace Lemurro\Api\Core\Checker;
 
 use Lemurro\Api\Core\Abstracts\Action;
+use Lemurro\Api\Core\Helpers\Response;
 
 /**
- * Class Checker
- *
  * @package Lemurro\Api\Core\Checker
  */
 class Checker extends Action
 {
     /**
-     * Зарегистрируем пользователя по идентификатору
-     *
-     * @param array $checks Массив проверок
-     *
-     * @return array
-     *
-     * @version 29.10.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 10.09.2020
      */
-    public function run($checks)
+    public function run(array $checks): void
     {
         if (is_array($checks) && count($checks) > 0) {
             foreach ($checks as $check_type => $check_info) {
@@ -48,11 +42,9 @@ class Checker extends Action
                 }
 
                 if (isset($check_result['errors'])) {
-                    return $check_result;
+                    Response::errorToException($check_result);
                 }
             }
         }
-
-        return [];
     }
 }

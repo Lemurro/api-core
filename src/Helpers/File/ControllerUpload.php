@@ -23,15 +23,13 @@ class ControllerUpload extends Controller
      */
     public function start(): Response
     {
-        $checker_checks = [
+        $this->checker->run([
             'auth' => '',
-        ];
-        $checker_result = $this->checker->run($checker_checks);
-        if (count($checker_result) > 0) {
-            $this->response->setData($checker_result);
-        } else {
-            $this->response->setData((new ActionUpload($this->dic))->run($this->request->files));
-        }
+        ]);
+
+        $this->response->setData((new ActionUpload($this->dic))->run(
+            $this->request->files
+        ));
 
         return $this->response;
     }

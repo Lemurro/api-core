@@ -25,30 +25,25 @@ class ControllerSave extends Controller
      */
     public function start(): Response
     {
-        $checker_checks = [
+        $this->checker->run([
             'auth' => '',
             'role' => [
                 'page'   => 'guide',
                 'access' => 'create-update',
             ],
-        ];
-        $checker_result = $this->checker->run($checker_checks);
-        if (is_array($checker_result) && count($checker_result) == 0) {
-            $check_type = $this->checkType($this->request->get('type'));
-            if (isset($check_type['data'])) {
-                $action = 'Lemurro\\Api\\App\\Guide\\' . $check_type['data']['class'] . '\\ActionSave';
-                $class = new $action($this->dic);
-                $data = json_decode($this->request->get('json'), true, 512, JSON_THROW_ON_ERROR);
-                $this->response->setData(call_user_func(
-                    [$class, 'run'],
-                    $this->request->get('id'),
-                    $data
-                ));
-            } else {
-                $this->response->setData($check_type);
-            }
+        ]);
+
+        $check_type = $this->checkType($this->request->get('type'));
+        if (isset($check_type['data'])) {
+            $action = 'Lemurro\\Api\\App\\Guide\\' . $check_type['data']['class'] . '\\ActionSave';
+            $class = new $action($this->dic);
+            $this->response->setData(call_user_func(
+                [$class, 'run'],
+                $this->request->get('id'),
+                json_decode($this->request->get('json'), true, 512, JSON_THROW_ON_ERROR)
+            ));
         } else {
-            $this->response->setData($checker_result);
+            $this->response->setData($check_type);
         }
 
         return $this->response;
