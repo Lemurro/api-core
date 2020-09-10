@@ -5,12 +5,13 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 09.09.2020
+ * @version 10.09.2020
  */
 
 namespace Lemurro\Api\Core\Profile\Session;
 
 use Lemurro\Api\Core\Abstracts\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @package Lemurro\Api\Core\Profile\Session
@@ -20,9 +21,9 @@ class ControllerReset extends Controller
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 09.09.2020
+     * @version 10.09.2020
      */
-    public function start()
+    public function start(): Response
     {
         $checker_checks = [
             'auth' => '',
@@ -34,6 +35,6 @@ class ControllerReset extends Controller
             $this->response->setData($checker_result);
         }
 
-        $this->response->send();
+        return $this->response;
     }
 }

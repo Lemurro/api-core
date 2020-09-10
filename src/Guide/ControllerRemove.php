@@ -3,26 +3,27 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 09.09.2020
+ * @version 10.09.2020
  */
 
 namespace Lemurro\Api\Core\Guide;
 
-use Lemurro\Api\App\Configs\SettingsGuides;
 use Lemurro\Api\Core\Abstracts\Controller;
-use Lemurro\Api\Core\Helpers\Response;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @package Lemurro\Api\Core\Guide
  */
 class ControllerRemove extends Controller
 {
+    use CheckType;
+
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 09.09.2020
+     * @version 10.09.2020
      */
-    public function start()
+    public function start(): Response
     {
         $checker_checks = [
             'auth' => '',
@@ -33,17 +34,18 @@ class ControllerRemove extends Controller
         ];
         $checker_result = $this->checker->run($checker_checks);
         if (is_array($checker_result) && count($checker_result) == 0) {
-            if (isset(SettingsGuides::CLASSES[$this->request->get('type')])) {
-                $action = 'Lemurro\\Api\\App\\Guide\\' . SettingsGuides::CLASSES[$this->request->get('type')] . '\\ActionRemove';
+            $check_type = $this->checkType($this->request->get('type'));
+            if (isset($check_type['data'])) {
+                $action = 'Lemurro\\Api\\App\\Guide\\' . $check_type['data']['class'] . '\\ActionRemove';
                 $class = new $action($this->dic);
                 $this->response->setData(call_user_func([$class, 'run'], $this->request->get('id')));
             } else {
-                $this->response->setData(Response::error404('Неизвестный справочник'));
+                $this->response->setData($check_type);
             }
         } else {
             $this->response->setData($checker_result);
         }
 
-        $this->response->send();
+        return $this->response;
     }
 }

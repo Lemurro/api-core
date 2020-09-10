@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 09.09.2020
+ * @version 10.09.2020
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
@@ -73,10 +73,14 @@ class ActionGet extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 31.07.2020
+     * @version 10.09.2020
      */
     public function run($auth_id): array
     {
+        if (empty($auth_id)) {
+            return Response::error400('Отсутствует параметр "auth_id"');
+        }
+
         $this->code_cleaner->clear($auth_id);
 
         try {
