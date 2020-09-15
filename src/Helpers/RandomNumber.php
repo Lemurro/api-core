@@ -1,16 +1,16 @@
 <?php
+
 /**
  * Генератор случайного числа определенной длины
  *
- * @version 01.01.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 15.09.2020
  */
 
 namespace Lemurro\Api\Core\Helpers;
 
 /**
- * Class RandomNumber
- *
  * @package Lemurro\Api\Core\Helpers
  */
 class RandomNumber
@@ -22,16 +22,16 @@ class RandomNumber
      *
      * @return integer
      *
-     * @version 01.01.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 15.09.2020
      */
     static function generate($length = 10)
     {
-        $chars = "123456789";
-        $key = "";
+        $key = '';
 
         for ($i = 0; $i < $length; $i++) {
-            $key .= $chars{mt_rand(0, strlen($chars) - 1)};
+            $key .= mt_rand(1, 9);
         }
 
         return intval($key, 10);
