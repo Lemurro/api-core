@@ -27,7 +27,7 @@ class DIC
      *
      * @version 09.09.2020
      */
-    static function init(): Container
+    public static function init(): Container
     {
         $dic = new Container();
 

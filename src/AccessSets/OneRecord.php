@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Получим одну запись по ИД
  *
@@ -27,7 +28,7 @@ class OneRecord
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      * @version 15.10.2019
      */
-    static function get($id)
+    public static function get($id)
     {
         $record = ORM::for_table('access_sets')
             ->where_null('deleted_at')

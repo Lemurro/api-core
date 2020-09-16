@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Проверка на наличие подобной записи
  *
@@ -29,7 +30,7 @@ class Exist
      * @version 05.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    static function check($id, $name)
+    public static function check($id, $name)
     {
         $exist = ORM::for_table('access_sets')
             ->select('id')

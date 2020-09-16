@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Ротация таблицы data_change_logs
  *

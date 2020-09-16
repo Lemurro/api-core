@@ -26,7 +26,7 @@ class RandomNumber
      *
      * @version 15.09.2020
      */
-    static function generate($length = 10)
+    public static function generate($length = 10)
     {
         $key = '';
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Инициализация ORM для запросов к БД
  *
@@ -25,7 +26,7 @@ class DB
      * @version 29.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    static function init()
+    public static function init()
     {
         if (SettingsDatabase::NEED_CONNECT) {
             $connection_string = 'mysql:host=' . SettingsDatabase::HOST . ';port=' . SettingsDatabase::PORT . ';dbname=' . SettingsDatabase::DBNAME;

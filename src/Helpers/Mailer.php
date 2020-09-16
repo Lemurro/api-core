@@ -92,7 +92,7 @@ class Mailer
     {
         // Проверяем наличие шаблона
         if (constant('\Lemurro\Api\App\Configs\EmailTemplates::' . $template_name) !== null) {
-            if (SettingsGeneral::SERVER_TYPE === SettingsGeneral::SERVER_TYPE_DEV AND SettingsMail::SMTP === false) {
+            if (SettingsGeneral::SERVER_TYPE === SettingsGeneral::SERVER_TYPE_DEV && SettingsMail::SMTP === false) {
                 return true;
             } else {
                 // Очищаемся от старых данных
