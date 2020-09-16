@@ -16,6 +16,9 @@
       "Lemurro\\Api\\Core\\": "src/"
     }
   },
+  "scripts": {
+    "phpcs": "phpcs -nsp ./src --runtime-set testVersion 7.4 --standard=PHPCompatibility --standard=PSR1 --standard=PSR12 --runtime-set installed_paths ./vendor/phpcompatibility/php-compatibility/PHPCompatibility --report=xml --report-file=./phpcs-report.xml"
+  },
   "config": {
     "sort-packages": true
   },
@@ -37,5 +40,8 @@
     "symfony/routing": "5.1.*",
     "symfony/config": "5.1.*",
     "symfony/yaml": "5.1.*"
+  },
+  "require-dev": {
+    "phpcompatibility/php-compatibility": "^9.3"
   }
 }
