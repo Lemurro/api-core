@@ -1,10 +1,9 @@
 <?php
 
 /**
- * Загрузка файла во временный каталог
- *
- * @version 06.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 25.09.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -17,21 +16,18 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\FileBag;
 
 /**
- * Class ActionUpload
- *
  * @package Lemurro\Api\Core\Helpers\File
  */
 class ActionUpload extends Action
 {
     /**
-     * Выполним действие
-     *
      * @param FileBag $file Загруженный файл
      *
      * @return array
      *
-     * @version 06.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 25.09.2020
      */
     public function run($file)
     {
@@ -46,17 +42,17 @@ class ActionUpload extends Action
         $orig_size = $uploaded_file->getSize();
         $orig_ext = $uploaded_file->getClientOriginalExtension();
 
-        switch (SettingsFile::CHECK_FILE_BY) {
+        switch (SettingsFile::$check_file_by) {
             case 'type':
-                $type_corrected = in_array($orig_mime, SettingsFile::ALLOWED_TYPES);
+                $type_corrected = in_array($orig_mime, SettingsFile::$allowed_types);
                 break;
 
             case 'ext':
-                $type_corrected = in_array($orig_ext, SettingsFile::ALLOWED_EXTENSIONS);
+                $type_corrected = in_array($orig_ext, SettingsFile::$allowed_extensions);
                 break;
 
             default:
-                $log->info('File: Неверный вид проверки типа файла: ' . SettingsFile::CHECK_FILE_BY);
+                $log->info('File: Неверный вид проверки типа файла: ' . SettingsFile::$check_file_by);
 
                 return Response::error400('Неверные настройки приложения, пожалуйста обратитесь к администратору');
                 break;
@@ -65,7 +61,7 @@ class ActionUpload extends Action
         if ($type_corrected === false) {
             $log->info('File: Попытка загрузки неразрешённого файла .' . $orig_ext . ': ' . $orig_mime);
 
-            $allowed_extensions = implode(', ', SettingsFile::ALLOWED_EXTENSIONS);
+            $allowed_extensions = implode(', ', SettingsFile::$allowed_extensions);
 
             return Response::error400('Разрешённые форматы: ' . $allowed_extensions, [
                 'mime' => $orig_mime,
@@ -73,11 +69,11 @@ class ActionUpload extends Action
             ]);
         }
 
-        if ($orig_size > SettingsFile::ALLOWED_SIZE) {
-            return Response::error400('Максимальный размер файла: ' . SettingsFile::MAX_SIZE_FORMATED);
+        if ($orig_size > SettingsFile::$allowed_size) {
+            return Response::error400('Максимальный размер файла: ' . SettingsFile::$max_size_formated);
         }
 
-        $dest_folder = SettingsFile::TEMP_FOLDER;
+        $dest_folder = SettingsFile::$temp_folder;
         $dest_name = md5_file($orig_tmp);
 
         if (isset($this->dic['user']['id'])) {

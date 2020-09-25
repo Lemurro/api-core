@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 09.09.2020
+ * @version 25.09.2020
  */
 
 namespace Lemurro\Api\Core\Helpers;
@@ -25,7 +25,7 @@ class DIC
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 09.09.2020
+     * @version 25.09.2020
      */
     public static function init(): Container
     {
@@ -43,39 +43,39 @@ class DIC
             $phpmailer = new PHPMailer();
             $phpmailer->isHTML(true);
             $phpmailer->CharSet = 'windows-1251';
-            $phpmailer->From = SettingsMail::APP_EMAIL;
-            $phpmailer->FromName = iconv('utf-8', 'windows-1251', SettingsGeneral::APP_NAME);
+            $phpmailer->From = SettingsMail::$app_email;
+            $phpmailer->FromName = iconv('utf-8', 'windows-1251', SettingsGeneral::$app_name);
 
-            if (SettingsMail::SMTP) {
+            if (SettingsMail::$smtp) {
                 $phpmailer->isSMTP();
                 $phpmailer->SMTPDebug = 0;
                 $phpmailer->SMTPAuth = true;
-                $phpmailer->SMTPSecure = SettingsMail::SMTP_SECURITY;
-                $phpmailer->Host = SettingsMail::SMTP_HOST;
-                $phpmailer->Port = SettingsMail::SMTP_PORT;
-                $phpmailer->Username = SettingsMail::SMTP_USERNAME;
-                $phpmailer->Password = SettingsMail::SMTP_PASSWORD;
+                $phpmailer->SMTPSecure = SettingsMail::$smtp_security;
+                $phpmailer->Host = SettingsMail::$smtp_host;
+                $phpmailer->Port = SettingsMail::$smtp_port;
+                $phpmailer->Username = SettingsMail::$smtp_username;
+                $phpmailer->Password = SettingsMail::$smtp_password;
             }
 
             return $phpmailer;
         };
 
-        if (SettingsMail::RESERVE) {
+        if (SettingsMail::$reserve) {
             $dic['phpmailer_reserve'] = function () {
                 $phpmailer = new PHPMailer();
                 $phpmailer->isHTML(true);
                 $phpmailer->CharSet = 'windows-1251';
-                $phpmailer->From = SettingsMail::RESERVE_APP_EMAIL;
-                $phpmailer->FromName = iconv('utf-8', 'windows-1251', SettingsGeneral::APP_NAME);
+                $phpmailer->From = SettingsMail::$reserve_app_email;
+                $phpmailer->FromName = iconv('utf-8', 'windows-1251', SettingsGeneral::$app_name);
 
                 $phpmailer->isSMTP();
                 $phpmailer->SMTPDebug = 0;
                 $phpmailer->SMTPAuth = true;
-                $phpmailer->SMTPSecure = SettingsMail::RESERVE_SMTP_SECURITY;
-                $phpmailer->Host = SettingsMail::RESERVE_SMTP_HOST;
-                $phpmailer->Port = SettingsMail::RESERVE_SMTP_PORT;
-                $phpmailer->Username = SettingsMail::RESERVE_SMTP_USERNAME;
-                $phpmailer->Password = SettingsMail::RESERVE_SMTP_PASSWORD;
+                $phpmailer->SMTPSecure = SettingsMail::$reserve_smtp_security;
+                $phpmailer->Host = SettingsMail::$reserve_smtp_host;
+                $phpmailer->Port = SettingsMail::$reserve_smtp_port;
+                $phpmailer->Username = SettingsMail::$reserve_smtp_username;
+                $phpmailer->Password = SettingsMail::$reserve_smtp_password;
 
                 return $phpmailer;
             };

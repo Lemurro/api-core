@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 31.07.2020
+ * @version 25.09.2020
  */
 
 namespace Lemurro\Api\Core\Cron;
@@ -28,21 +28,14 @@ use Throwable;
  */
 class Jobby
 {
-    /**
-     * @var Logger
-     */
-    public $log;
+    public Logger $log;
+
+    protected JobbyJobby $jobby;
 
     /**
-     * @var JobbyJobby
-     */
-    protected $jobby;
-
-    /**
-     * Jobby constructor.
-     *
-     * @version 29.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 25.09.2020
      */
     public function __construct()
     {
@@ -51,15 +44,15 @@ class Jobby
         $this->log = LoggerFactory::create('Jobby');
 
         $this->jobby = new JobbyJobby([
-            'output'         => SettingsCron::LOG_FILE,
-            'recipients'     => implode(',', SettingsCron::ERRORS_EMAILS),
+            'output'         => SettingsCron::$log_file,
+            'recipients'     => implode(',', SettingsCron::$errors_emails),
             'mailer'         => 'smtp',
-            'smtpHost'       => SettingsMail::SMTP_HOST,
-            'smtpPort'       => SettingsMail::SMTP_PORT,
-            'smtpUsername'   => SettingsMail::SMTP_USERNAME,
-            'smtpPassword'   => SettingsMail::SMTP_PASSWORD,
-            'smtpSecurity'   => SettingsMail::SMTP_SECURITY,
-            'smtpSender'     => SettingsMail::APP_EMAIL,
+            'smtpHost'       => SettingsMail::$smtp_host,
+            'smtpPort'       => SettingsMail::$smtp_port,
+            'smtpUsername'   => SettingsMail::$smtp_username,
+            'smtpPassword'   => SettingsMail::$smtp_password,
+            'smtpSecurity'   => SettingsMail::$smtp_security,
+            'smtpSender'     => SettingsMail::$app_email,
             'smtpSenderName' => 'Jobby',
         ]);
     }
@@ -67,20 +60,21 @@ class Jobby
     /**
      * Инициализация
      *
-     * @version 23.08.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 25.09.2020
      */
     public function init()
     {
-        if (SettingsCron::FILE_OLDER_TOKENS_ENABLED) {
+        if (SettingsCron::$file_older_tokens_enabled) {
             $this->fileOlderTokens();
         }
 
-        if (SettingsCron::FILE_OLDER_FILES_ENABLED) {
+        if (SettingsCron::$file_older_files_enabled) {
             $this->fileOlderFiles();
         }
 
-        if (SettingsCron::DATA_CHANGE_LOGS_ROTATOR_ENABLED) {
+        if (SettingsCron::$data_change_logs_rotator_enabled) {
             $this->dataChangeLogsRotator();
         }
 
@@ -92,12 +86,12 @@ class Jobby
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 31.07.2020
+     * @version 25.09.2020
      */
     protected function fileOlderTokens()
     {
         try {
-            $this->jobby->add(SettingsCron::NAME_PREFIX . 'FileOlderTokens', [
+            $this->jobby->add(SettingsCron::$name_prefix . 'FileOlderTokens', [
                 'enabled'  => true,
                 'schedule' => '*/5 * * * *', // Каждые 5 минут
                 'closure'  => function () {
@@ -118,12 +112,12 @@ class Jobby
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 31.07.2020
+     * @version 25.09.2020
      */
     protected function fileOlderFiles()
     {
         try {
-            $this->jobby->add(SettingsCron::NAME_PREFIX . 'FileOlderFiles', [
+            $this->jobby->add(SettingsCron::$name_prefix . 'FileOlderFiles', [
                 'enabled'  => true,
                 'schedule' => '0 0 * * *', // Каждый день в 0:00 UTC
                 'closure'  => function () {
@@ -142,12 +136,12 @@ class Jobby
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 31.07.2020
+     * @version 25.09.2020
      */
     protected function dataChangeLogsRotator()
     {
         try {
-            $this->jobby->add(SettingsCron::NAME_PREFIX . 'DataChangeLogsRotator', [
+            $this->jobby->add(SettingsCron::$name_prefix . 'DataChangeLogsRotator', [
                 'enabled'  => true,
                 'schedule' => '0 0 1 1 *', // Каждый год 1 января в 0:00
                 'closure'  => function () {

@@ -1,10 +1,9 @@
 <?php
 
 /**
- * Скачивание файла
- *
- * @version 26.07.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 25.09.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -14,21 +13,18 @@ use Lemurro\Api\Core\Helpers\Response;
 use Lemurro\Api\Core\Abstracts\Action;
 
 /**
- * Class ActionDownloadRun
- *
  * @package Lemurro\Api\Core\Helpers\File
  */
 class ActionDownloadRun extends Action
 {
     /**
-     * Выполним действие
-     *
      * @param string token Токен для скачивания файла
      *
      * @return array
      *
-     * @version 26.07.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 25.09.2020
      */
     public function run($token)
     {
@@ -40,11 +36,11 @@ class ActionDownloadRun extends Action
 
         switch ($file_info['data']['type']) {
             case 'permanent':
-                $folder = SettingsFile::FILE_FOLDER;
+                $folder = SettingsFile::$file_folder;
                 break;
 
             case 'temporary':
-                $folder = SettingsFile::TEMP_FOLDER;
+                $folder = SettingsFile::$temp_folder;
                 break;
 
             default:

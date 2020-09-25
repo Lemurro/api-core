@@ -4,7 +4,8 @@
  * Ротация таблицы data_change_logs
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 11.02.2020
+ *
+ * @version 25.09.2020
  */
 
 namespace Lemurro\Api\Core\Cron;
@@ -16,8 +17,6 @@ use Lemurro\Api\Core\Helpers\Mailer;
 use ORM;
 
 /**
- * Class DataChangeLogsRotator
- *
  * @package Lemurro\Api\Core\Cron
  */
 class DataChangeLogsRotator extends Action
@@ -26,7 +25,8 @@ class DataChangeLogsRotator extends Action
      * Выполним ротацию
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 11.02.2020
+     *
+     * @version 25.09.2020
      */
     public function execute()
     {
@@ -53,7 +53,7 @@ class DataChangeLogsRotator extends Action
 
         /** @var Mailer $mailer */
         $mailer = $this->dic['mailer'];
-        $mailer->send('SIMPLE_MESSAGE', $subject, SettingsCron::ERRORS_EMAILS, [
+        $mailer->send('SIMPLE_MESSAGE', $subject, SettingsCron::$errors_emails, [
             '[CONTENT]' => $message,
         ]);
     }

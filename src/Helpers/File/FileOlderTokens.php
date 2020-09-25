@@ -1,10 +1,9 @@
 <?php
 
 /**
- * Очистим устаревшие токены для скачивания
- *
- * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 25.09.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -14,24 +13,21 @@ use Lemurro\Api\App\Configs\SettingsFile;
 use ORM;
 
 /**
- * Class FileOlderTokens
- *
  * @package Lemurro\Api\Core\Helpers\File
  */
 class FileOlderTokens
 {
     /**
-     * Выполним очистку
-     *
-     * @version 08.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 25.09.2020
      */
     public function clear()
     {
         $now = Carbon::now('UTC');
 
         ORM::for_table('files_downloads')
-            ->where_lt('created_at', $now->subHours(SettingsFile::TOKENS_OLDER_THAN_HOURS))
+            ->where_lt('created_at', $now->subHours(SettingsFile::$tokens_older_than_hours))
             ->delete_many();
     }
 }

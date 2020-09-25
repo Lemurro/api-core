@@ -4,7 +4,8 @@
  * Шлюз для отправки sms: sms.ru
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 24.10.2019
+ *
+ * @version 25.09.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\SMS;
@@ -13,22 +14,19 @@ use Lemurro\Api\App\Configs\SettingsSMS;
 use Lemurro\Api\Core\Abstracts\GatewaySMS;
 
 /**
- * Class GatewaySMSRU
- *
  * @package Lemurro\Api\Core\Helpers\SMS
  */
 class GatewaySMSRU implements GatewaySMS
 {
     /**
-     * Отправка sms
-     *
      * @param string $phone   Номер телефона получателя
      * @param string $message Сообщение
      *
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 24.10.2019
+     *
+     * @version 25.09.2020
      */
     public function send($phone, $message)
     {
@@ -41,8 +39,8 @@ class GatewaySMSRU implements GatewaySMS
             ];
         }
 
-        $from = (SettingsSMS::SMSRU_SENDER == '' ? '' : '&from=' . SettingsSMS::SMSRU_SENDER);
-        $result = file_get_contents('https://sms.ru/sms/send?api_id=' . SettingsSMS::SMSRU_API_ID . '&to=' . $phone_number . $from . '&text=' . urlencode($message) . '&json=1');
+        $from = (SettingsSMS::$smsru_sender == '' ? '' : '&from=' . SettingsSMS::$smsru_sender);
+        $result = file_get_contents('https://sms.ru/sms/send?api_id=' . SettingsSMS::$smsru_api_id . '&to=' . $phone_number . $from . '&text=' . urlencode($message) . '&json=1');
 
         if ($result != '') {
             $parsed = json_decode($result, true);

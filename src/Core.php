@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 10.09.2020
+ * @version 25.09.2020
  */
 
 namespace Lemurro\Api\Core;
@@ -41,36 +41,16 @@ use Throwable;
  */
 class Core
 {
-    /**
-     * @var Container
-     */
-    protected $dic;
+    protected Container $dic;
+    protected UrlMatcher $url_matcher;
+    protected Request $request;
+    protected JsonResponse $response;
+    protected Logger $core_log;
 
     /**
-     * @var UrlMatcher
-     */
-    protected $url_matcher;
-
-    /**
-     * @var Request
-     */
-    protected $request;
-
-    /**
-     * @var JsonResponse
-     */
-    protected $response;
-
-    /**
-     * @var Logger
-     */
-    protected $core_log;
-
-    /**
-     * Конструктор
-     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 20.12.2019
+     *
+     * @version 25.09.2020
      */
     public function __construct()
     {
@@ -89,7 +69,7 @@ class Core
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 10.09.2020
+     * @version 25.09.2020
      */
     public function start()
     {
@@ -111,7 +91,7 @@ class Core
                     $this->response->setData(Response::error(
                         '503 Service Unavailable',
                         'warning',
-                        SettingsMaintenance::MESSAGE
+                        SettingsMaintenance::$message
                     ));
                     $this->response->send();
                 } else {
@@ -148,11 +128,12 @@ class Core
      * Инициализация маршрутов
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 29.12.2018
+     *
+     * @version 25.09.2020
      */
     protected function initRoutes()
     {
-        $fileLocator = new FileLocator([__DIR__, SettingsPath::FULL_ROOT]);
+        $fileLocator = new FileLocator([__DIR__, SettingsPath::$root]);
         $loader = new YamlFileLoader($fileLocator);
         $routes = $loader->load('coreroutes.yaml');
 
@@ -211,7 +192,8 @@ class Core
      * @return boolean
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 21.11.2019
+     *
+     * @version 25.09.2020
      */
     protected function maintenance()
     {
@@ -219,7 +201,7 @@ class Core
             return false;
         }
 
-        if (SettingsMaintenance::ACTIVE) {
+        if (SettingsMaintenance::$active) {
             return true;
         }
 

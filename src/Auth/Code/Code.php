@@ -3,8 +3,9 @@
 /**
  * Очистка устаревших кодов аутентификации
  *
- * @version 13.12.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 25.09.2020
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
@@ -14,8 +15,6 @@ use Lemurro\Api\App\Configs\SettingsAuth;
 use ORM;
 
 /**
- * Class Code
- *
  * @package Lemurro\Api\Core\Auth\Code
  */
 class Code
@@ -25,15 +24,16 @@ class Code
      *
      * @param string $auth_id Идентификатор пользователя (номер телефона или электронная почта)
      *
-     * @version 13.12.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 25.09.2020
      */
     public function clear($auth_id = '')
     {
         $now = Carbon::now('UTC');
 
         ORM::for_table('auth_codes')
-            ->where_lt('created_at', $now->subHours(SettingsAuth::AUTH_CODES_OLDER_THAN))
+            ->where_lt('created_at', $now->subHours(SettingsAuth::$auth_codes_older_than))
             ->delete_many();
 
         if ($auth_id != '') {

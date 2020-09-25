@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 10.09.2020
+ * @version 25.09.2020
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
@@ -114,7 +114,7 @@ class ActionGet extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 30.07.2020
+     * @version 25.09.2020
      */
     private function findUser($auth_id): array
     {
@@ -124,7 +124,7 @@ class ActionGet extends Action
             return $user;
         }
 
-        if (!SettingsAuth::CAN_REGISTRATION_USERS) {
+        if (!SettingsAuth::$can_registration_users) {
             throw new RuntimeException('Пользователь не найден', 404);
         }
 
@@ -144,7 +144,7 @@ class ActionGet extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 17.06.2020
+     * @version 25.09.2020
      */
     private function bruteForceProtection(): void
     {
@@ -154,7 +154,7 @@ class ActionGet extends Action
             ->where_equal('user_id', $this->user_id)
             ->where_gte('created_at', $lastday)
             ->count();
-        if ($count >= SettingsAuth::ATTEMPTS_PER_DAY) {
+        if ($count >= SettingsAuth::$attempts_per_day) {
             throw new RuntimeException('Попытка брутфорса (user_id: ' . $this->user_id . ')', 403);
         }
     }
@@ -243,17 +243,17 @@ class ActionGet extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 14.08.2020
+     * @version 25.09.2020
      */
     private function sendCode(): array
     {
-        if (SettingsGeneral::SERVER_TYPE === SettingsGeneral::SERVER_TYPE_DEV) {
+        if (SettingsGeneral::$server_type === SettingsGeneral::$server_type_dev) {
             return Response::data([
                 'message' => $this->secret,
             ]);
         }
 
-        switch (SettingsAuth::TYPE) {
+        switch (SettingsAuth::$type) {
             case 'email':
                 return $this->sendEmail();
                 break;
@@ -271,7 +271,7 @@ class ActionGet extends Action
                 break;
 
             default:
-                $this->log->warning('Неверный вид аутентификации "' . SettingsAuth::TYPE . '", проверьте настройки');
+                $this->log->warning('Неверный вид аутентификации "' . SettingsAuth::$type . '", проверьте настройки');
 
                 return Response::error500('При получении кода произошла ошибка, пожалуйста обратитесь к администратору');
                 break;
@@ -285,7 +285,7 @@ class ActionGet extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 10.06.2020
+     * @version 25.09.2020
      */
     private function sendEmail()
     {
@@ -296,7 +296,7 @@ class ActionGet extends Action
                 $this->auth_id,
             ],
             [
-                '[APP_NAME]' => SettingsGeneral::APP_NAME,
+                '[APP_NAME]' => SettingsGeneral::$app_name,
                 '[SECRET]'   => $this->secret,
             ]
         );
@@ -313,13 +313,13 @@ class ActionGet extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 10.06.2020
+     * @version 25.09.2020
      */
     private function sendSms()
     {
         $this->sms->send(
             $this->auth_id,
-            'Код для входа: ' . $this->secret . ', ' . SettingsGeneral::APP_NAME
+            'Код для входа: ' . $this->secret . ', ' . SettingsGeneral::$app_name
         );
 
         return Response::data([

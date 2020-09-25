@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 09.09.2020
+ * @version 25.09.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -19,15 +19,8 @@ use Pimple\Container;
  */
 class FileRemove extends Action
 {
-    /**
-     * @var FileInfo
-     */
-    protected $file_info;
-
-    /**
-     * @var FileRights
-     */
-    protected $file_rights;
+    protected FileInfo $file_info;
+    protected FileRights $file_rights;
 
     /**
      * @param Container $dic Контейнер
@@ -50,7 +43,7 @@ class FileRemove extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 09.09.2020
+     * @version 25.09.2020
      */
     public function run($fileid)
     {
@@ -65,9 +58,9 @@ class FileRemove extends Action
             ]);
         }
 
-        $file_path = SettingsFile::FILE_FOLDER . $info->path;
+        $file_path = SettingsFile::$file_folder . $info->path;
 
-        if (SettingsFile::FULL_REMOVE) {
+        if (SettingsFile::$full_remove) {
             $info->delete();
         } else {
             $info->deleted_at = $this->datetimenow;
@@ -79,7 +72,7 @@ class FileRemove extends Action
             $datachangelog = $this->dic['datachangelog'];
             $datachangelog->insert('files', $datachangelog::ACTION_DELETE, $info->id, $info->as_array());
 
-            if (SettingsFile::FULL_REMOVE) {
+            if (SettingsFile::$full_remove) {
                 @unlink($file_path);
             }
 

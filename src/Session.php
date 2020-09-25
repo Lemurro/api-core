@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 30.07.2020
+ * @version 25.09.2020
  */
 
 namespace Lemurro\Api\Core;
@@ -16,8 +16,6 @@ use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
 /**
- * Class Session
- *
  * @package Lemurro\Api\Core
  */
 class Session
@@ -31,7 +29,7 @@ class Session
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 30.07.2020
+     * @version 25.09.2020
      */
     public function check($session_id)
     {
@@ -43,14 +41,14 @@ class Session
         $checked_at = $now->toDateTimeString();
 
         ORM::for_table('sessions')
-            ->where_lt('checked_at', $now->subDays(SettingsAuth::SESSIONS_OLDER_THAN))
+            ->where_lt('checked_at', $now->subDays(SettingsAuth::$sessions_older_than))
             ->delete_many();
 
         $session = ORM::for_table('sessions')
             ->where_equal('session', $session_id)
             ->find_one();
         if (is_object($session) && $session->session == $session_id) {
-            if (SettingsAuth::SESSIONS_BINDING_TO_IP && $session->ip !== $_SERVER['REMOTE_ADDR']) {
+            if (SettingsAuth::$sessions_binding_to_ip && $session->ip !== $_SERVER['REMOTE_ADDR']) {
                 $session->delete();
 
                 return Response::error401('Необходимо авторизоваться [#2]');

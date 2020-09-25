@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 09.09.2020
+ * @version 25.09.2020
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
@@ -29,7 +29,7 @@ class ActionCheck extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 09.09.2020
+     * @version 25.09.2020
      */
     public function run($auth_id, $auth_code, $device_info, $geoip): array
     {
@@ -53,7 +53,7 @@ class ActionCheck extends Action
                 $session->created_at = $created_at;
                 $session->checked_at = $created_at;
 
-                if (SettingsAuth::SESSIONS_BINDING_TO_IP) {
+                if (SettingsAuth::$sessions_binding_to_ip) {
                     $session->ip = $_SERVER['REMOTE_ADDR'];
                 }
 

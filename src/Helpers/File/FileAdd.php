@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 09.09.2020
+ * @version 25.09.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -33,8 +33,6 @@ class FileAdd extends Action
     protected $undo_list = [];
 
     /**
-     * Выполним действие
-     *
      * @param string $file_name      Имя файла во временном каталоге
      * @param string $orig_name      Оригинальное имя файла
      * @param string $container_type Тип контейнера
@@ -63,17 +61,16 @@ class FileAdd extends Action
     }
 
     /**
-     * Возвращаем файлы обратно во временное хранилище
-     *
      * @return boolean
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.10.2019
+     *
+     * @version 25.09.2020
      */
     public function undo()
     {
         if (!empty($this->undo_list)) {
-            foreach ($this->undo_list as $path_file => $item) {
+            foreach ($this->undo_list as $item) {
                 rename($item['destination_file'], $item['source_file']);
 
                 if (isset($item['id'])) {
@@ -90,18 +87,17 @@ class FileAdd extends Action
     }
 
     /**
-     * Переносим файл из временного каталога в хранилище
-     *
      * @param string $source_file_name Имя файла во временном каталоге
      *
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.01.2020
+     *
+     * @version 25.09.2020
      */
     protected function moveToStorage($source_file_name)
     {
-        $source_file = SettingsFile::TEMP_FOLDER . $source_file_name;
+        $source_file = SettingsFile::$temp_folder . $source_file_name;
 
         if (!is_file($source_file) || !is_readable($source_file)) {
             $this->log->error('File: Файл отсутствует или не может быть прочитан', [
@@ -120,7 +116,7 @@ class FileAdd extends Action
         $second_folder = substr($md5, 2, 2);
         $suffix_folder = $first_folder . '/' . $second_folder . '/';
 
-        $dest_folder = SettingsFile::FILE_FOLDER . $suffix_folder;
+        $dest_folder = SettingsFile::$file_folder . $suffix_folder;
 
         if (!is_dir($dest_folder) && !mkdir($dest_folder, 0755, true) && !is_dir($dest_folder)) {
             return Response::error500('Каталог "' . $dest_folder . '" не был создан, обратитесь к разработчику');
@@ -152,8 +148,6 @@ class FileAdd extends Action
     }
 
     /**
-     * Переносим файл из временного каталога в хранилище
-     *
      * @param string $file_name      Имя файла в постоянном хранилище
      * @param string $orig_name      Оригинальное имя файла
      * @param string $container_type Тип контейнера
