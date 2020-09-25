@@ -10,7 +10,9 @@
 
 namespace Lemurro\Api\Core\Helpers;
 
-use Lemurro\Api\App\Configs\EmailTemplates;
+use Lemurro\Api\App\Configs\EmailTemplates\Footer;
+use Lemurro\Api\App\Configs\EmailTemplates\Header;
+use Lemurro\Api\App\Configs\EmailTemplates\LogoBase64;
 use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\App\Configs\SettingsMail;
 use Lemurro\Api\App\Configs\SettingsPath;
@@ -23,30 +25,11 @@ use Throwable;
  */
 class Mailer
 {
-    /**
-     * @var PHPMailer
-     */
-    protected $phpmailer;
-
-    /**
-     * @var PHPMailer
-     */
-    protected $phpmailer_reserve;
-
-    /**
-     * @var Logger
-     */
-    protected $log;
-
-    /**
-     * @var string HTML-код шапки письма
-     */
-    protected $header;
-
-    /**
-     * @var string HTML-код подвала письма
-     */
-    protected $footer;
+    protected PHPMailer $phpmailer;
+    protected PHPMailer $phpmailer_reserve;
+    protected Logger $log;
+    protected string $header;
+    protected string $footer;
 
     /**
      * @param object $dic    Контейнер
@@ -57,7 +40,7 @@ class Mailer
      *
      * @version 25.09.2020
      */
-    public function __construct($dic, $header = EmailTemplates::HEADER, $footer = EmailTemplates::FOOTER)
+    public function __construct($dic, $header = Header::$tpl, $footer = Footer::$tpl)
     {
         $this->phpmailer = $dic['phpmailer'];
         $this->log = LoggerFactory::create('Mailer');
@@ -70,7 +53,7 @@ class Mailer
     }
 
     /**
-     * @param string $template_name Имя шаблона
+     * @param string $tpl           Шаблон
      * @param string $subject       Тема письма
      * @param array  $email_tos     Массив адресов кому отправить письмо
      * @param array  $template_data Массив данных для подстановки в шаблон
@@ -83,126 +66,118 @@ class Mailer
      *
      * @version 25.09.2020
      */
-    public function send($template_name, $subject, $email_tos, $template_data, $images = [], $files = [])
+    public function send($tpl, $subject, $email_tos, $template_data, $images = [], $files = [])
     {
-        // Проверяем наличие шаблона
-        if (constant('\Lemurro\Api\App\Configs\EmailTemplates::' . $template_name) !== null) {
-            if (SettingsGeneral::$server_type === SettingsGeneral::$server_type_dev && SettingsMail::$smtp === false) {
-                return true;
-            } else {
-                // Очищаемся от старых данных
-                $this->phpmailer->ClearAllRecipients();
-                $this->phpmailer->ClearAttachments();
-                $this->phpmailer->ClearCustomHeaders();
-                $this->phpmailer->ClearReplyTos();
+        if (SettingsGeneral::$server_type === SettingsGeneral::$server_type_dev && SettingsMail::$smtp === false) {
+            return true;
+        } else {
+            // Очищаемся от старых данных
+            $this->phpmailer->ClearAllRecipients();
+            $this->phpmailer->ClearAttachments();
+            $this->phpmailer->ClearCustomHeaders();
+            $this->phpmailer->ClearReplyTos();
 
-                if (SettingsMail::$reserve) {
-                    $this->phpmailer_reserve->ClearAllRecipients();
-                    $this->phpmailer_reserve->ClearAttachments();
-                    $this->phpmailer_reserve->ClearCustomHeaders();
-                    $this->phpmailer_reserve->ClearReplyTos();
-                }
+            if (SettingsMail::$reserve) {
+                $this->phpmailer_reserve->ClearAllRecipients();
+                $this->phpmailer_reserve->ClearAttachments();
+                $this->phpmailer_reserve->ClearCustomHeaders();
+                $this->phpmailer_reserve->ClearReplyTos();
+            }
 
-                // Прикрепляем другие изображения при необходимости
-                if (is_array($images) && count($images) > 0) {
-                    foreach ($images as $image_code => $image_filename) {
-                        $filename = SettingsPath::$root . $image_filename;
-                        if (is_readable($filename)) {
-                            $basename = pathinfo($filename, PATHINFO_BASENAME);
-                            $imagetype = getimagesize($filename)['mime'];
+            // Прикрепляем другие изображения при необходимости
+            if (is_array($images) && count($images) > 0) {
+                foreach ($images as $image_code => $image_filename) {
+                    $filename = SettingsPath::$root . $image_filename;
+                    if (is_readable($filename)) {
+                        $basename = pathinfo($filename, PATHINFO_BASENAME);
+                        $imagetype = getimagesize($filename)['mime'];
 
-                            $this->phpmailer->AddEmbeddedImage(
+                        $this->phpmailer->AddEmbeddedImage(
+                            $filename,
+                            $image_code,
+                            $basename,
+                            'base64',
+                            $imagetype
+                        );
+
+                        if (SettingsMail::$reserve) {
+                            $this->phpmailer_reserve->AddEmbeddedImage(
                                 $filename,
                                 $image_code,
                                 $basename,
                                 'base64',
                                 $imagetype
                             );
+                        }
+                    }
+                }
+            }
+
+            // Прикрепляем файлы при необходимости
+            if (is_array($files) && count($files) > 0) {
+                foreach ($files as $filename) {
+                    if (is_readable($filename)) {
+                        try {
+                            $this->phpmailer->addAttachment($filename);
 
                             if (SettingsMail::$reserve) {
-                                $this->phpmailer_reserve->AddEmbeddedImage(
-                                    $filename,
-                                    $image_code,
-                                    $basename,
-                                    'base64',
-                                    $imagetype
-                                );
+                                $this->phpmailer_reserve->addAttachment($filename);
                             }
+                        } catch (Throwable $t) {
                         }
                     }
                 }
+            }
 
-                // Прикрепляем файлы при необходимости
-                if (is_array($files) && count($files) > 0) {
-                    foreach ($files as $filename) {
-                        if (is_readable($filename)) {
-                            try {
-                                $this->phpmailer->addAttachment($filename);
+            // Связываем данные с шаблоном
+            $header_content = strtr($this->header, ['[LOGO_BASE64]' => LogoBase64::$tpl]);
+            $body_content = strtr($tpl, $template_data);
+            $footer_content = $this->footer;
+            $message = $header_content . $body_content . $footer_content;
 
-                                if (SettingsMail::$reserve) {
-                                    $this->phpmailer_reserve->addAttachment($filename);
-                                }
-                            } catch (Throwable $t) {
-                            }
-                        }
+            $this->phpmailer->Subject = iconv('utf-8', 'windows-1251', $subject);
+            $this->phpmailer->MsgHTML(iconv('utf-8', 'windows-1251', $message));
+
+            if (SettingsMail::$reserve) {
+                $this->phpmailer_reserve->Subject = iconv('utf-8', 'windows-1251', $subject);
+                $this->phpmailer_reserve->MsgHTML(iconv('utf-8', 'windows-1251', $message));
+            }
+
+            if (is_array($email_tos) && count($email_tos) > 0) {
+                foreach ($email_tos as $one_email) {
+                    $this->phpmailer->addAddress($one_email);
+
+                    if (SettingsMail::$reserve) {
+                        $this->phpmailer_reserve->addAddress($one_email);
                     }
                 }
+            } else {
+                $this->log->warning('Массив адресов отправки пуст.');
 
-                // Связываем данные с шаблоном
-                $template = constant('\Lemurro\Api\App\Configs\EmailTemplates::' . $template_name);
-                $header_content = strtr($this->header, ['[LOGO_BASE64]' => EmailTemplates::LOGO_BASE64]);
-                $body_content = strtr($template, $template_data);
-                $footer_content = $this->footer;
-                $message = $header_content . $body_content . $footer_content;
+                return false;
+            }
 
-                $this->phpmailer->Subject = iconv('utf-8', 'windows-1251', $subject);
-                $this->phpmailer->MsgHTML(iconv('utf-8', 'windows-1251', $message));
-
-                if (SettingsMail::$reserve) {
-                    $this->phpmailer_reserve->Subject = iconv('utf-8', 'windows-1251', $subject);
-                    $this->phpmailer_reserve->MsgHTML(iconv('utf-8', 'windows-1251', $message));
-                }
-
-                if (is_array($email_tos) && count($email_tos) > 0) {
-                    foreach ($email_tos as $one_email) {
-                        $this->phpmailer->addAddress($one_email);
-
-                        if (SettingsMail::$reserve) {
-                            $this->phpmailer_reserve->addAddress($one_email);
-                        }
-                    }
+            try {
+                if (!$this->phpmailer->Send()) {
+                    $this->log->warning('При отправке письма через основной канал произошла ошибка: "' . $this->phpmailer->ErrorInfo . '".');
                 } else {
-                    $this->log->warning('Массив адресов отправки пуст.');
-
-                    return false;
+                    return true;
                 }
+            } catch (Throwable $t) {
+                LogException::write($this->log, $t);
+            }
 
+            if (SettingsMail::$reserve) {
                 try {
-                    if (!$this->phpmailer->Send()) {
-                        $this->log->warning('При отправке письма через основной канал произошла ошибка: "' . $this->phpmailer->ErrorInfo . '".');
+                    if (!$this->phpmailer_reserve->Send()) {
+                        $this->log->warning('При отправке письма через резервный канал произошла ошибка: "' . $this->phpmailer_reserve->ErrorInfo . '".');
                     } else {
                         return true;
                     }
                 } catch (Throwable $t) {
                     LogException::write($this->log, $t);
                 }
-
-                if (SettingsMail::$reserve) {
-                    try {
-                        if (!$this->phpmailer_reserve->Send()) {
-                            $this->log->warning('При отправке письма через резервный канал произошла ошибка: "' . $this->phpmailer_reserve->ErrorInfo . '".');
-                        } else {
-                            return true;
-                        }
-                    } catch (Throwable $t) {
-                        LogException::write($this->log, $t);
-                    }
-                }
-
-                return false;
             }
-        } else {
-            $this->log->warning('При отправке письма не найден шаблон: "' . $template_name . '".');
 
             return false;
         }

@@ -11,6 +11,7 @@
 namespace Lemurro\Api\Core\Cron;
 
 use Carbon\Carbon;
+use Lemurro\Api\App\Configs\EmailTemplates\SimpleMessage;
 use Lemurro\Api\App\Configs\SettingsCron;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\Mailer;
@@ -53,7 +54,7 @@ class DataChangeLogsRotator extends Action
 
         /** @var Mailer $mailer */
         $mailer = $this->dic['mailer'];
-        $mailer->send('SIMPLE_MESSAGE', $subject, SettingsCron::$errors_emails, [
+        $mailer->send(SimpleMessage::$tpl, $subject, SettingsCron::$errors_emails, [
             '[CONTENT]' => $message,
         ]);
     }

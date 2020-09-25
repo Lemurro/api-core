@@ -9,6 +9,7 @@
 namespace Lemurro\Api\Core\Auth\Code;
 
 use Carbon\Carbon;
+use Lemurro\Api\App\Configs\EmailTemplates\AuthCode;
 use Lemurro\Api\App\Configs\SettingsAuth;
 use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\Core\Abstracts\Action;
@@ -290,7 +291,7 @@ class ActionGet extends Action
     private function sendEmail()
     {
         $this->mailer->send(
-            'AUTH_CODE',
+            AuthCode::$tpl,
             'Код для входа в приложение для пользователя: ' . $this->auth_id,
             [
                 $this->auth_id,
