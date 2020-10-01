@@ -5,10 +5,12 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 16.09.2020
+ * @version 01.10.2020
  */
 
 namespace Lemurro\Api\Core\Abstracts;
+
+use PDO;
 
 /**
  * @package Lemurro\Api\Core\Abstracts
@@ -21,19 +23,9 @@ abstract class AbstractSettingsDatabase
     public static bool $need_connect = true;
 
     /**
-     * Сервер
+     * Имя источника данных
      */
-    public static string $host = '127.0.0.1';
-
-    /**
-     * Порт
-     */
-    public static int $port = 3306;
-
-    /**
-     * Имя БД
-     */
-    public static string $dbname = 'lemurro';
+    public static string $dsn = 'mysql:host=127.0.0.1;port=3306;dbname=lemurro';
 
     /**
      * Пользователь
@@ -44,6 +36,15 @@ abstract class AbstractSettingsDatabase
      * Пароль
      */
     public static string $password = '';
+
+    /**
+     * Опции драйвера
+     */
+    public static array $options = [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+    ];
 
     /**
      * Сбор выполняемых запросов:
