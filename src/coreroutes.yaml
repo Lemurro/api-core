@@ -131,11 +131,6 @@ user_get_me:
 
 # /users
 
-users_index:
-  path: /users
-  controller: '\Lemurro\Api\Core\Users\ControllerIndex'
-  methods: [GET, OPTIONS]
-
 users_insert:
   path: /users
   controller: '\Lemurro\Api\Core\Users\ControllerInsert'

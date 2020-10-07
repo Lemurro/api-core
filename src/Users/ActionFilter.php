@@ -1,10 +1,9 @@
 <?php
 
 /**
- * Поиск пользователей по фильтру
- *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 31.01.2020
+ *
+ * @version 07.10.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -14,29 +13,25 @@ use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
 /**
- * Class ActionFilter
- *
  * @package Lemurro\Api\Core\Users
  */
 class ActionFilter extends Action
 {
     /**
-     * @var integer Лимит пользователей при входе в раздел
-     */
-    protected $default_limit = 50;
-
-    /**
-     * Выполним действие
-     *
      * @param array $filter
      *
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 27.09.2019
+     *
+     * @version 07.10.2020
      */
     public function run($filter)
     {
+        if (empty($filter)) {
+            return Response::error400('Не указаны условия для выборки');
+        }
+
         $fields = $this->getFields();
         $sql_where = $this->getSqlWhere($filter, $fields);
         $users = $this->getInfoUsers($sql_where);
@@ -93,7 +88,8 @@ class ActionFilter extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 27.09.2019
+     *
+     * @version 07.10.2020
      */
     protected function getSqlWhere($filter, $fields)
     {
@@ -105,68 +101,59 @@ class ActionFilter extends Action
         ];
         */
 
-        $query = '1=1';
+        $query = [];
         $params = [];
-        $limit = $this->default_limit;
 
-        if (!empty($filter)) {
-            $roles_type = $filter['lemurro_roles_type'];
-            unset($filter['lemurro_roles_type']);
+        $roles_type = $filter['lemurro_roles_type'];
+        unset($filter['lemurro_roles_type']);
 
-            foreach ($filter as $field => $value) {
-                $value = trim($value);
+        foreach ($filter as $field => $value) {
+            $value = trim($value);
 
-                if ($value != '' && $value != 'all') {
-                    switch ($field) {
-                        case 'lemurro_user_fio':
-                            $query .= " AND CONCAT(`iu`.`last_name`,' ',`iu`.`first_name`,' ',`iu`.`second_name`) LIKE ?";
-                            $params[] = '%' . $value . '%';
-                            break;
+            if ($value != '' && $value != 'all') {
+                switch ($field) {
+                    case 'lemurro_user_fio':
+                        $query[] = "CONCAT(`iu`.`last_name`,' ',`iu`.`first_name`,' ',`iu`.`second_name`) LIKE ?";
+                        $params[] = '%' . $value . '%';
+                        break;
 
-                        case 'lemurro_roles':
-                            // $value = 'example|read'
-                            $role = explode('|', $value);
+                    case 'lemurro_roles':
+                        // $value = 'example|read'
+                        $role = explode('|', $value);
 
-                            if (is_array($role) && count($role) === 2) {
-                                if ($roles_type == 0) {
-                                    $where_roles_type = 'IS NULL';
-                                } else {
-                                    $where_roles_type = 'IS NOT NULL';
-                                }
-
-                                // `iu`.`roles` = {"guide":["read"],"example":["read","create-update","delete"]}
-                                // JSON_SEARCH(`roles`->>'$.example', 'one', 'read') IS NOT NULL
-                                $query .= " AND JSON_SEARCH(`roles`->>?, 'one', ?) $where_roles_type";
-                                $params[] = '$.' . $role[0]; // example
-                                $params[] = $role[1]; // read
-                            }
-                            break;
-
-                        default:
-                            if (in_array($field, $fields['info_users'], true)) {
-                                $query .= ' AND `iu`.`' . $field . '` = ?';
-                                $params[] = $value;
+                        if (is_array($role) && count($role) === 2) {
+                            if ($roles_type == 0) {
+                                $where_roles_type = 'IS NULL';
                             } else {
-                                if (in_array($field, $fields['users'], true)) {
-                                    $query .= ' AND `u`.`' . $field . '` = ?';
-                                    $params[] = $value;
-                                }
+                                $where_roles_type = 'IS NOT NULL';
                             }
-                            break;
-                    }
-                }
-            }
 
-            // Снимем лимит на количество строк, если был использован фильтр
-            if ($query != '1=1') {
-                $limit = null;
+                            // `iu`.`roles` = {"guide":["read"],"example":["read","create-update","delete"]}
+                            // JSON_SEARCH(`roles`->>'$.example', 'one', 'read') IS NOT NULL
+                            $query[] = "JSON_SEARCH(`roles`->>?, 'one', ?) $where_roles_type";
+                            $params[] = '$.' . $role[0]; // example
+                            $params[] = $role[1]; // read
+                        }
+                        break;
+
+                    default:
+                        if (in_array($field, $fields['info_users'], true)) {
+                            $query[] = '`iu`.`' . $field . '` = ?';
+                            $params[] = $value;
+                        } else {
+                            if (in_array($field, $fields['users'], true)) {
+                                $query[] = '`u`.`' . $field . '` = ?';
+                                $params[] = $value;
+                            }
+                        }
+                        break;
+                }
             }
         }
 
         return [
-            'query'  => $query,
+            'query' => implode(' AND ', $query),
             'params' => $params,
-            'limit'  => $limit,
         ];
     }
 
@@ -178,12 +165,11 @@ class ActionFilter extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 31.01.2020
+     *
+     * @version 07.10.2020
      */
     protected function getInfoUsers($sql_where)
     {
-        $limit = empty($sql_where['limit']) ? '' : 'LIMIT ' . $sql_where['limit'];
-
         $users = ORM::for_table('info_users')
             ->raw_query('SELECT
                 `iu`.*,
@@ -196,8 +182,7 @@ class ActionFilter extends Action
                 WHERE ' . $sql_where['query'] . '
                     AND `iu`.`deleted_at` IS NULL
                     AND `s2`.`id` IS NULL
-                ORDER BY `s1`.`checked_at` DESC
-                ' . $limit, $sql_where['params'])
+                ORDER BY `s1`.`checked_at` DESC', $sql_where['params'])
             ->find_array();
 
         if (!is_array($users)) {
