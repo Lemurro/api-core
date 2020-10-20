@@ -4,58 +4,34 @@
  * Валидация телефона
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 24.10.2019
+ *
+ * @version 16.10.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\SMS;
 
-use Lemurro\Api\Core\Helpers\LoggerFactory;
 use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumberType;
 use libphonenumber\PhoneNumberUtil;
-use Monolog\Logger;
 
 /**
- * Class Phone
- *
  * @package Lemurro\Api\Core\Helpers\SMS
  */
 class Phone
 {
     /**
-     * @var Logger
-     */
-    protected $log;
-
-    /**
-     * Phone constructor.
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 24.10.2019
-     */
-    public function __construct()
-    {
-        $this->log = LoggerFactory::create('SMS');
-    }
-
-    /**
-     * Валидация телефона
-     *
-     * @param string $phone  Номер телефона получателя
-     * @param string $region Возможный регион номера телефона (по умолчанию: 'RU')
-     *
      * @return string|null
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 24.10.2019
+     *
+     * @version 16.10.2020
      */
-    public function validate($phone, $region = 'RU')
+    public function normalize(string $phone, string $region = 'RU')
     {
         $phoneUtil = PhoneNumberUtil::getInstance();
+        $phoneNumber = $phoneUtil->parse($phone, $region);
 
         try {
-            $phoneNumber = $phoneUtil->parse($phone, $region);
-
             if (
                 $phoneUtil->isPossibleNumber($phoneNumber)
                 &&
@@ -63,27 +39,24 @@ class Phone
                 &&
                 $phoneUtil->getNumberType($phoneNumber) === PhoneNumberType::MOBILE
             ) {
-                return $phoneNumber->getCountryCode() . $phoneNumber->getNationalNumber();
+                $country_code = (string) $phoneNumber->getCountryCode();
+                $national_number = (string) $phoneNumber->getNationalNumber();
+
+                return $country_code . $national_number;
             }
         } catch (NumberParseException $e) {
-            $this->log->error('Phone->validate("' . $phone . '"): ' . $e->getMessage());
+            return null;
         }
 
         return null;
     }
 
     /**
-     * Это телефон?
-     *
-     * @param string $phone  Номер телефона получателя
-     * @param string $region Возможный регион номера телефона (по умолчанию: 'RU')
-     *
-     * @return boolean
-     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 24.10.2019
+     *
+     * @version 16.10.2020
      */
-    public function isPhone($phone, $region = 'RU')
+    public function hasPhone(string $phone, string $region = 'RU'): bool
     {
         $phoneUtil = PhoneNumberUtil::getInstance();
 

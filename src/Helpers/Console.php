@@ -1,10 +1,9 @@
 <?php
 
 /**
- * Инициализация cron-задач
- *
- * @version 30.04.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 14.10.2020
  */
 
 namespace Lemurro\Api\Core\Helpers;
@@ -14,36 +13,20 @@ use Lemurro\Api\Core\Users\ActionGet as GetUser;
 use Pimple\Container;
 
 /**
- * Class Console
- *
  * @package Lemurro\Helpers
  */
 class Console
 {
     /**
-     * Console constructor.
-     *
-     * @version 30.04.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 14.10.2020
      */
-    public function __construct()
+    public function getDIC(string $path_root): Container
     {
         date_default_timezone_set('UTC');
 
-        DB::init();
-    }
-
-    /**
-     * Получим DIC
-     *
-     * @return Container
-     *
-     * @version 30.04.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     */
-    public function getDIC()
-    {
-        $dic = DIC::init();
+        $dic = DIC::init($path_root);
 
         $dic['user'] = function ($c) {
             $user_info = (new GetUser($c))->run(1);
@@ -51,9 +34,9 @@ class Console
                 $user_info['data']['admin'] = true;
 
                 return $user_info['data'];
-            } else {
-                return [];
             }
+
+            return [];
         };
 
         (new AppDIC())->run($dic);

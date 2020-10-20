@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 10.09.2020
+ * @version 14.10.2020
  */
 
 namespace Lemurro\Api\Core\Checker;
@@ -19,7 +19,7 @@ class Checker extends Action
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 10.09.2020
+     * @version 14.10.2020
      */
     public function run(array $checks): void
     {
@@ -27,7 +27,7 @@ class Checker extends Action
             foreach ($checks as $check_type => $check_info) {
                 switch ($check_type) {
                     case 'auth':
-                        $check_result = (new Auth())->run($this->dic['session_id']);
+                        $check_result = (new Auth($this->dic['config']['auth']))->run($this->dic['session_id']);
                         break;
 
                     case 'role':

@@ -1,29 +1,38 @@
 <?php
 
 /**
- * Интерфейс шлюза отправки sms
- *
- * @version 18.02.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 14.10.2020
  */
 
 namespace Lemurro\Api\Core\Abstracts;
 
+use Lemurro\Api\Core\Helpers\SMS\Phone;
+
 /**
- * Class GatewaySMS
- *
  * @package Lemurro\Api\Core\Abstracts
  */
-interface GatewaySMS
+abstract class GatewaySMS
 {
+    protected array $config_sms;
+    protected Phone $phone;
+
     /**
-     * Отправка sms
-     *
-     * @param string $phone   Номер телефона получателя
-     * @param string $message Сообщение
-     *
-     * @version 18.02.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 14.10.2020
      */
-    public function send($phone, $message);
+    public function __construct(array $config_sms)
+    {
+        $this->config_sms = $config_sms;
+        $this->phone = new Phone();
+    }
+
+    /**
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 14.10.2020
+     */
+    public abstract function send(string $phone, string $message): array;
 }

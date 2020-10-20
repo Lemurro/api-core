@@ -1,8 +1,6 @@
 <?php
 
 /**
- * Инициализация Jobby
- *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
  * @version 25.09.2020
@@ -11,70 +9,64 @@
 namespace Lemurro\Api\Core\Cron;
 
 use Jobby\Jobby as JobbyJobby;
-use Lemurro\Api\App\Configs\SettingsCron;
-use Lemurro\Api\App\Configs\SettingsMail;
 use Lemurro\Api\Core\Helpers\Console;
+use Lemurro\Api\Core\Helpers\DB;
 use Lemurro\Api\Core\Helpers\File\FileOlderFiles;
 use Lemurro\Api\Core\Helpers\File\FileOlderTokens;
 use Lemurro\Api\Core\Helpers\LogException;
-use Lemurro\Api\Core\Helpers\LoggerFactory;
 use Monolog\Logger;
+use Pimple\Container;
 use Throwable;
 
 /**
- * Class Jobby
- *
  * @package Lemurro\Api\Core\Cron
  */
 class Jobby
 {
+    public Container $dic;
     public Logger $log;
-
     protected JobbyJobby $jobby;
 
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 25.09.2020
+     * @version 14.10.2020
      */
-    public function __construct()
+    public function __construct(string $path_root)
     {
-        date_default_timezone_set('UTC');
-
-        $this->log = LoggerFactory::create('Jobby');
+        $this->dic = (new Console())->getDIC($path_root);
+        $this->log = $this->dic['logfactory']->create('Jobby');
 
         $this->jobby = new JobbyJobby([
-            'output'         => SettingsCron::$log_file,
-            'recipients'     => implode(',', SettingsCron::$errors_emails),
+            'output'         => $this->dic['config']['cron']['log_file'],
+            'recipients'     => implode(',', $this->dic['config']['cron']['errors_emails']),
             'mailer'         => 'smtp',
-            'smtpHost'       => SettingsMail::$smtp_host,
-            'smtpPort'       => SettingsMail::$smtp_port,
-            'smtpUsername'   => SettingsMail::$smtp_username,
-            'smtpPassword'   => SettingsMail::$smtp_password,
-            'smtpSecurity'   => SettingsMail::$smtp_security,
-            'smtpSender'     => SettingsMail::$app_email,
+            'smtpHost'       => $this->dic['config']['mail']['smtp_host'],
+            'smtpPort'       => $this->dic['config']['mail']['smtp_port'],
+            'smtpUsername'   => $this->dic['config']['mail']['smtp_username'],
+            'smtpPassword'   => $this->dic['config']['mail']['smtp_password'],
+            'smtpSecurity'   => $this->dic['config']['mail']['smtp_security'],
+            'smtpSender'     => $this->dic['config']['mail']['app_email'],
             'smtpSenderName' => 'Jobby',
         ]);
     }
 
     /**
-     * Инициализация
-     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 25.09.2020
+     * @version 14.10.2020
      */
     public function init()
     {
-        if (SettingsCron::$file_older_tokens_enabled) {
+        if ($this->dic['config']['cron']['file_older_tokens_enabled']) {
             $this->fileOlderTokens();
         }
 
-        if (SettingsCron::$file_older_files_enabled) {
+        if ($this->dic['config']['cron']['file_older_files_enabled']) {
             $this->fileOlderFiles();
         }
 
-        if (SettingsCron::$data_change_logs_rotator_enabled) {
+        if ($this->dic['config']['cron']['data_change_logs_rotator_enabled']) {
             $this->dataChangeLogsRotator();
         }
 
@@ -86,18 +78,18 @@ class Jobby
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 25.09.2020
+     * @version 14.10.2020
      */
     protected function fileOlderTokens()
     {
         try {
-            $this->jobby->add(SettingsCron::$name_prefix . 'FileOlderTokens', [
+            $this->jobby->add($this->dic['config']['cron']['name_prefix'] . 'FileOlderTokens', [
                 'enabled'  => true,
                 'schedule' => '*/5 * * * *', // Каждые 5 минут
                 'closure'  => function () {
-                    new Console();
+                    DB::init($this->dic['config']['database']);
 
-                    (new FileOlderTokens())->clear();
+                    (new FileOlderTokens($this->dic['config']['file']))->clear();
 
                     return true;
                 },
@@ -112,16 +104,16 @@ class Jobby
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 25.09.2020
+     * @version 14.10.2020
      */
     protected function fileOlderFiles()
     {
         try {
-            $this->jobby->add(SettingsCron::$name_prefix . 'FileOlderFiles', [
+            $this->jobby->add($this->dic['config']['cron']['name_prefix'] . 'FileOlderFiles', [
                 'enabled'  => true,
                 'schedule' => '0 0 * * *', // Каждый день в 0:00 UTC
                 'closure'  => function () {
-                    (new FileOlderFiles())->clear();
+                    (new FileOlderFiles($this->dic['config']['file']))->clear();
 
                     return true;
                 },
@@ -136,19 +128,18 @@ class Jobby
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 25.09.2020
+     * @version 14.10.2020
      */
     protected function dataChangeLogsRotator()
     {
         try {
-            $this->jobby->add(SettingsCron::$name_prefix . 'DataChangeLogsRotator', [
+            $this->jobby->add($this->dic['config']['cron']['name_prefix'] . 'DataChangeLogsRotator', [
                 'enabled'  => true,
                 'schedule' => '0 0 1 1 *', // Каждый год 1 января в 0:00
                 'closure'  => function () {
-                    $cron = new Console();
-                    $dic = $cron->getDIC();
+                    DB::init($this->dic['config']['database']);
 
-                    (new DataChangeLogsRotator($dic))->execute();
+                    (new DataChangeLogsRotator($this->dic))->execute();
 
                     return true;
                 },

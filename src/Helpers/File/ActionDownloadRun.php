@@ -3,12 +3,11 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 25.09.2020
+ * @version 14.10.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
-use Lemurro\Api\App\Configs\SettingsFile;
 use Lemurro\Api\Core\Helpers\Response;
 use Lemurro\Api\Core\Abstracts\Action;
 
@@ -24,7 +23,7 @@ class ActionDownloadRun extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 25.09.2020
+     * @version 14.10.2020
      */
     public function run($token)
     {
@@ -36,11 +35,11 @@ class ActionDownloadRun extends Action
 
         switch ($file_info['data']['type']) {
             case 'permanent':
-                $folder = SettingsFile::$file_folder;
+                $folder = $this->dic['config']['file']['path_upload'];
                 break;
 
             case 'temporary':
-                $folder = SettingsFile::$temp_folder;
+                $folder = $this->dic['config']['file']['path_temp'];
                 break;
 
             default:
@@ -48,7 +47,7 @@ class ActionDownloadRun extends Action
                 break;
         }
 
-        $filepath = $folder . $file_info['data']['path'];
+        $filepath = $folder . '/' . $file_info['data']['path'];
 
         if (!is_readable($filepath) || !is_file($filepath)) {
             return Response::error404('Файл не найден');

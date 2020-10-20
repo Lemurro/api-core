@@ -5,14 +5,12 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 25.09.2020
+ * @version 14.10.2020
  */
 
 namespace Lemurro\Api\Core\Cron;
 
 use Carbon\Carbon;
-use Lemurro\Api\App\Configs\EmailTemplates\SimpleMessage;
-use Lemurro\Api\App\Configs\SettingsCron;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\Mailer;
 use ORM;
@@ -23,11 +21,9 @@ use ORM;
 class DataChangeLogsRotator extends Action
 {
     /**
-     * Выполним ротацию
-     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 25.09.2020
+     * @version 14.10.2020
      */
     public function execute()
     {
@@ -54,7 +50,7 @@ class DataChangeLogsRotator extends Action
 
         /** @var Mailer $mailer */
         $mailer = $this->dic['mailer'];
-        $mailer->send(SimpleMessage::$tpl, $subject, SettingsCron::$errors_emails, [
+        $mailer->send('simple_message', $subject, $this->dic['config']['cron']['errors_emails'], [
             '[CONTENT]' => $message,
         ]);
     }

@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 17.04.2020
+ * @version 14.10.2020
  */
 
 namespace Lemurro\Api\Core\Auth;
@@ -17,8 +17,6 @@ use ORM;
 use Pimple\Container;
 
 /**
- * Class ActionGetKeys
- *
  * @package Lemurro\Api\Core\Auth
  */
 class ActionGetKeys extends Action
@@ -29,19 +27,17 @@ class ActionGetKeys extends Action
     private $code_cleaner;
 
     /**
-     * ActionGetKeys constructor.
-     *
      * @param Container $dic
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 17.04.2020
+     * @version 14.10.2020
      */
     public function __construct($dic)
     {
         parent::__construct($dic);
 
-        $this->code_cleaner = new Code();
+        $this->code_cleaner = new Code($dic['config']['auth']['auth_codes_older_than_hours']);
     }
 
     /**

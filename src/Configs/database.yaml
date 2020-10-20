@@ -1,0 +1,21 @@
+database:
+  # Имя источника данных
+  dsn: "mysql:host=127.0.0.1;port=3306;dbname=lemurro"
+
+  # Пользователь
+  username: "root"
+
+  # Пароль
+  password: ""
+
+  # Опции драйвера
+  #
+  # 3: 2 => \PDO::ATTR_ERRMODE: \PDO::ERRMODE_EXCEPTION
+  # 19: 2 => \PDO::ATTR_DEFAULT_FETCH_MODE: \PDO::FETCH_ASSOC
+  # 1002: \PDO::MYSQL_ATTR_INIT_COMMAND
+  options: {3: 2, 19: 2, 1002: "SET NAMES utf8"}
+
+  # Сбор выполняемых запросов:
+  #   \ORM::get_last_query() (Возвращает строку)
+  #   \ORM::get_query_log() (Возвращает массив)
+  logging: true

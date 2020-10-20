@@ -3,18 +3,14 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 25.09.2020
+ * @version 14.10.2020
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
 
 use Carbon\Carbon;
-use Lemurro\Api\App\Configs\EmailTemplates\AuthCode;
-use Lemurro\Api\App\Configs\SettingsAuth;
-use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\LogException;
-use Lemurro\Api\Core\Helpers\LoggerFactory;
 use Lemurro\Api\Core\Helpers\Mailer;
 use Lemurro\Api\Core\Helpers\RandomNumber;
 use Lemurro\Api\Core\Helpers\Response;
@@ -49,7 +45,7 @@ class ActionGet extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 09.09.2020
+     * @version 14.10.2020
      */
     public function __construct($dic)
     {
@@ -58,11 +54,11 @@ class ActionGet extends Action
         $this->mailer = $dic['mailer'];
         $this->sms = $dic['sms'];
 
-        $this->code_cleaner = new Code();
+        $this->code_cleaner = new Code($dic['config']['auth']['auth_codes_older_than_hours']);
         $this->user_finder = new FindUser();
         $this->user_inserter = new InsertUser($dic);
         $this->phone_validator = new Phone();
-        $this->log = LoggerFactory::create('Auth');
+        $this->log = $dic['logfactory']->create('Auth');
     }
 
     /**
@@ -115,7 +111,7 @@ class ActionGet extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 25.09.2020
+     * @version 14.10.2020
      */
     private function findUser($auth_id): array
     {
@@ -125,7 +121,7 @@ class ActionGet extends Action
             return $user;
         }
 
-        if (!SettingsAuth::$can_registration_users) {
+        if (!$this->dic['config']['auth']['can_registration_users']) {
             throw new RuntimeException('Пользователь не найден', 404);
         }
 
@@ -145,7 +141,7 @@ class ActionGet extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 25.09.2020
+     * @version 14.10.2020
      */
     private function bruteForceProtection(): void
     {
@@ -155,7 +151,7 @@ class ActionGet extends Action
             ->where_equal('user_id', $this->user_id)
             ->where_gte('created_at', $lastday)
             ->count();
-        if ($count >= SettingsAuth::$attempts_per_day) {
+        if ($count >= $this->dic['config']['auth']['attempts_per_day']) {
             throw new RuntimeException('Попытка брутфорса (user_id: ' . $this->user_id . ')', 403);
         }
     }
@@ -244,17 +240,17 @@ class ActionGet extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 25.09.2020
+     * @version 14.10.2020
      */
     private function sendCode(): array
     {
-        if (SettingsGeneral::$server_type === SettingsGeneral::$server_type_dev) {
+        if ($this->dic['config']['general']['server_type'] === $this->dic['config']['general']['const_server_type_dev']) {
             return Response::data([
                 'message' => $this->secret,
             ]);
         }
 
-        switch (SettingsAuth::$type) {
+        switch ($this->dic['config']['auth']['type']) {
             case 'email':
                 return $this->sendEmail();
                 break;
@@ -264,7 +260,7 @@ class ActionGet extends Action
                 break;
 
             case 'mixed':
-                if ($this->phone_validator->isPhone($this->auth_id)) {
+                if ($this->phone_validator->hasPhone($this->auth_id)) {
                     return $this->sendSms();
                 } else {
                     return $this->sendEmail();
@@ -272,7 +268,7 @@ class ActionGet extends Action
                 break;
 
             default:
-                $this->log->warning('Неверный вид аутентификации "' . SettingsAuth::$type . '", проверьте настройки');
+                $this->log->warning('Неверный вид аутентификации "' . $this->dic['config']['auth']['type'] . '", проверьте настройки');
 
                 return Response::error500('При получении кода произошла ошибка, пожалуйста обратитесь к администратору');
                 break;
@@ -286,18 +282,18 @@ class ActionGet extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 25.09.2020
+     * @version 14.10.2020
      */
     private function sendEmail()
     {
         $this->mailer->send(
-            AuthCode::$tpl,
+            'auth_code',
             'Код для входа в приложение для пользователя: ' . $this->auth_id,
             [
                 $this->auth_id,
             ],
             [
-                '[APP_NAME]' => SettingsGeneral::$app_name,
+                '[APP_NAME]' => $this->dic['config']['general']['app_name'],
                 '[SECRET]'   => $this->secret,
             ]
         );
@@ -314,13 +310,13 @@ class ActionGet extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 25.09.2020
+     * @version 14.10.2020
      */
     private function sendSms()
     {
         $this->sms->send(
             $this->auth_id,
-            'Код для входа: ' . $this->secret . ', ' . SettingsGeneral::$app_name
+            'Код для входа: ' . $this->secret . ', ' . $this->dic['config']['general']['app_name']
         );
 
         return Response::data([

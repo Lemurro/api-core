@@ -1,0 +1,6 @@
+sms:
+  # API-ключ от аккаунта в sms.ru
+  smsru_api_id: "api_id"
+
+  # Отправитель (можно оставить пустым, если не нужен)
+  smsru_sender: "SenderName"

@@ -3,12 +3,11 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 25.09.2020
+ * @version 14.10.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
-use Lemurro\Api\App\Configs\SettingsFile;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\Response;
 
@@ -43,7 +42,7 @@ class ActionDownloadPrepare extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 25.09.2020
+     * @version 14.10.2020
      */
     protected function permanentFile($fileid, $filename)
     {
@@ -56,7 +55,7 @@ class ActionDownloadPrepare extends Action
             return Response::error403('Доступ ограничен', false);
         }
 
-        $file_path = SettingsFile::$file_folder . $info->path;
+        $file_path = $this->dic['config']['file']['path_upload'] . '/' . $info->path;
 
         if (!is_readable($file_path) || !is_file($file_path)) {
             return Response::error404('Файл не найден');
@@ -82,7 +81,7 @@ class ActionDownloadPrepare extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 25.09.2020
+     * @version 14.10.2020
      */
     protected function temporaryFile($fileid, $filename)
     {
@@ -100,7 +99,7 @@ class ActionDownloadPrepare extends Action
             return Response::error404('Файл не найден');
         }
 
-        $file_path = SettingsFile::$temp_folder . $fileid;
+        $file_path = $this->dic['config']['file']['path_temp'] . '/' . $fileid;
 
         if (!is_readable($file_path) || !is_file($file_path)) {
             return Response::error404('Файл не найден');

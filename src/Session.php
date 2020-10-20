@@ -5,13 +5,12 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 25.09.2020
+ * @version 14.10.2020
  */
 
 namespace Lemurro\Api\Core;
 
 use Carbon\Carbon;
-use Lemurro\Api\App\Configs\SettingsAuth;
 use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
@@ -20,18 +19,23 @@ use ORM;
  */
 class Session
 {
+    private array $config_auth;
+
     /**
-     * Проверим сессию на валидность
-     *
-     * @param string $session_id ИД сессии
-     *
-     * @return array
-     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 25.09.2020
+     * @version 14.10.2020
      */
-    public function check($session_id)
+    public function __construct(array $config_auth) {
+        $this->config_auth = $config_auth;
+    }
+
+    /**
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 14.10.2020
+     */
+    public function check(string $session_id): array
     {
         if (empty($session_id)) {
             return Response::error401('Необходимо авторизоваться [#1]');
@@ -41,14 +45,14 @@ class Session
         $checked_at = $now->toDateTimeString();
 
         ORM::for_table('sessions')
-            ->where_lt('checked_at', $now->subDays(SettingsAuth::$sessions_older_than))
+            ->where_lt('checked_at', $now->subDays($this->config_auth['sessions_older_than_hours']))
             ->delete_many();
 
         $session = ORM::for_table('sessions')
             ->where_equal('session', $session_id)
             ->find_one();
         if (is_object($session) && $session->session == $session_id) {
-            if (SettingsAuth::$sessions_binding_to_ip && $session->ip !== $_SERVER['REMOTE_ADDR']) {
+            if ($this->config_auth['sessions_binding_to_ip'] && $session->ip !== $_SERVER['REMOTE_ADDR']) {
                 $session->delete();
 
                 return Response::error401('Необходимо авторизоваться [#2]');

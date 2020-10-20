@@ -3,12 +3,11 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 25.09.2020
+ * @version 14.10.2020
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
 
-use Lemurro\Api\App\Configs\SettingsAuth;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\RandomKey;
 use Lemurro\Api\Core\Helpers\Response;
@@ -29,11 +28,11 @@ class ActionCheck extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 25.09.2020
+     * @version 14.10.2020
      */
     public function run($auth_id, $auth_code, $device_info, $geoip): array
     {
-        $cleaner = new Code();
+        $cleaner = new Code($this->dic['config']['auth']['auth_codes_older_than_hours']);
 
         $cleaner->clear();
 
@@ -53,7 +52,7 @@ class ActionCheck extends Action
                 $session->created_at = $created_at;
                 $session->checked_at = $created_at;
 
-                if (SettingsAuth::$sessions_binding_to_ip) {
+                if ($this->dic['config']['auth']['sessions_binding_to_ip']) {
                     $session->ip = $_SERVER['REMOTE_ADDR'];
                 }
 

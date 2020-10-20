@@ -1,0 +1,46 @@
+mail:
+  # ОСНОВНОЙ КАНАЛ
+
+  # Почтовый адрес
+  app_email: "no-reply@domain.tld"
+
+  # Отправка через SMTP с авторизацией
+  smtp: true
+
+  # Тип протокола (ssl|tls)
+  smtp_security: "ssl"
+
+  # Сервер
+  smtp_host: "HOST"
+
+  # Порт
+  smtp_port: 0
+
+  # Адрес почты
+  smtp_username: "no-reply@domain.tld"
+
+  # Пароль от почтового ящика
+  smtp_password: "PASSWORD"
+
+  # РЕЗЕРВНЫЙ КАНАЛ (ВСЕГДА SMTP)
+
+  # Включить (true) или выключить (false) отправку через резервный канал, в случае сбоя отправки через основной
+  reserve: false
+
+  # Почтовый адрес
+  reserve_app_email: "no-reply@domain.tld"
+
+  # Тип протокола (ssl|tls)
+  reserve_smtp_security: "ssl"
+
+  # Сервер
+  reserve_smtp_host: "HOST"
+
+  # Порт
+  reserve_smtp_port: 0
+
+  # Адрес почты
+  reserve_smtp_username: "no-reply@domain.tld"
+
+  # Пароль от почтового ящика
+  reserve_smtp_password: "PASSWORD"

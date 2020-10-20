@@ -5,13 +5,12 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 10.09.2020
+ * @version 16.10.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\Core\Checker\Checker;
-use Lemurro\Api\Core\Helpers\LoggerFactory;
 use Monolog\Logger;
 use Pimple\Container;
 
@@ -27,14 +26,14 @@ abstract class FileChecker
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 10.09.2020
+     * @version 16.10.2020
      */
     public function __construct(Container $dic)
     {
         $this->dic = $dic;
 
         $this->checker = new Checker($dic);
-        $this->log = LoggerFactory::create('FileChecker');
+        $this->log = $dic['logfactory']->create('FileChecker');
     }
 
     /**

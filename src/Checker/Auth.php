@@ -3,8 +3,9 @@
 /**
  * Проверка аутентификации
  *
- * @version 13.04.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 14.10.2020
  */
 
 namespace Lemurro\Api\Core\Checker;
@@ -12,24 +13,29 @@ namespace Lemurro\Api\Core\Checker;
 use Lemurro\Api\Core\Session;
 
 /**
- * Class Auth
- *
  * @package Lemurro\Api\Core\Checker
  */
 class Auth
 {
+    private Session $session;
+
     /**
-     * Запуск проверки
-     *
-     * @param string $session_id ИД сессии
-     *
-     * @return array
-     *
-     * @version 13.04.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 14.10.2020
      */
-    public function run($session_id)
+    public function __construct(array $config_auth)
     {
-        return (new Session())->check($session_id);
+        $this->session = new Session($config_auth);
+    }
+
+    /**
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 14.10.2020
+     */
+    public function run(string $session_id): array
+    {
+        return $this->session->check($session_id);
     }
 }

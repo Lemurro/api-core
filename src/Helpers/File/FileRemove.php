@@ -3,12 +3,11 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 25.09.2020
+ * @version 14.10.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
-use Lemurro\Api\App\Configs\SettingsFile;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
@@ -43,7 +42,7 @@ class FileRemove extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 25.09.2020
+     * @version 14.10.2020
      */
     public function run($fileid)
     {
@@ -58,9 +57,9 @@ class FileRemove extends Action
             ]);
         }
 
-        $file_path = SettingsFile::$file_folder . $info->path;
+        $file_path = $this->dic['config']['file']['path_upload'] . '/' . $info->path;
 
-        if (SettingsFile::$full_remove) {
+        if ($this->dic['config']['file']['full_remove']) {
             $info->delete();
         } else {
             $info->deleted_at = $this->datetimenow;
@@ -72,7 +71,7 @@ class FileRemove extends Action
             $datachangelog = $this->dic['datachangelog'];
             $datachangelog->insert('files', $datachangelog::ACTION_DELETE, $info->id, $info->as_array());
 
-            if (SettingsFile::$full_remove) {
+            if ($this->dic['config']['file']['full_remove']) {
                 @unlink($file_path);
             }
 

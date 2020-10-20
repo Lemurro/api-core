@@ -3,12 +3,11 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 01.10.2020
+ * @version 14.10.2020
  */
 
 namespace Lemurro\Api\Core\Helpers;
 
-use Lemurro\Api\App\Configs\SettingsDatabase;
 use ORM;
 
 /**
@@ -19,16 +18,14 @@ class DB
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 01.10.2020
+     * @version 14.10.2020
      */
-    public static function init()
+    public static function init(array $db_config)
     {
-        if (SettingsDatabase::$need_connect) {
-            ORM::configure('connection_string', SettingsDatabase::$dsn);
-            ORM::configure('username', SettingsDatabase::$username);
-            ORM::configure('password', SettingsDatabase::$password);
-            ORM::configure('logging', SettingsDatabase::$logging);
-            ORM::configure('driver_options', SettingsDatabase::$options);
-        }
+        ORM::configure('connection_string', $db_config['dsn']);
+        ORM::configure('username', $db_config['username']);
+        ORM::configure('password', $db_config['password']);
+        ORM::configure('logging', $db_config['logging']);
+        ORM::configure('driver_options', $db_config['options']);
     }
 }

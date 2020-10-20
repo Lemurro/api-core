@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 10.09.2020
+ * @version 14.10.2020
  */
 
 namespace Lemurro\Api\Core\Auth;
@@ -24,14 +24,14 @@ class ActionCheck extends Action
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 10.09.2020
+     * @version 14.10.2020
      */
     public function __construct(Container $dic)
     {
         parent::__construct($dic);
 
         $this->session_id = $dic['session_id'];
-        $this->session = new Session();
+        $this->session = new Session($dic['config']['auth']);
     }
 
     /**

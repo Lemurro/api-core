@@ -5,12 +5,11 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 25.09.2020
+ * @version 14.10.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
-use Lemurro\Api\App\Configs\SettingsFile;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
@@ -22,15 +21,8 @@ use ORM;
  */
 class FileAdd extends Action
 {
-    /**
-     * @var Logger
-     */
-    protected $log;
-
-    /**
-     * @var array
-     */
-    protected $undo_list = [];
+    protected Logger $log;
+    protected array $undo_list = [];
 
     /**
      * @param string $file_name      Имя файла во временном каталоге
@@ -93,11 +85,11 @@ class FileAdd extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 25.09.2020
+     * @version 14.10.2020
      */
     protected function moveToStorage($source_file_name)
     {
-        $source_file = SettingsFile::$temp_folder . $source_file_name;
+        $source_file = $this->dic['config']['file']['path_temp'] . '/' . $source_file_name;
 
         if (!is_file($source_file) || !is_readable($source_file)) {
             $this->log->error('File: Файл отсутствует или не может быть прочитан', [
@@ -114,9 +106,9 @@ class FileAdd extends Action
         $md5 = md5_file($source_file);
         $first_folder = substr($md5, 0, 2);
         $second_folder = substr($md5, 2, 2);
-        $suffix_folder = $first_folder . '/' . $second_folder . '/';
+        $suffix_folder = $first_folder . '/' . $second_folder;
 
-        $dest_folder = SettingsFile::$file_folder . $suffix_folder;
+        $dest_folder = $this->dic['config']['file']['path_upload'] . '/' . $suffix_folder;
 
         if (!is_dir($dest_folder) && !mkdir($dest_folder, 0755, true) && !is_dir($dest_folder)) {
             return Response::error500('Каталог "' . $dest_folder . '" не был создан, обратитесь к разработчику');
@@ -124,9 +116,10 @@ class FileAdd extends Action
 
         $file_name = (new FileName())->generate($dest_folder, $info['filename'], $info['extension']);
 
-        $path_file = $suffix_folder . $file_name;
+        $path_file = $suffix_folder . '/' . $file_name;
+        $destination_file = $dest_folder . '/' . $file_name;
 
-        if (!rename($source_file, $dest_folder . $file_name)) {
+        if (!rename($source_file, $destination_file)) {
             $this->log->error('File: Файл не был перемещён', [
                 'source_file_name' => $source_file_name,
                 'file_name'        => $path_file,
@@ -139,7 +132,7 @@ class FileAdd extends Action
 
         $this->undo_list[$path_file] = [
             'source_file'      => $source_file,
-            'destination_file' => $dest_folder . $file_name,
+            'destination_file' => $destination_file,
         ];
 
         return Response::data([
