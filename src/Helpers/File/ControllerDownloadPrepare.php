@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 10.09.2020
+ * @version 20.10.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -19,7 +19,7 @@ class ControllerDownloadPrepare extends Controller
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 10.09.2020
+     * @version 20.10.2020
      */
     public function start(): Response
     {
@@ -28,8 +28,8 @@ class ControllerDownloadPrepare extends Controller
         ]);
 
         $this->response->setData((new ActionDownloadPrepare($this->dic))->run(
-            $this->request->get('fileid'),
-            $this->request->get('filename')
+            $this->request->request->get('fileid'),
+            $this->request->request->get('filename')
         ));
 
         return $this->response;

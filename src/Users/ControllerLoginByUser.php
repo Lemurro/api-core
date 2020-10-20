@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 10.09.2020
+ * @version 20.10.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -21,7 +21,7 @@ class ControllerLoginByUser extends Controller
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 10.09.2020
+     * @version 20.10.2020
      */
     public function start(): Response
     {
@@ -31,7 +31,7 @@ class ControllerLoginByUser extends Controller
         ]);
 
         $this->response->setData((new ActionLoginByUser($this->dic))->run(
-            $this->request->get('user_id')
+            $this->request->request->get('user_id')
         ));
 
         return $this->response;

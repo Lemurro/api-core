@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 10.09.2020
+ * @version 20.10.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -21,11 +21,11 @@ class ControllerDownloadRun extends Controller
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 10.09.2020
+     * @version 20.10.2020
      */
     public function start(): Response
     {
-        $file_info = (new ActionDownloadRun($this->dic))->run($this->request->get('token'));
+        $file_info = (new ActionDownloadRun($this->dic))->run($this->request->query->get('token'));
 
         if (isset($file_info['errors'])) {
             $this->response->setData($file_info);

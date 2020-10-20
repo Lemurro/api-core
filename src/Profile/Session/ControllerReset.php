@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 10.09.2020
+ * @version 20.10.2020
  */
 
 namespace Lemurro\Api\Core\Profile\Session;
@@ -21,7 +21,7 @@ class ControllerReset extends Controller
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 10.09.2020
+     * @version 20.10.2020
      */
     public function start(): Response
     {
@@ -30,7 +30,7 @@ class ControllerReset extends Controller
         ]);
 
         $this->response->setData((new ActionReset($this->dic))->run(
-            $this->request->get('session')
+            $this->request->request->get('session')
         ));
 
         return $this->response;

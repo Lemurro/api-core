@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 10.09.2020
+ * @version 20.10.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -21,7 +21,7 @@ class ControllerFilter extends Controller
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 10.09.2020
+     * @version 20.10.2020
      */
     public function start(): Response
     {
@@ -31,7 +31,7 @@ class ControllerFilter extends Controller
         ]);
 
         $this->response->setData((new ActionFilter($this->dic))->run(
-            json_decode($this->request->get('json'), true, 512, JSON_THROW_ON_ERROR)
+            json_decode($this->request->request->get('json'), true, 512, JSON_THROW_ON_ERROR)
         ));
 
         return $this->response;

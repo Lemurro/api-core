@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 10.09.2020
+ * @version 20.10.2020
  */
 
 namespace Lemurro\Api\Core\AccessSets;
@@ -19,7 +19,7 @@ class ControllerSave extends Controller
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 10.09.2020
+     * @version 20.10.2020
      */
     public function start(): Response
     {
@@ -29,8 +29,8 @@ class ControllerSave extends Controller
         ]);
 
         $this->response->setData((new ActionSave($this->dic))->run(
-            $this->request->get('id'),
-            json_decode($this->request->get('json'), true, 512, JSON_THROW_ON_ERROR)
+            $this->request->query->get('id'),
+            json_decode($this->request->request->get('json'), true, 512, JSON_THROW_ON_ERROR)
         ));
 
         return $this->response;
