@@ -24,7 +24,8 @@ class ControllerGet extends Controller
     public function start(): Response
     {
         $this->response->setData((new ActionGet($this->dic))->run(
-            $this->request->query->get('auth_id')
+            $this->request->query->get('auth_id'),
+            $this->request->query->get('ip', '')
         ));
 
         return $this->response;

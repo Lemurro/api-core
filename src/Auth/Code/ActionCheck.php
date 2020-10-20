@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 14.10.2020
+ * @version 20.10.2020
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
@@ -28,7 +28,7 @@ class ActionCheck extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 14.10.2020
+     * @version 20.10.2020
      */
     public function run($auth_id, $auth_code, $device_info, $geoip): array
     {
@@ -41,6 +41,16 @@ class ActionCheck extends Action
             ->find_one();
         if (is_object($auth)) {
             if ($auth->code === $auth_code) {
+                $ip = '';
+
+                if (isset($geoip['ip'])) {
+                    $ip = $geoip['ip'];
+                }
+
+                if ($auth->ip !== $ip) {
+                    return Response::error401('Попытка взлома, запросите код повторно');
+                }
+
                 $secret = RandomKey::generate(100);
                 $created_at = $this->datetimenow;
 
