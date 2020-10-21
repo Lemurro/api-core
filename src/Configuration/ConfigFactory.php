@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 13.10.2020
+ * @version 21.10.2020
  */
 
 namespace Lemurro\Api\Core\Configuration;
@@ -33,7 +33,7 @@ class ConfigFactory
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 13.10.2020
+     * @version 21.10.2020
      */
     public function create(string $path_root): array
     {
@@ -55,7 +55,9 @@ class ConfigFactory
             'config' => array_replace_recursive($default_values, $override_values),
         ];
 
-        return $this->processor->processConfiguration($this->configuration, $config_values);
+        $config = $this->processor->processConfiguration($this->configuration, $config_values);
+
+        return Preparing::run($config);
     }
 
     /**
