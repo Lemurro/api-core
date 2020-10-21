@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 13.10.2020
+ * @version 21.10.2020
  */
 
 namespace Lemurro\Api\Core\Configuration;
@@ -19,7 +19,7 @@ class Configuration implements ConfigurationInterface
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 13.10.2020
+     * @version 21.10.2020
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
@@ -34,6 +34,10 @@ class Configuration implements ConfigurationInterface
                 ->integerNode('auth_codes_older_than_hours')->isRequired()->min(1)->end()
                 ->integerNode('sessions_older_than_hours')->isRequired()->min(1)->end()
                 ->booleanNode('sessions_binding_to_ip')->isRequired()->end()
+            ->end()->end()
+            ->arrayNode('cors')->children()
+                ->arrayNode('access_control_allow_origin')->isRequired()->scalarPrototype()->end()->end()
+                ->booleanNode('access_control_allow_credentials')->isRequired()->end()
             ->end()->end()
             ->arrayNode('cron')->children()
                 ->scalarNode('name_prefix')->isRequired()->end()

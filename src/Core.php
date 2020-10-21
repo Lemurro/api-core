@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 14.10.2020
+ * @version 21.10.2020
  */
 
 namespace Lemurro\Api\Core;
@@ -33,22 +33,22 @@ use Throwable;
  */
 class Core
 {
-    protected Logger $core_log;
-    protected Container $dic;
-    protected UrlMatcher $url_matcher;
     protected Request $request;
     protected JsonResponse $response;
+    protected Container $dic;
+    protected Logger $core_log;
 
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 14.10.2020
+     * @version 21.10.2020
      */
     public function __construct(string $path_root)
     {
         date_default_timezone_set('UTC');
 
-        $this->initRoutes($path_root);
+        $this->request = Request::createFromGlobals();
+        $this->response = new JsonResponse();
 
         $this->dic = DIC::init(
             $path_root,
@@ -57,25 +57,37 @@ class Core
         );
 
         $this->core_log = $this->dic['logfactory']->create('Core');
+        $this->core_log->debug('cors', $this->dic['config']['database']);
+        $this->core_log->debug($this->getOrigin($this->request->headers->get('Origin')));
 
         DB::init($this->dic['config']['database']);
+
+        $this->initRoutes($path_root);
     }
 
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 14.10.2020
+     * @version 21.10.2020
      */
     public function start()
     {
         try {
-            $matcher = $this->url_matcher->match($this->request->getPathInfo());
+            $fileLocator = new FileLocator([__DIR__, $this->dic['path_root']]);
+            $loader = new YamlFileLoader($fileLocator);
+            $routes = $loader->load('coreroutes.yaml');
+
+            $context = new RequestContext();
+            $context->fromRequest($this->request);
+
+            $url_matcher = new UrlMatcher($routes, $context);
+            $matcher = $url_matcher->match($this->request->getPathInfo());
             $this->request->attributes->add($matcher);
 
             (new AppResponse())->run($this->response);
 
             if ($this->request->getMethod() == 'OPTIONS') {
-                $allow_methods = 'OPTIONS, ' . $this->request->headers->get('access-control-request-method');
+                $allow_methods = 'OPTIONS, ' . $this->request->headers->get('Access-Control-Request-Method');
 
                 $this->response->headers->set('Access-Control-Allow-Methods', $allow_methods);
                 $this->response->send();
@@ -122,14 +134,10 @@ class Core
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 14.10.2020
+     * @version 21.10.2020
      */
-    protected function initRoutes(string $path_root): void
+    protected function initRoutes(): void
     {
-        $fileLocator = new FileLocator([__DIR__, $path_root]);
-        $loader = new YamlFileLoader($fileLocator);
-        $routes = $loader->load('coreroutes.yaml');
-
         $headers = [
             'X-SESSION-ID',
             'X-UTC-OFFSET',
@@ -137,16 +145,11 @@ class Core
             'X-File-Name',
         ];
 
-        $this->request = Request::createFromGlobals();
-        $this->response = new JsonResponse();
+        $origin = $this->getOrigin($this->request->headers->get('Origin'));
 
-        $this->response->headers->set('Access-Control-Allow-Origin', '*');
+        $this->response->headers->set('Access-Control-Allow-Origin', $origin);
+        $this->response->headers->set('Access-Control-Allow-Credentials', $this->dic['config']['cors']['access_control_allow_credentials']);
         $this->response->headers->set('Access-Control-Allow-Headers', implode(',', $headers));
-
-        $context = new RequestContext();
-        $context->fromRequest($this->request);
-
-        $this->url_matcher = new UrlMatcher($routes, $context);
     }
 
     /**
@@ -169,5 +172,25 @@ class Core
         }
 
         return false;
+    }
+
+    /**
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 21.10.2020
+     */
+    protected function getOrigin(string $request_origin): string
+    {
+        $allow_origins = $this->dic['config']['cors']['access_control_allow_origin'];
+
+        if (in_array('*', $allow_origins)) {
+            return '*';
+        }
+
+        if (in_array($request_origin, $allow_origins)) {
+            return $request_origin;
+        }
+
+        return $allow_origins[0];
     }
 }
