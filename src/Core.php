@@ -57,12 +57,8 @@ class Core
         );
 
         $this->core_log = $this->dic['logfactory']->create('Core');
-        $this->core_log->debug('cors', $this->dic['config']['database']);
-        $this->core_log->debug($this->getOrigin($this->request->headers->get('Origin')));
 
         DB::init($this->dic['config']['database']);
-
-        $this->initRoutes($path_root);
     }
 
     /**
@@ -73,43 +69,9 @@ class Core
     public function start()
     {
         try {
-            $fileLocator = new FileLocator([__DIR__, $this->dic['path_root']]);
-            $loader = new YamlFileLoader($fileLocator);
-            $routes = $loader->load('coreroutes.yaml');
-
-            $context = new RequestContext();
-            $context->fromRequest($this->request);
-
-            $url_matcher = new UrlMatcher($routes, $context);
-            $matcher = $url_matcher->match($this->request->getPathInfo());
-            $this->request->attributes->add($matcher);
-
-            (new AppResponse())->run($this->response);
-
-            if ($this->request->getMethod() == 'OPTIONS') {
-                $allow_methods = 'OPTIONS, ' . $this->request->headers->get('Access-Control-Request-Method');
-
-                $this->response->headers->set('Access-Control-Allow-Methods', $allow_methods);
-                $this->response->send();
-            } else {
-                (new AppDIC())->run($this->dic);
-
-                if ($this->maintenance()) {
-                    $this->response->setData(Response::error(
-                        '503 Service Unavailable',
-                        'warning',
-                        $this->dic['config']['maintenance']['message']
-                    ));
-                    $this->response->send();
-                } else {
-                    $class = $this->request->get('_controller');
-                    $controller = new $class($this->request, $this->response, $this->dic);
-
-                    /** @var SymfonyResponse $response */
-                    $response = call_user_func([$controller, 'start']);
-                    $response->send();
-                }
-            }
+            $this->initHeaders();
+            $this->initRoutes();
+            $this->initApplication();
         } catch (ResourceNotFoundException $e) {
             LogException::write($this->core_log, $e);
 
@@ -136,20 +98,69 @@ class Core
      *
      * @version 21.10.2020
      */
-    protected function initRoutes(): void
+    protected function initHeaders(): void
     {
-        $headers = [
-            'X-SESSION-ID',
-            'X-UTC-OFFSET',
-            'X-Requested-With',
-            'X-File-Name',
-        ];
-
         $origin = $this->getOrigin($this->request->headers->get('Origin'));
+        $credentials = $this->dic['config']['cors']['access_control_allow_credentials'];
+        $headers = implode(',', $this->dic['config']['headers']);
 
         $this->response->headers->set('Access-Control-Allow-Origin', $origin);
-        $this->response->headers->set('Access-Control-Allow-Credentials', $this->dic['config']['cors']['access_control_allow_credentials']);
-        $this->response->headers->set('Access-Control-Allow-Headers', implode(',', $headers));
+        $this->response->headers->set('Access-Control-Allow-Credentials', $credentials);
+        $this->response->headers->set('Access-Control-Allow-Headers', $headers);
+    }
+
+    /**
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 21.10.2020
+     */
+    protected function initRoutes(): void
+    {
+        $fileLocator = new FileLocator([__DIR__, $this->dic['path_root']]);
+        $loader = new YamlFileLoader($fileLocator);
+        $routes = $loader->load('coreroutes.yaml');
+
+        $context = new RequestContext();
+        $context->fromRequest($this->request);
+
+        $url_matcher = new UrlMatcher($routes, $context);
+        $matcher = $url_matcher->match($this->request->getPathInfo());
+        $this->request->attributes->add($matcher);
+    }
+
+    /**
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 21.10.2020
+     */
+    protected function initApplication(): void
+    {
+        (new AppResponse())->run($this->response);
+
+        if ($this->request->getMethod() == 'OPTIONS') {
+            $allow_methods = 'OPTIONS, ' . $this->request->headers->get('Access-Control-Request-Method');
+
+            $this->response->headers->set('Access-Control-Allow-Methods', $allow_methods);
+            $this->response->send();
+        } else {
+            (new AppDIC())->run($this->dic);
+
+            if ($this->maintenance()) {
+                $this->response->setData(Response::error(
+                    '503 Service Unavailable',
+                    'warning',
+                    $this->dic['config']['maintenance']['message']
+                ));
+                $this->response->send();
+            } else {
+                $class = $this->request->get('_controller');
+                $controller = new $class($this->request, $this->response, $this->dic);
+
+                /** @var SymfonyResponse $response */
+                $response = call_user_func([$controller, 'start']);
+                $response->send();
+            }
+        }
     }
 
     /**
