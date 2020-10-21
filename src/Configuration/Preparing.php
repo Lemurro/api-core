@@ -34,6 +34,6 @@ class Preparing
             }
         }
 
-        return $config
+        return $config;
     }
 }
