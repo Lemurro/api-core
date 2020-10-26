@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 21.10.2020
+ * @version 26.10.2020
  */
 
 namespace Lemurro\Api\Core;
@@ -96,11 +96,11 @@ class Core
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 21.10.2020
+     * @version 26.10.2020
      */
     protected function initHeaders(): void
     {
-        $origin = $this->getOrigin($this->request->headers->get('Origin'));
+        $origin = $this->getOrigin($this->request->headers->get('Origin', ''));
         $credentials = $this->dic['config']['cors']['access_control_allow_credentials'];
         $headers = implode(',', $this->dic['config']['headers']);
 
