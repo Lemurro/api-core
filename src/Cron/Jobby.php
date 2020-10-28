@@ -3,14 +3,14 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 25.09.2020
+ * @version 28.10.2020
  */
 
 namespace Lemurro\Api\Core\Cron;
 
 use Jobby\Jobby as JobbyJobby;
 use Lemurro\Api\Core\Helpers\Console;
-use Lemurro\Api\Core\Helpers\DB;
+use Lemurro\Api\Core\Helpers\Database;
 use Lemurro\Api\Core\Helpers\File\FileOlderFiles;
 use Lemurro\Api\Core\Helpers\File\FileOlderTokens;
 use Lemurro\Api\Core\Helpers\LogException;
@@ -78,7 +78,7 @@ class Jobby
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 14.10.2020
+     * @version 28.10.2020
      */
     protected function fileOlderTokens()
     {
@@ -87,7 +87,7 @@ class Jobby
                 'enabled'  => true,
                 'schedule' => '*/5 * * * *', // Каждые 5 минут
                 'closure'  => function () {
-                    DB::init($this->dic['config']['database']);
+                    Database::init($this->dic['config']['database']);
 
                     (new FileOlderTokens($this->dic['config']['file']))->clear();
 
@@ -128,7 +128,7 @@ class Jobby
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 14.10.2020
+     * @version 28.10.2020
      */
     protected function dataChangeLogsRotator()
     {
@@ -137,7 +137,7 @@ class Jobby
                 'enabled'  => true,
                 'schedule' => '0 0 1 1 *', // Каждый год 1 января в 0:00
                 'closure'  => function () {
-                    DB::init($this->dic['config']['database']);
+                    Database::init($this->dic['config']['database']);
 
                     (new DataChangeLogsRotator($this->dic))->execute();
 

@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 14.10.2020
+ * @version 28.10.2020
  */
 
 namespace Lemurro\Api\Core\Helpers;
@@ -13,12 +13,12 @@ use ORM;
 /**
  * @package Lemurro\Api\Core\Helpers
  */
-class DB
+class Database
 {
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 14.10.2020
+     * @version 28.10.2020
      */
     public static function init(array $db_config)
     {

@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 26.10.2020
+ * @version 28.10.2020
  */
 
 namespace Lemurro\Api\Core;
@@ -11,7 +11,7 @@ namespace Lemurro\Api\Core;
 use Lemurro\Api\App\Overrides\DIC as AppDIC;
 use Lemurro\Api\App\Overrides\Response as AppResponse;
 use Lemurro\Api\Core\Exception\ResponseException;
-use Lemurro\Api\Core\Helpers\DB;
+use Lemurro\Api\Core\Helpers\Database;
 use Lemurro\Api\Core\Helpers\DIC;
 use Lemurro\Api\Core\Helpers\LogException;
 use Lemurro\Api\Core\Helpers\Response;
@@ -41,7 +41,7 @@ class Core
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 21.10.2020
+     * @version 28.10.2020
      */
     public function __construct(string $path_root)
     {
@@ -58,7 +58,7 @@ class Core
 
         $this->core_log = $this->dic['logfactory']->create('Core');
 
-        DB::init($this->dic['config']['database']);
+        Database::init($this->dic['config']['database']);
     }
 
     /**
