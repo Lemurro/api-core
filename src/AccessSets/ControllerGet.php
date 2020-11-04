@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 20.10.2020
+ * @version 04.11.2020
  */
 
 namespace Lemurro\Api\Core\AccessSets;
@@ -19,7 +19,7 @@ class ControllerGet extends Controller
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 20.10.2020
+     * @version 04.11.2020
      */
     public function start(): Response
     {
@@ -29,7 +29,7 @@ class ControllerGet extends Controller
         ]);
 
         $this->response->setData((new ActionGet($this->dic))->run(
-            $this->request->query->get('id')
+            $this->request->attributes->get('id')
         ));
 
         return $this->response;

@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 20.10.2020
+ * @version 04.11.2020
  */
 
 namespace Lemurro\Api\Core\Guide;
@@ -21,7 +21,7 @@ class ControllerSave extends Controller
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 20.10.2020
+     * @version 04.11.2020
      */
     public function start(): Response
     {
@@ -33,12 +33,12 @@ class ControllerSave extends Controller
             ],
         ]);
 
-        $class_name = $this->checkType($this->request->query->get('type'));
+        $class_name = $this->checkType($this->request->attributes->get('type'));
         $action = 'Lemurro\\Api\\App\\Guide\\' . $class_name . '\\ActionSave';
         $class = new $action($this->dic);
         $this->response->setData(call_user_func(
             [$class, 'run'],
-            $this->request->query->get('id'),
+            $this->request->attributes->get('id'),
             json_decode($this->request->request->get('json'), true, 512, JSON_THROW_ON_ERROR)
         ));
 

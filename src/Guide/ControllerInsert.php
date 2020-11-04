@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 20.10.2020
+ * @version 04.11.2020
  */
 
 namespace Lemurro\Api\Core\Guide;
@@ -21,7 +21,7 @@ class ControllerInsert extends Controller
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 20.10.2020
+     * @version 04.11.2020
      */
     public function start(): Response
     {
@@ -33,7 +33,7 @@ class ControllerInsert extends Controller
             ],
         ]);
 
-        $class_name = $this->checkType($this->request->query->get('type'));
+        $class_name = $this->checkType($this->request->attributes->get('type'));
         $action = 'Lemurro\\Api\\App\\Guide\\' . $class_name . '\\ActionInsert';
         $class = new $action($this->dic);
         $this->response->setData(call_user_func(
