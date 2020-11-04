@@ -1,21 +1,41 @@
 database:
-  # Имя источника данных
-  dsn: "mysql:host=127.0.0.1;port=3306;dbname=lemurro"
+  mysql:
+    driver: "mysql"
+    host: "127.0.0.1"
+    port: "3306"
+    database: "lemurro"
+    username: "root"
+    password: ""
+    charset: "utf8mb4"
+    collation: "utf8mb4_unicode_ci"
+    # Опции драйвера
+    #
+    # 3: 2 => \PDO::ATTR_ERRMODE: \PDO::ERRMODE_EXCEPTION
+    # 19: 2 => \PDO::ATTR_DEFAULT_FETCH_MODE: \PDO::FETCH_ASSOC
+    # 1002: \PDO::MYSQL_ATTR_INIT_COMMAND
+    options: { 3: 2, 19: 2, 1002: "SET NAMES utf8" }
 
-  # Пользователь
-  username: "root"
+  # pgsql:
+  #   driver: "pgsql"
+  #   host: "127.0.0.1"
+  #   port: "5432"
+  #   database: "lemurro"
+  #   username: "root"
+  #   password: ""
+  #   charset: "utf8"
+  #   schema: "public"
+  #   sslmode: "prefer"
 
-  # Пароль
-  password: ""
+  # sqlite:
+  #   driver: "sqlite"
+  #   database: "/path/to/database.sqlite"
+  #   foreign_key_constraints: true
 
-  # Опции драйвера
-  #
-  # 3: 2 => \PDO::ATTR_ERRMODE: \PDO::ERRMODE_EXCEPTION
-  # 19: 2 => \PDO::ATTR_DEFAULT_FETCH_MODE: \PDO::FETCH_ASSOC
-  # 1002: \PDO::MYSQL_ATTR_INIT_COMMAND
-  options: {3: 2, 19: 2, 1002: "SET NAMES utf8"}
-
-  # Сбор выполняемых запросов:
-  #   \ORM::get_last_query() (Возвращает строку)
-  #   \ORM::get_query_log() (Возвращает массив)
-  logging: true
+  # sqlsrv:
+  #   driver: "sqlsrv"
+  #   host: "localhost"
+  #   port: "1433"
+  #   database: "lemurro"
+  #   username: "root"
+  #   password: ""
+  #   charset: "utf8"

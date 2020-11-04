@@ -3,11 +3,12 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 14.10.2020
+ * @version 04.11.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
+use Illuminate\Support\Facades\DB;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\Response;
 
@@ -38,17 +39,18 @@ class ActionDownloadPrepare extends Action
      * @param integer $fileid   ИД постоянного файла
      * @param string  $filename Имя файла (для браузера)
      *
-     * @return array
-     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 14.10.2020
+     * @version 04.11.2020
      */
-    protected function permanentFile($fileid, $filename)
+    protected function permanentFile($fileid, $filename): array
     {
-        $info = (new FileInfo())->getOneORM($fileid);
-        if (is_array($info)) {
-            return $info;
+        $info = DB::table('files')
+            ->where('id', '=', $fileid)
+            ->whereNull('deleted_at')
+            ->first();
+        if ($info === null) {
+            return Response::error404('Файл не найден');
         }
 
         if ((new FileRights($this->dic))->check($info->container_type, $info->container_id) === false) {

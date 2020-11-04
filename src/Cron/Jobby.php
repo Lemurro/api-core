@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 28.10.2020
+ * @version 30.10.2020
  */
 
 namespace Lemurro\Api\Core\Cron;
@@ -78,7 +78,7 @@ class Jobby
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 28.10.2020
+     * @version 30.10.2020
      */
     protected function fileOlderTokens()
     {
@@ -87,7 +87,7 @@ class Jobby
                 'enabled'  => true,
                 'schedule' => '*/5 * * * *', // Каждые 5 минут
                 'closure'  => function () {
-                    Database::init($this->dic['config']['database']);
+                    (new Database())->addConnection($this->dic['config']['database']['mysql'])->connect();
 
                     (new FileOlderTokens($this->dic['config']['file']))->clear();
 
@@ -128,7 +128,7 @@ class Jobby
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 28.10.2020
+     * @version 30.10.2020
      */
     protected function dataChangeLogsRotator()
     {
@@ -137,7 +137,7 @@ class Jobby
                 'enabled'  => true,
                 'schedule' => '0 0 1 1 *', // Каждый год 1 января в 0:00
                 'closure'  => function () {
-                    Database::init($this->dic['config']['database']);
+                    (new Database())->addConnection($this->dic['config']['database']['mysql'])->connect();
 
                     (new DataChangeLogsRotator($this->dic))->execute();
 

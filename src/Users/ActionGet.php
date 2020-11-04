@@ -1,58 +1,52 @@
 <?php
 
 /**
- * Получение пользователя
- *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 15.10.2019
+ *
+ * @version 30.10.2020
  */
 
 namespace Lemurro\Api\Core\Users;
 
+use Illuminate\Support\Facades\DB;
 use Lemurro\Api\App\RunAfter\Users\Get as RunAfterGet;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\Response;
-use ORM;
 
 /**
- * Class ActionGet
- *
  * @package Lemurro\Api\Core\Users
  */
 class ActionGet extends Action
 {
     /**
-     * Выполним действие
-     *
      * @param integer $id ИД записи
      *
-     * @return array
-     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.10.2019
+     *
+     * @version 30.10.2020
      */
-    public function run($id)
+    public function run($id): array
     {
-        $record = ORM::for_table('info_users')
-            ->table_alias('iu')
-            ->left_outer_join('users', ['u.id', '=', 'iu.user_id'], 'u')
-            ->where_equal('iu.user_id', $id)
-            ->where_null('iu.deleted_at')
-            ->find_one();
-        if (is_object($record) && $record->user_id == $id) {
-            $record = $record->as_array();
+        $record = DB::table('info_users', 'iu')
+            ->leftJoin('users', 'users.id', '=', 'iu.user_id')
+            ->where('iu.user_id', '=', $id)
+            ->whereNull('iu.deleted_at')
+            ->first();
 
-            $record['id'] = $record['user_id'];
-
-            if ($record['roles'] != '') {
-                $record['roles'] = json_decode($record['roles'], true);
-            } else {
-                $record['roles'] = [];
-            }
-
-            return (new RunAfterGet($this->dic))->run($record);
-        } else {
+        if ($record === null) {
             return Response::error404('Пользователь не найден');
         }
+
+        $record = (array) $record;
+
+        $record['id'] = $record['user_id'];
+
+        if ($record['roles'] != '') {
+            $record['roles'] = json_decode($record['roles'], true);
+        } else {
+            $record['roles'] = [];
+        }
+
+        return (new RunAfterGet($this->dic))->run($record);
     }
 }

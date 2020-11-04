@@ -1,51 +1,41 @@
 <?php
 
 /**
- * Список
- *
- * @version 05.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 30.10.2020
  */
 
 namespace Lemurro\Api\Core\AccessSets;
 
+use Illuminate\Support\Facades\DB;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\Response;
-use ORM;
 
 /**
- * Class ActionIndex
- *
  * @package Lemurro\Api\Core\AccessSets
  */
 class ActionIndex extends Action
 {
     /**
-     * Выполним действие
-     *
-     * @return array
-     *
-     * @version 05.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 30.10.2020
      */
-    public function run()
+    public function run(): array
     {
-        $sets = ORM::for_table('access_sets')
-            ->where_null('deleted_at')
-            ->find_array();
+        $sets = DB::table('access_sets')
+            ->whereNull('deleted_at')
+            ->get();
 
-        if (!is_array($sets)) {
-            return Response::error500('При получении наборов произошла ошибка, попробуйте ещё раз');
-        }
-
-        $count = count($sets);
+        $count = $sets->count();
 
         if ($count > 0) {
             foreach ($sets as &$set) {
-                if (empty($set['roles'])) {
-                    $set['roles'] = [];
+                if (empty($set->roles)) {
+                    $set->roles = [];
                 } else {
-                    $set['roles'] = json_decode($set['roles'], true);
+                    $set->roles = json_decode($set->roles, true);
                 }
             }
         }

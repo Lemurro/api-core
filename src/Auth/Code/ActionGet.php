@@ -3,12 +3,13 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 20.10.2020
+ * @version 30.10.2020
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\LogException;
 use Lemurro\Api\Core\Helpers\Mailer;
@@ -19,7 +20,6 @@ use Lemurro\Api\Core\Helpers\SMS\SMS;
 use Lemurro\Api\Core\Users\ActionInsert as InsertUser;
 use Lemurro\Api\Core\Users\Find as FindUser;
 use Monolog\Logger;
-use ORM;
 use Pimple\Container;
 use RuntimeException;
 use Throwable;
@@ -115,13 +115,13 @@ class ActionGet extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 14.10.2020
+     * @version 30.10.2020
      */
     private function findUser($auth_id): array
     {
         $user = $this->user_finder->run($auth_id);
 
-        if (is_array($user) && !empty($user)) {
+        if (!empty($user)) {
             return $user;
         }
 
@@ -145,16 +145,17 @@ class ActionGet extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 14.10.2020
+     * @version 30.10.2020
      */
     private function bruteForceProtection(): void
     {
         $lastday = Carbon::now()->subDay()->toDateTimeString();
 
-        $count = ORM::for_table('auth_codes_lasts')
-            ->where_equal('user_id', $this->user_id)
-            ->where_gte('created_at', $lastday)
+        $count = DB::table('auth_codes_lasts')
+            ->where('user_id', '=', $this->user_id)
+            ->where('created_at', '>=', $lastday)
             ->count();
+
         if ($count >= $this->dic['config']['auth']['attempts_per_day']) {
             throw new RuntimeException('Попытка брутфорса (user_id: ' . $this->user_id . ')', 403);
         }
@@ -178,25 +179,21 @@ class ActionGet extends Action
     }
 
     /**
-     * Получение существующих кодов
-     *
-     * @return array
-     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 10.06.2020
+     * @version 30.10.2020
      */
     private function getExistCodes(): array
     {
         $exist_codes = [];
 
-        $auth_codes = ORM::for_table('auth_codes')
+        $auth_codes = DB::table('auth_codes')
             ->select('code')
-            ->find_array();
+            ->get();
 
-        if (is_array($auth_codes) && !empty($auth_codes)) {
+        if (is_countable($auth_codes)) {
             foreach ($auth_codes as $item) {
-                $exist_codes[] = $item['code'];
+                $exist_codes[] = $item->code;
             }
         }
 
@@ -204,33 +201,31 @@ class ActionGet extends Action
     }
 
     /**
-     * Сохранение кода в БД
-     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 20.10.2020
+     * @version 30.10.2020
      */
     private function saveCode(): void
     {
         try {
-            ORM::get_db()->beginTransaction();
+            DB::beginTransaction();
 
-            $auth_code = ORM::for_table('auth_codes')->create();
-            $auth_code->auth_id = $this->auth_id;
-            $auth_code->code = $this->secret;
-            $auth_code->ip = $this->ip;
-            $auth_code->user_id = $this->user_id;
-            $auth_code->created_at = $this->datetimenow;
-            $auth_code->save();
+            DB::table('auth_codes')->insert([
+                'auth_id' => $this->auth_id,
+                'code' => $this->secret,
+                'ip' => $this->ip,
+                'user_id' => $this->user_id,
+                'created_at' => $this->datetimenow,
+            ]);
 
-            $auth_code_last = ORM::for_table('auth_codes_lasts')->create();
-            $auth_code_last->user_id = $this->user_id;
-            $auth_code_last->created_at = $this->datetimenow;
-            $auth_code_last->save();
+            DB::table('auth_codes_lasts')->insert([
+                'user_id' => $this->user_id,
+                'created_at' => $this->datetimenow,
+            ]);
 
-            ORM::get_db()->commit();
+            DB::commit();
         } catch (Throwable $t) {
-            ORM::get_db()->rollBack();
+            DB::rollBack();
 
             LogException::write($this->log, $t);
 

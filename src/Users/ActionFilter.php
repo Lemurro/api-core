@@ -3,14 +3,14 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 07.10.2020
+ * @version 30.10.2020
  */
 
 namespace Lemurro\Api\Core\Users;
 
+use Illuminate\Support\Facades\DB;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\Response;
-use ORM;
 
 /**
  * @package Lemurro\Api\Core\Users
@@ -20,13 +20,11 @@ class ActionFilter extends Action
     /**
      * @param array $filter
      *
-     * @return array
-     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 07.10.2020
+     * @version 30.10.2020
      */
-    public function run($filter)
+    public function run($filter): array
     {
         if (empty($filter)) {
             return Response::error400('Не указаны условия для выборки');
@@ -45,29 +43,24 @@ class ActionFilter extends Action
     /**
      * Подготовим список имён полей для валидации
      *
-     * @return array
-     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 27.09.2019
+     *
+     * @version 30.10.2020
      */
-    protected function getFields()
+    protected function getFields(): array
     {
         $info_users = [];
         $users = [];
 
-        $cols_info_users = ORM::for_table('info_users')
-            ->raw_query('SHOW COLUMNS FROM `info_users`')
-            ->find_many();
-        if (is_array($cols_info_users)) {
+        $cols_info_users = DB::select('SHOW COLUMNS FROM `info_users`');
+        if (is_countable($cols_info_users)) {
             foreach ($cols_info_users as $cols_info_user) {
                 $info_users[] = $cols_info_user->Field;
             }
         }
 
-        $cols_users = ORM::for_table('users')
-            ->raw_query('SHOW COLUMNS FROM `users`')
-            ->find_many();
-        if (is_array($cols_users)) {
+        $cols_users = DB::select('SHOW COLUMNS FROM `users`');
+        if (is_countable($cols_users)) {
             foreach ($cols_users as $cols_user) {
                 $users[] = $cols_user->Field;
             }
@@ -75,7 +68,7 @@ class ActionFilter extends Action
 
         return [
             'info_users' => $info_users,
-            'users'      => $users,
+            'users' => $users,
         ];
     }
 
@@ -85,13 +78,11 @@ class ActionFilter extends Action
      * @param array $filter
      * @param array $fields
      *
-     * @return array
-     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 07.10.2020
+     * @version 30.10.2020
      */
-    protected function getSqlWhere($filter, $fields)
+    protected function getSqlWhere($filter, $fields): array
     {
         /*
         $filter = [
@@ -162,28 +153,26 @@ class ActionFilter extends Action
      *
      * @param array $sql_where
      *
-     * @return array
-     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 07.10.2020
+     * @version 30.10.2020
      */
-    protected function getInfoUsers($sql_where)
+    protected function getInfoUsers($sql_where): array
     {
-        $users = ORM::for_table('info_users')
-            ->raw_query('SELECT
+        $users = DB::select('
+            SELECT
                 `iu`.*,
                 `u`.*,
                 `s1`.`checked_at`
-                FROM `info_users` `iu`
-                    LEFT JOIN `users` `u` ON `u`.`id` = `iu`.`user_id`
-                    LEFT JOIN `sessions` `s1` ON `s1`.`user_id` = `iu`.`user_id`
-                    LEFT JOIN `sessions` `s2` ON `s1`.`user_id` = `s2`.`user_id` AND `s1`.`checked_at` < `s2`.`checked_at`
-                WHERE ' . $sql_where['query'] . '
-                    AND `iu`.`deleted_at` IS NULL
-                    AND `s2`.`id` IS NULL
-                ORDER BY `s1`.`checked_at` DESC', $sql_where['params'])
-            ->find_array();
+            FROM `info_users` `iu`
+                LEFT JOIN `users` `u` ON `u`.`id` = `iu`.`user_id`
+                LEFT JOIN `sessions` `s1` ON `s1`.`user_id` = `iu`.`user_id`
+                LEFT JOIN `sessions` `s2` ON `s1`.`user_id` = `s2`.`user_id` AND `s1`.`checked_at` < `s2`.`checked_at`
+            WHERE ' . $sql_where['query'] . '
+                AND `iu`.`deleted_at` IS NULL
+                AND `s2`.`id` IS NULL
+            ORDER BY `s1`.`checked_at` DESC
+        ', $sql_where['params']);
 
         if (!is_array($users)) {
             return [];
@@ -191,9 +180,9 @@ class ActionFilter extends Action
 
         if ($users > 0) {
             foreach ($users as &$item) {
-                $item['id'] = $item['user_id'];
-                $item['locked'] = ($item['locked'] === '1');
-                $item['last_action_date'] = $item['checked_at'];
+                $item->id = $item->user_id;
+                $item->locked = (int) $item->locked === 1;
+                $item->last_action_date = $item->checked_at;
             }
         }
 

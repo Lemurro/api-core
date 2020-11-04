@@ -4,4 +4,4 @@ guides:
   # конечная точка: example (используется в пути: /guide/example)
   #      namespace: Example (полный путь до каталога классов: /app/Guide/Example/)
   classes:
-    # - example: 'Example'
+    # example: "Example"

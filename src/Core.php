@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 28.10.2020
+ * @version 30.10.2020
  */
 
 namespace Lemurro\Api\Core;
@@ -41,7 +41,7 @@ class Core
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 28.10.2020
+     * @version 30.10.2020
      */
     public function __construct(string $path_root)
     {
@@ -58,7 +58,7 @@ class Core
 
         $this->core_log = $this->dic['logfactory']->create('Core');
 
-        Database::init($this->dic['config']['database']);
+        (new Database())->addConnection($this->dic['config']['database']['mysql'])->connect();
     }
 
     /**

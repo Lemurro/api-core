@@ -5,13 +5,13 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 14.10.2020
+ * @version 30.10.2020
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
 
 use Carbon\Carbon;
-use ORM;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @package Lemurro\Api\Core\Auth\Code
@@ -35,20 +35,21 @@ class Code
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 14.10.2020
+     * @version 30.10.2020
      */
     public function clear($auth_id = '')
     {
         $now = Carbon::now('UTC');
+        $older_than = $now->subHours($this->auth_codes_older_than_hours)->toDateTimeString();
 
-        ORM::for_table('auth_codes')
-            ->where_lt('created_at', $now->subHours($this->auth_codes_older_than_hours))
-            ->delete_many();
+        DB::table('auth_codes')
+            ->where('created_at', '<', $older_than)
+            ->delete();
 
         if ($auth_id != '') {
-            ORM::for_table('auth_codes')
-                ->where_equal('auth_id', $auth_id)
-                ->delete_many();
+            DB::table('auth_codes')
+                ->where('auth_id', '=', $auth_id)
+                ->delete();
         }
     }
 }

@@ -3,15 +3,17 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 20.10.2020
+ * @version 30.10.2020
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
 
+use Illuminate\Support\Facades\DB;
 use Lemurro\Api\Core\Abstracts\Action;
+use Lemurro\Api\Core\Helpers\LogException;
 use Lemurro\Api\Core\Helpers\RandomKey;
 use Lemurro\Api\Core\Helpers\Response;
-use ORM;
+use Throwable;
 
 /**
  * @package Lemurro\Api\Core\Auth\Code
@@ -24,11 +26,9 @@ class ActionCheck extends Action
      * @param array  $device_info Информация об устройстве
      * @param array  $geoip       Информация о геолокации
      *
-     * @return array
-     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 20.10.2020
+     * @version 30.10.2020
      */
     public function run($auth_id, $auth_code, $device_info, $geoip): array
     {
@@ -36,70 +36,77 @@ class ActionCheck extends Action
 
         $cleaner->clear();
 
-        $auth = ORM::for_table('auth_codes')
-            ->where_equal('auth_id', $auth_id)
-            ->find_one();
-        if (is_object($auth)) {
-            if ($auth->code === $auth_code) {
-                $ip = '';
+        $auth = DB::table('auth_codes')
+            ->where('auth_id', '=', $auth_id)
+            ->first();
 
-                if (isset($geoip['ip'])) {
-                    $ip = $geoip['ip'];
-                }
+        if ($auth === null) {
+            return Response::error400('Код отсутствует, перезапустите приложение');
+        }
 
-                if ($auth->ip !== $ip) {
-                    return Response::error401('Попытка взлома, запросите код повторно');
-                }
+        if ($auth->code === $auth_code) {
+            $ip = '';
 
-                $secret = RandomKey::generate(100);
-                $created_at = $this->datetimenow;
+            if (isset($geoip['ip'])) {
+                $ip = $geoip['ip'];
+            }
 
-                $session = ORM::for_table('sessions')->create();
-                $session->session = $secret;
-                $session->user_id = $auth->user_id;
-                $session->device_info = json_encode($device_info, JSON_UNESCAPED_UNICODE);
-                $session->geoip = json_encode($geoip, JSON_UNESCAPED_UNICODE);
-                $session->created_at = $created_at;
-                $session->checked_at = $created_at;
+            if ($auth->ip !== $ip) {
+                return Response::error401('Попытка взлома, запросите код повторно');
+            }
 
-                if ($this->dic['config']['auth']['sessions_binding_to_ip']) {
-                    $session->ip = $_SERVER['REMOTE_ADDR'];
-                }
+            $secret = RandomKey::generate(100);
+            $created_at = $this->datetimenow;
+            $ip = $this->dic['config']['auth']['sessions_binding_to_ip'] ? $_SERVER['REMOTE_ADDR'] : null;
 
-                $session->save();
+            try {
+                DB::beginTransaction();
 
-                if (is_object($session) && isset($session->id)) {
-                    $history_registration = ORM::for_table('history_registrations')->create();
-                    $history_registration->device_uuid = ($device_info['uuid'] ?? 'unknown');
-                    $history_registration->device_platform = ($device_info['platform'] ?? 'unknown');
-                    $history_registration->device_version = ($device_info['version'] ?? 'unknown');
-                    $history_registration->device_manufacturer = ($device_info['manufacturer'] ?? 'unknown');
-                    $history_registration->device_model = ($device_info['model'] ?? 'unknown');
-                    $history_registration->created_at = $created_at;
-                    $history_registration->save();
+                DB::table('sessions')->insert([
+                    'session' => $secret,
+                    'ip' => $ip,
+                    'user_id' => $auth->user_id,
+                    'device_info' => json_encode($device_info, JSON_UNESCAPED_UNICODE),
+                    'geoip' => json_encode($geoip, JSON_UNESCAPED_UNICODE),
+                    'created_at' => $created_at,
+                    'checked_at' => $created_at,
+                ]);
 
-                    $cleaner->clear($auth_id);
+                DB::table('history_registrations')->insert([
+                    'device_uuid' => $device_info['uuid'] ?? 'unknown',
+                    'device_platform' => $device_info['platform'] ?? 'unknown',
+                    'device_version' => $device_info['version'] ?? 'unknown',
+                    'device_manufacturer' => $device_info['manufacturer'] ?? 'unknown',
+                    'device_model' => $device_info['model'] ?? 'unknown',
+                    'created_at' => $created_at,
+                ]);
 
-                    return Response::data([
-                        'session' => $secret,
-                    ]);
-                }
+                $cleaner->clear($auth_id);
+
+                DB::commit();
+
+                return Response::data([
+                    'session' => $secret,
+                ]);
+            } catch (Throwable $th) {
+                DB::rollBack();
+
+                LogException::write($this->dic['log'], $th);
 
                 return Response::error500('Произошла ошибка при аутентификации, попробуйте ещё раз');
             }
-
-            if ($auth->attempts < 3) {
-                $auth->attempts++;
-                $auth->save();
-
-                return Response::error400('Неверный код, попробуйте ещё раз');
-            }
-
-            $auth->delete();
-
-            return Response::error401('Попытка взлома, запросите код повторно');
         }
 
-        return Response::error400('Код отсутствует, перезапустите приложение');
+        if ($auth->attempts < 3) {
+            DB::table('auth_codes')
+                ->where('id', '=', $auth->id)
+                ->increment('attempts');
+
+            return Response::error400('Неверный код, попробуйте ещё раз');
+        }
+
+        DB::table('auth_codes')->delete($auth->id);
+
+        return Response::error401('Попытка взлома, запросите код повторно');
     }
 }

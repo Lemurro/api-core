@@ -3,15 +3,15 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 09.09.2020
+ * @version 30.10.2020
  */
 
 namespace Lemurro\Api\Core\AccessSets;
 
+use Illuminate\Support\Facades\DB;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
-use ORM;
 
 /**
  * @package Lemurro\Api\Core\AccessSets
@@ -21,13 +21,11 @@ class ActionInsert extends Action
     /**
      * @param array $data Массив данных
      *
-     * @return array
-     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 09.09.2020
+     * @version 30.10.2020
      */
-    public function run($data)
+    public function run($data): array
     {
         $exist = Exist::check(0, $data['name']);
         if (isset($exist['errors'])) {
@@ -38,22 +36,19 @@ class ActionInsert extends Action
             $data['roles'] = [];
         }
 
-        $record = ORM::for_table('access_sets')->create();
-        $record->name = $data['name'];
-        $record->roles = json_encode($data['roles']);
-        $record->created_at = $this->datetimenow;
-        $record->save();
-        if (is_object($record) && isset($record->id)) {
-            $result = $record->as_array();
-            $result['roles'] = $data['roles'];
+        $id = DB::table('access_sets')->insertGetId([
+            'name' => $data['name'],
+            'roles' => json_encode($data['roles']),
+            'created_at' => $this->datetimenow,
+        ]);
 
-            /** @var DataChangeLog $data_change_log */
-            $data_change_log = $this->dic['datachangelog'];
-            $data_change_log->insert('access_sets', $data_change_log::ACTION_INSERT, $record->id, $result);
+        $data['id'] = $id;
+        $data['created_at'] = $this->datetimenow;
 
-            return Response::data($result);
-        } else {
-            return Response::error500('Произошла ошибка при добавлении информации о пользователе, попробуйте ещё раз');
-        }
+        /** @var DataChangeLog $data_change_log */
+        $data_change_log = $this->dic['datachangelog'];
+        $data_change_log->insert('access_sets', $data_change_log::ACTION_INSERT, $id, $data);
+
+        return Response::data($data);
     }
 }

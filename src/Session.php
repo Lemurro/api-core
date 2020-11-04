@@ -5,14 +5,14 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 14.10.2020
+ * @version 30.10.2020
  */
 
 namespace Lemurro\Api\Core;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Lemurro\Api\Core\Helpers\Response;
-use ORM;
 
 /**
  * @package Lemurro\Api\Core
@@ -26,14 +26,15 @@ class Session
      *
      * @version 14.10.2020
      */
-    public function __construct(array $config_auth) {
+    public function __construct(array $config_auth)
+    {
         $this->config_auth = $config_auth;
     }
 
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 14.10.2020
+     * @version 30.10.2020
      */
     public function check(string $session_id): array
     {
@@ -43,27 +44,36 @@ class Session
 
         $now = Carbon::now('UTC');
         $checked_at = $now->toDateTimeString();
+        $older_than = $now->subDays($this->config_auth['sessions_older_than_hours'])->toDateTimeString();
 
-        ORM::for_table('sessions')
-            ->where_lt('checked_at', $now->subDays($this->config_auth['sessions_older_than_hours']))
-            ->delete_many();
+        DB::table('sessions')
+            ->where('checked_at', '<', $older_than)
+            ->delete();
 
-        $session = ORM::for_table('sessions')
-            ->where_equal('session', $session_id)
-            ->find_one();
-        if (is_object($session) && $session->session == $session_id) {
-            if ($this->config_auth['sessions_binding_to_ip'] && $session->ip !== $_SERVER['REMOTE_ADDR']) {
-                $session->delete();
+        $session = DB::table('sessions')
+            ->where('session', '=', $session_id)
+            ->first();
 
-                return Response::error401('Необходимо авторизоваться [#2]');
-            }
-
-            $session->checked_at = $checked_at;
-            $session->save();
-
-            return $session->as_array();
-        } else {
+        if ($session === null) {
             return Response::error401('Необходимо авторизоваться [#3]');
         }
+
+        if ($this->config_auth['sessions_binding_to_ip'] && $session->ip !== $_SERVER['REMOTE_ADDR']) {
+            DB::table('sessions')
+                ->where('session', '=', $session_id)
+                ->delete();
+
+            return Response::error401('Необходимо авторизоваться [#2]');
+        }
+
+        DB::table('sessions')
+            ->where('session', '=', $session_id)
+            ->update([
+                'checked_at' => $checked_at,
+            ]);
+
+        $session->checked_at = $checked_at;
+
+        return (array) $session;
     }
 }

@@ -5,14 +5,14 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 09.09.2020
+ * @version 30.10.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
+use Illuminate\Support\Facades\DB;
 use Lemurro\Api\Core\Helpers\Response;
 use Lemurro\Api\Core\Abstracts\Action;
-use ORM;
 
 /**
  * @package Lemurro\Api\Core\Helpers\File
@@ -26,28 +26,23 @@ class FileToken extends Action
      * @param string $path Путь до файла
      * @param string $name Имя файла для браузера
      *
-     * @return string
-     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 09.09.2020
+     * @version 30.10.2020
      */
-    public function generate($type, $path, $name)
+    public function generate($type, $path, $name): string
     {
         $token = md5(uniqid($this->dic['user']['id'], true));
 
-        $record = ORM::for_table('files_downloads')->create();
-        $record->type = $type;
-        $record->path = $path;
-        $record->name = $name;
-        $record->token = $token;
-        $record->created_at = $this->datetimenow;
-        $record->save();
-        if (is_object($record)) {
-            return $token;
-        } else {
-            return '';
-        }
+        $inserted = DB::table('files_downloads')->insert([
+            'type' => $type,
+            'path' => $path,
+            'name' => $name,
+            'token' => $token,
+            'created_at' => $this->datetimenow,
+        ]);
+
+        return $inserted ? $token : '';
     }
 
     /**
@@ -55,34 +50,34 @@ class FileToken extends Action
      *
      * @param string $token Токен
      *
-     * @return array
-     *
-     * @version 15.05.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 30.10.2020
      */
-    public function getFileInfo($token)
+    public function getFileInfo($token): array
     {
-        $record = ORM::for_table('files_downloads')
-            ->select_many(
+        $record = DB::table('files_downloads')
+            ->select(
                 'type',
                 'path',
                 'name',
                 'token'
             )
-            ->where_equal('token', $token)
-            ->find_one();
-        if (is_object($record)) {
-            if ($record->token === $token) {
-                return Response::data([
-                    'type' => $record->type,
-                    'path' => $record->path,
-                    'name' => $record->name,
-                ]);
-            } else {
-                return Response::error400('Неверный токен');
-            }
-        } else {
+            ->where('token', '=', $token)
+            ->first();
+
+        if ($record === null) {
             return Response::error404('Токен не найден');
         }
+
+        if ($record->token === $token) {
+            return Response::data([
+                'type' => $record->type,
+                'path' => $record->path,
+                'name' => $record->name,
+            ]);
+        }
+
+        return Response::error400('Неверный токен');
     }
 }
