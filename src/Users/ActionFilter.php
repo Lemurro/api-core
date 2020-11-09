@@ -122,8 +122,8 @@ class ActionFilter extends Action
                             }
 
                             // `iu`.`roles` = {"guide":["read"],"example":["read","create-update","delete"]}
-                            // JSON_SEARCH(`roles`->>'$.example', 'one', 'read') IS NOT NULL
-                            $query[] = "JSON_SEARCH(`roles`->>?, 'one', ?) $where_roles_type";
+                            // JSON_SEARCH(JSON_EXTRACT(`roles`, '$.example'), 'one', 'read') IS NOT NULL
+                            $query[] = "JSON_SEARCH(JSON_EXTRACT(`roles`, ?), 'one', ?) $where_roles_type";
                             $params[] = '$.' . $role[0]; // example
                             $params[] = $role[1]; // read
                         }
