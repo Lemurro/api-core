@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 30.10.2020
+ * @version 09.11.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -80,7 +80,7 @@ class ActionFilter extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 30.10.2020
+     * @version 09.11.2020
      */
     protected function getSqlWhere($filter, $fields): array
     {
@@ -92,7 +92,9 @@ class ActionFilter extends Action
         ];
         */
 
-        $query = [];
+        $query = [
+            '1 = 1',
+        ];
         $params = [];
 
         $roles_type = $filter['lemurro_roles_type'];
