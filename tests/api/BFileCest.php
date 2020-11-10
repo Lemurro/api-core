@@ -41,7 +41,7 @@ class BFileCest extends AbstractCest
 
     //     $I->seeResponseCodeIs(HttpCode::OK); // 200
     //     $I->seeResponseIsJson();
-    //     $I->seeResponseContains("{'success':true,'data':{'success':true}}");
+    //     $I->seeResponseContains('{"success":true,"data":{"success":true}}');
     // }
 
     // /**
@@ -55,6 +55,6 @@ class BFileCest extends AbstractCest
 
     //     $I->seeResponseCodeIs(HttpCode::OK); // 200
     //     $I->seeResponseIsJson();
-    //     $I->seeResponseContains("{'success':true,'data':{'success':true}}");
+    //     $I->seeResponseContains('{"success":true,"data":{"success":true}}');
     // }
 }
