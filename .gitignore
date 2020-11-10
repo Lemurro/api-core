@@ -1,4 +1,5 @@
 .vscode
 stubs
+tests/api.suite.yml
 vendor
 composer.lock

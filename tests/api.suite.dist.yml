@@ -1,0 +1,17 @@
+actor: ApiTester
+modules:
+    enabled:
+        - \Helper\Api
+        - Db:
+              dsn: "mysql:host=127.0.0.1;dbname=lemurro"
+              user: "root"
+              password: ""
+              dump: "tests/_data/database.sql"
+              cleanup: false # reload dump between tests
+              populate: true # load dump before all tests
+              initial_queries:
+                  - "SET NAMES utf8;"
+        - REST:
+              url: http://lemurro-api.localhost/
+              depends: PhpBrowser
+              part: Json
