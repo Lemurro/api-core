@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 30.10.2020
+ * @version 22.11.2020
  */
 
 namespace Lemurro\Api\Core\Configuration;
@@ -19,7 +19,7 @@ class Configuration implements ConfigurationInterface
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 30.10.2020
+     * @version 22.11.2020
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
@@ -69,20 +69,6 @@ class Configuration implements ConfigurationInterface
                     ->scalarNode('charset')->isRequired()->end()
                     ->scalarNode('schema')->isRequired()->end()
                     ->scalarNode('sslmode')->isRequired()->end()
-                ->end()->end()
-                ->arrayNode('sqlite')->canBeDisabled()->children()
-                    ->enumNode('driver')->isRequired()->values(['sqlite'])->end()
-                    ->scalarNode('database')->isRequired()->end()
-                    ->booleanNode('foreign_key_constraints')->isRequired()->end()
-                ->end()->end()
-                ->arrayNode('sqlsrv')->canBeDisabled()->children()
-                    ->enumNode('driver')->isRequired()->values(['sqlsrv'])->end()
-                    ->scalarNode('host')->isRequired()->end()
-                    ->scalarNode('port')->isRequired()->end()
-                    ->scalarNode('database')->isRequired()->end()
-                    ->scalarNode('username')->isRequired()->end()
-                    ->scalarNode('password')->isRequired()->end()
-                    ->scalarNode('charset')->isRequired()->end()
                 ->end()->end()
             ->end()->end()
             ->arrayNode('file')->children()

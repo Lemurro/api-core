@@ -25,17 +25,3 @@ database:
   #   charset: "utf8"
   #   schema: "public"
   #   sslmode: "prefer"
-
-  # sqlite:
-  #   driver: "sqlite"
-  #   database: "/path/to/database.sqlite"
-  #   foreign_key_constraints: true
-
-  # sqlsrv:
-  #   driver: "sqlsrv"
-  #   host: "localhost"
-  #   port: "1433"
-  #   database: "lemurro"
-  #   username: "root"
-  #   password: ""
-  #   charset: "utf8"
