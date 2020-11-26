@@ -12,6 +12,6 @@ modules:
               initial_queries:
                   - "SET NAMES utf8;"
         - REST:
-              url: http://lemurro-api.localhost/
+              url: http://127.0.0.1:8000/
               depends: PhpBrowser
               part: Json
