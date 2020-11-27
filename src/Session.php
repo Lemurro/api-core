@@ -42,14 +42,6 @@ class Session
             return Response::error401('Необходимо авторизоваться [#1]');
         }
 
-        $now = Carbon::now('UTC');
-        $checked_at = $now->toDateTimeString();
-        $older_than = $now->subDays($this->config_auth['sessions_older_than_days'])->toDateTimeString();
-
-        DB::table('sessions')
-            ->where('checked_at', '<', $older_than)
-            ->delete();
-
         $session = DB::table('sessions')
             ->where('session', '=', $session_id)
             ->first();
@@ -66,13 +58,13 @@ class Session
             return Response::error401('Необходимо авторизоваться [#2]');
         }
 
+        $session->checked_at = Carbon::now('UTC')->toDateTimeString();
+
         DB::table('sessions')
             ->where('session', '=', $session_id)
             ->update([
-                'checked_at' => $checked_at,
+                'checked_at' => $session->checked_at,
             ]);
-
-        $session->checked_at = $checked_at;
 
         return (array) $session;
     }

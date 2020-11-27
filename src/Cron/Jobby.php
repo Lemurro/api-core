@@ -3,11 +3,13 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 30.10.2020
+ * @version 27.11.2020
  */
 
 namespace Lemurro\Api\Core\Cron;
 
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Jobby\Jobby as JobbyJobby;
 use Lemurro\Api\Core\Helpers\Console;
 use Lemurro\Api\Core\Helpers\Database;
@@ -54,10 +56,12 @@ class Jobby
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 14.10.2020
+     * @version 27.11.2020
      */
     public function init()
     {
+        $this->authOlderSessions();
+
         if ($this->dic['config']['cron']['file_older_tokens_enabled']) {
             $this->fileOlderTokens();
         }
@@ -71,6 +75,36 @@ class Jobby
         }
 
         return $this->jobby;
+    }
+
+    /**
+     * Очистим устаревшие сессии
+     *
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 27.11.2020
+     */
+    protected function authOlderSessions()
+    {
+        try {
+            $this->jobby->add($this->dic['config']['cron']['name_prefix'] . 'AuthOlderSessions', [
+                'enabled'  => true,
+                'schedule' => '30 * * * *', // Каждый час
+                'closure'  => function () {
+                    (new Database())->addConnection($this->dic['config']['database']['mysql'])->connect();
+
+                    $older_than = Carbon::now('UTC')->subDays($this->dic['config']['auth']['sessions_older_than_days'])->toDateTimeString();
+
+                    DB::table('sessions')
+                        ->where('checked_at', '<', $older_than)
+                        ->delete();
+
+                    return true;
+                },
+            ]);
+        } catch (Throwable $t) {
+            LogException::write($this->log, $t);
+        }
     }
 
     /**
