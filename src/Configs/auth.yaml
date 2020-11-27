@@ -15,7 +15,7 @@ auth:
   auth_codes_older_than_hours: 2
 
   # Время устаревания сессий (в днях), сессии которыми не пользовались
-  sessions_older_than_hours: 30
+  sessions_older_than_days: 30
 
   # Привязка сессии к IP-адресу
   sessions_binding_to_ip: false

@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 30.10.2020
+ * @version 27.11.2020
  */
 
 namespace Lemurro\Api\Core;
@@ -34,7 +34,7 @@ class Session
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 30.10.2020
+     * @version 27.11.2020
      */
     public function check(string $session_id): array
     {
@@ -44,7 +44,7 @@ class Session
 
         $now = Carbon::now('UTC');
         $checked_at = $now->toDateTimeString();
-        $older_than = $now->subDays($this->config_auth['sessions_older_than_hours'])->toDateTimeString();
+        $older_than = $now->subDays($this->config_auth['sessions_older_than_days'])->toDateTimeString();
 
         DB::table('sessions')
             ->where('checked_at', '<', $older_than)
