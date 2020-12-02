@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 27.11.2020
+ * @version 29.11.2020
  */
 
 namespace Lemurro\Api\Core;
@@ -34,7 +34,7 @@ class Session
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 27.11.2020
+     * @version 29.11.2020
      */
     public function check(string $session_id): array
     {
@@ -50,12 +50,16 @@ class Session
             return Response::error401('Необходимо авторизоваться [#3]');
         }
 
-        if ($this->config_auth['sessions_binding_to_ip'] && $session->ip !== $_SERVER['REMOTE_ADDR']) {
-            DB::table('sessions')
-                ->where('session', '=', $session_id)
-                ->delete();
+        if ($this->config_auth['sessions_binding_to_ip']) {
+            $ip = $_SERVER['REMOTE_ADDR'] ?? null;
 
-            return Response::error401('Необходимо авторизоваться [#2]');
+            if ((empty($ip) || $session->ip !== (string) $ip)) {
+                DB::table('sessions')
+                    ->where('session', '=', $session_id)
+                    ->delete();
+
+                return Response::error401('Необходимо авторизоваться [#2]');
+            }
         }
 
         $session->checked_at = Carbon::now('UTC')->toDateTimeString();

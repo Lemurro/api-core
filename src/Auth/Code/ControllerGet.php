@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 20.10.2020
+ * @version 02.12.2020
  */
 
 namespace Lemurro\Api\Core\Auth\Code;
@@ -19,13 +19,13 @@ class ControllerGet extends Controller
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 20.10.2020
+     * @version 02.12.2020
      */
     public function start(): Response
     {
         $this->response->setData((new ActionGet($this->dic))->run(
-            $this->request->query->get('auth_id'),
-            $this->request->query->get('ip', '')
+            (string) $this->request->query->get('auth_id'),
+            (string) $this->request->query->get('ip', '')
         ));
 
         return $this->response;

@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 30.10.2020
+ * @version 29.11.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -25,7 +25,7 @@ class ActionLoginByUser extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 30.10.2020
+     * @version 29.11.2020
      */
     public function run($user_id): array
     {
@@ -43,11 +43,11 @@ class ActionLoginByUser extends Action
         }
 
         $secret = RandomKey::generate(100);
-        $ip = null;
         $created_at = $this->datetimenow;
 
+        $ip = null;
         if ($this->dic['config']['auth']['sessions_binding_to_ip']) {
-            $ip = $_SERVER['REMOTE_ADDR'];
+            $ip = $_SERVER['REMOTE_ADDR'] ?? null;
         }
 
         DB::table('sessions')->insert([
