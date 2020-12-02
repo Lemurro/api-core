@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 27.11.2020
+ * @version 01.12.2020
  */
 
 namespace Lemurro\Api\Core\Cron;
@@ -25,6 +25,7 @@ use Throwable;
  */
 class Jobby
 {
+    public string $sql_driver;
     public Container $dic;
     public Logger $log;
     protected JobbyJobby $jobby;
@@ -32,10 +33,11 @@ class Jobby
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 14.10.2020
+     * @version 01.12.2020
      */
-    public function __construct(string $path_root)
+    public function __construct(string $path_root, string $sql_driver)
     {
+        $this->sql_driver = $sql_driver;
         $this->dic = (new Console())->getDIC($path_root);
         $this->log = $this->dic['logfactory']->create('Jobby');
 
@@ -82,7 +84,7 @@ class Jobby
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 27.11.2020
+     * @version 01.12.2020
      */
     protected function authOlderSessions()
     {
@@ -91,7 +93,7 @@ class Jobby
                 'enabled'  => true,
                 'schedule' => '30 * * * *', // Каждый час
                 'closure'  => function () {
-                    (new Database())->addConnection($this->dic['config']['database']['mysql'])->connect();
+                    (new Database())->addConnection($this->dic['config']['database'][$this->sql_driver])->connect();
 
                     $older_than = Carbon::now('UTC')->subDays($this->dic['config']['auth']['sessions_older_than_days'])->toDateTimeString();
 
@@ -112,7 +114,7 @@ class Jobby
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 30.10.2020
+     * @version 01.12.2020
      */
     protected function fileOlderTokens()
     {
@@ -121,7 +123,7 @@ class Jobby
                 'enabled'  => true,
                 'schedule' => '*/5 * * * *', // Каждые 5 минут
                 'closure'  => function () {
-                    (new Database())->addConnection($this->dic['config']['database']['mysql'])->connect();
+                    (new Database())->addConnection($this->dic['config']['database'][$this->sql_driver])->connect();
 
                     (new FileOlderTokens($this->dic['config']['file']))->clear();
 
@@ -162,7 +164,7 @@ class Jobby
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 30.10.2020
+     * @version 01.12.2020
      */
     protected function dataChangeLogsRotator()
     {
@@ -171,7 +173,7 @@ class Jobby
                 'enabled'  => true,
                 'schedule' => '0 0 1 1 *', // Каждый год 1 января в 0:00
                 'closure'  => function () {
-                    (new Database())->addConnection($this->dic['config']['database']['mysql'])->connect();
+                    (new Database())->addConnection($this->dic['config']['database'][$this->sql_driver])->connect();
 
                     (new DataChangeLogsRotator($this->dic))->execute();
 
