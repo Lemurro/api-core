@@ -1,0 +1,75 @@
+name: API tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+
+    env:
+      LEMURRO_VERSION: "2.1"
+      PROJ_FOLDER: /home/runner/work/api-core/api-core/testproject
+      CONFIGS_FOLDER: /home/runner/work/api-core/api-core/testproject/api/app/Overrides/Configs
+      APP_TESTS_FOLDER: /home/runner/work/api-core/api-core/testproject/api/tests
+      CORE_TESTS_FOLDER: /home/runner/work/api-core/api-core/testproject/api/vendor/lemurro/api-core/tests
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: "Start MySQL"
+        run: sudo systemctl start mysql.service
+
+      - name: "Install Lemurro"
+        run: |
+          composer global require --no-progress --no-scripts --no-plugins lemurro/installer
+          sed -i 's/setTty(true)/setTty(false)/g' ~/.composer/vendor/lemurro/installer/src/NewCommand.php
+          ~/.composer/vendor/bin/lemurro new testproject --lv=$LEMURRO_VERSION --api --skip --silent
+          composer install --working-dir=$PROJ_FOLDER/api/vendor/lemurro/api-core
+
+      - name: "Prepare database"
+        run: |
+          touch ~/.my.cnf
+          echo -e "[mysql]\nuser=root\npassword=root\n" > ~/.my.cnf
+          mysql -h 127.0.0.1 --execute="CREATE DATABASE lemurro"
+          mysql -h 127.0.0.1 lemurro < $PROJ_FOLDER/api/database.sql
+          mysql -h 127.0.0.1 --execute="SELECT * FROM lemurro.users"
+
+      - name: "Configuration application"
+        run: |
+          touch $CONFIGS_FOLDER/database.yaml
+          touch $CONFIGS_FOLDER/file.yaml
+          touch $CONFIGS_FOLDER/guides.yaml
+          echo -e "database:\n  mysql:\n    password: root" > $CONFIGS_FOLDER/database.yaml
+          echo -e "file:\n  path_logs: $PROJ_FOLDER/api/var/logs\n  path_temp: $PROJ_FOLDER/api/var/temp\n  path_upload: $PROJ_FOLDER/api/var/documents" > $CONFIGS_FOLDER/file.yaml
+          echo -e "guides:\n  classes:\n    example: Example" > $CONFIGS_FOLDER/guides.yaml
+          cat $CONFIGS_FOLDER/file.yaml
+          cat $CONFIGS_FOLDER/guides.yaml
+
+      - name: "Configuration application tests"
+        run: |
+          cp $APP_TESTS_FOLDER/api.suite.dist.yml $APP_TESTS_FOLDER/api.suite.yml
+          sed -i 's/password: ""/password: "root"/g' $APP_TESTS_FOLDER/api.suite.yml
+          cat $APP_TESTS_FOLDER/api.suite.yml
+
+      - name: "Configuration core tests"
+        run: |
+          cp $CORE_TESTS_FOLDER/api.suite.dist.yml $CORE_TESTS_FOLDER/api.suite.yml
+          sed -i 's/password: ""/password: "root"/g' $CORE_TESTS_FOLDER/api.suite.yml
+          cat $CORE_TESTS_FOLDER/api.suite.yml
+
+      - name: "Running web server"
+        run: php -S localhost:8000 -t $PROJ_FOLDER/api/public &
+
+      - name: "Running application tests"
+        run: |
+          cd $PROJ_FOLDER/api
+          php vendor/bin/codecept run api
+
+      - name: "Running core tests"
+        run: |
+          cd $PROJ_FOLDER/api/vendor/lemurro/api-core
+          php vendor/bin/codecept run api

@@ -3,7 +3,7 @@ modules:
     enabled:
         - \Helper\Api
         - Db:
-              dsn: "mysql:host=127.0.0.1;dbname=lemurro"
+              dsn: "mysql:host=localhost;dbname=lemurro"
               user: "root"
               password: ""
               dump: "tests/_data/database.sql"
@@ -12,6 +12,6 @@ modules:
               initial_queries:
                   - "SET NAMES utf8;"
         - REST:
-              url: http://127.0.0.1:8000/
+              url: http://localhost:8000/
               depends: PhpBrowser
               part: Json
