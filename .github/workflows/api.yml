@@ -3,15 +3,21 @@ name: API tests
 on:
   push:
     branches: [master]
-  pull_request:
-    branches: [develop]
 
 jobs:
   test:
     runs-on: ubuntu-20.04
 
+    strategy:
+      matrix:
+       include:
+         - lemurro_version: "2.0"
+           sql_file: "database.sql"
+         - lemurro_version: "2.1"
+           sql_file: "database.my.sql"
+
     env:
-      LEMURRO_VERSION: "2.1"
+      LEMURRO_VERSION: ${{ matrix.lemurro_version }}
       PROJ_FOLDER: /home/runner/work/api-core/api-core/testproject
       CONFIGS_FOLDER: /home/runner/work/api-core/api-core/testproject/api/app/Overrides/Configs
       APP_TESTS_FOLDER: /home/runner/work/api-core/api-core/testproject/api/tests
@@ -35,7 +41,7 @@ jobs:
           touch ~/.my.cnf
           echo -e "[mysql]\nuser=root\npassword=root\n" > ~/.my.cnf
           mysql -h 127.0.0.1 --execute="CREATE DATABASE lemurro"
-          mysql -h 127.0.0.1 lemurro < $PROJ_FOLDER/api/database.sql
+          mysql -h 127.0.0.1 lemurro < $PROJ_FOLDER/api/${{ matrix.sql_file }}
           mysql -h 127.0.0.1 --execute="SELECT * FROM lemurro.users"
 
       - name: "Configuration application"
