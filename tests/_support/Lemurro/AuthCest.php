@@ -30,7 +30,7 @@ class AuthCest
             'success' => true,
         ]);
 
-        $this->code = $I->grabDataFromResponseByJsonPath('$.data.message')[0];
+        $this->code = (string) $I->grabDataFromResponseByJsonPath('$.data.message')[0];
     }
 
     /**
@@ -57,7 +57,7 @@ class AuthCest
             'success' => true,
         ]);
 
-        $this->session = $I->grabDataFromResponseByJsonPath('$.data.session')[0];
+        $this->session = (string) $I->grabDataFromResponseByJsonPath('$.data.session')[0];
 
         file_put_contents(codecept_output_dir('session.key'), $this->session);
     }
