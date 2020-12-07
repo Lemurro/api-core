@@ -5,7 +5,6 @@ use Lemurro\AbstractCest;
 
 class BUserCest extends AbstractCest
 {
-    // tests
     public function getMe(ApiTester $I)
     {
         $I->sendGet('/user');

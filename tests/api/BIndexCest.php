@@ -4,7 +4,6 @@ use Codeception\Util\HttpCode;
 
 class BIndexCest
 {
-    // tests
     public function getIndex(ApiTester $I)
     {
         $I->sendGet('/');

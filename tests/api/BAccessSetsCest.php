@@ -7,7 +7,6 @@ class BAccessSetsCest extends AbstractCest
 {
     private int $record_id;
 
-    // tests
     public function getIndex(ApiTester $I)
     {
         $I->sendGet('/access_sets');

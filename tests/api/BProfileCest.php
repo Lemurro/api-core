@@ -7,7 +7,6 @@ class BProfileCest extends AbstractCest
 {
     private string $session = '0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
 
-    // tests
     public function getIndex(ApiTester $I)
     {
         $I->sendGet('/profile');

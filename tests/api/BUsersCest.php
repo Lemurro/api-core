@@ -7,7 +7,6 @@ class BUsersCest extends AbstractCest
 {
     private int $record_id;
 
-    // tests
     public function insertRecord(ApiTester $I)
     {
         $I->sendPost('/users', [
