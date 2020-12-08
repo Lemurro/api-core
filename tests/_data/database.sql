@@ -1,4 +1,9 @@
 DELETE FROM
+    access_sets
+WHERE
+    name LIKE 'test access set%';
+
+DELETE FROM
     info_users
 WHERE
     user_id = (
