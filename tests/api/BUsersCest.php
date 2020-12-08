@@ -5,12 +5,13 @@ use Lemurro\AbstractCest;
 
 class BUsersCest extends AbstractCest
 {
+    private string $auth_id = 'test@test.test';
     private int $record_id;
 
     public function insertRecord(ApiTester $I)
     {
         $I->sendPost('/users', [
-            'json' => '{"id":"0","auth_id":"test@test.test","roles":{"guide":["read"],"example":["read","create-update","delete"]},"info_users":{"email":"test@test.test","last_name":"Test","first_name":"Record","second_name":""}}',
+            'json' => '{"id":"0","auth_id":"' . $this->auth_id . '","roles":{"guide":["read"],"example":["read","create-update","delete"]},"info_users":{"email":"' . $this->auth_id . '","last_name":"Test","first_name":"Record","second_name":""}}',
         ]);
 
         $I->seeResponseCodeIs(HttpCode::OK); // 200
@@ -18,8 +19,8 @@ class BUsersCest extends AbstractCest
         $I->seeResponseContainsJson([
             'success' => true,
             'data' => [
-                'auth_id' => 'test@test.test',
-                'email' => 'test@test.test',
+                'auth_id' => $this->auth_id,
+                'email' => $this->auth_id,
                 'roles' => '{"guide":["read"],"example":["read","create-update","delete"]}',
                 'last_name' => 'Test',
                 'first_name' => 'Record',
@@ -45,15 +46,9 @@ class BUsersCest extends AbstractCest
         $I->seeResponseIsJson();
         $I->seeResponseContainsJson([
             'success' => true,
-            'data' => [
-                'count' => 1,
-                'items' => [
-                    [
-                        'id' => $this->record_id,
-                        'user_id' => $this->record_id,
-                    ]
-                ],
-            ],
+        ]);
+        $I->seeResponseContainsJson([
+            'user_id' => $this->record_id,
         ]);
     }
 
@@ -98,7 +93,7 @@ class BUsersCest extends AbstractCest
     public function saveRecord(ApiTester $I)
     {
         $I->sendPost('/users/' . $this->record_id, [
-            'json' => '{"id":"' . $this->record_id . '","auth_id":"test@test.test","roles":{"admin":true},"info_users":{"email":"test@test.test","last_name":"Test","first_name":"Record","second_name":"Admin"}}',
+            'json' => '{"id":"' . $this->record_id . '","auth_id":"' . $this->auth_id . '","roles":{"admin":true},"info_users":{"email":"' . $this->auth_id . '","last_name":"Test","first_name":"Record","second_name":"Admin"}}',
         ]);
 
         $I->seeResponseCodeIs(HttpCode::OK); // 200
@@ -107,9 +102,9 @@ class BUsersCest extends AbstractCest
             'success' => true,
             'data' => [
                 'id' => $this->record_id,
-                'auth_id' => 'test@test.test',
+                'auth_id' => $this->auth_id,
                 'roles' => '{"admin":true}',
-                'email' => 'test@test.test',
+                'email' => $this->auth_id,
                 'last_name' => 'Test',
                 'first_name' => 'Record',
                 'second_name' => 'Admin',
@@ -132,9 +127,9 @@ class BUsersCest extends AbstractCest
         $I->seeResponseIsJson();
         $I->seeResponseContainsJson([
             'success' => true,
-            'data' => [
-                'count' => 3,
-            ],
+        ]);
+        $I->seeResponseContainsJson([
+            'user_id' => $this->record_id,
         ]);
     }
 
@@ -169,7 +164,7 @@ class BUsersCest extends AbstractCest
     public function filterByName(ApiTester $I)
     {
         $I->sendPost('/users/filter', [
-            'json' => '{"user_id":"","lemurro_user_fio":"test","auth_id":"","lemurro_roles_type":"1","lemurro_roles":"all","locked":"all"}',
+            'json' => '{"user_id":"","lemurro_user_fio":"test record","auth_id":"","lemurro_roles_type":"1","lemurro_roles":"all","locked":"all"}',
         ]);
 
         $I->seeResponseCodeIs(HttpCode::OK); // 200
@@ -194,7 +189,7 @@ class BUsersCest extends AbstractCest
     public function filterByAuthId(ApiTester $I)
     {
         $I->sendPost('/users/filter', [
-            'json' => '{"user_id":"","lemurro_user_fio":"","auth_id":"test@test.test","lemurro_roles_type":"1","lemurro_roles":"all","locked":"all"}',
+            'json' => '{"user_id":"","lemurro_user_fio":"","auth_id":"' . $this->auth_id . '","lemurro_roles_type":"1","lemurro_roles":"all","locked":"all"}',
         ]);
 
         $I->seeResponseCodeIs(HttpCode::OK); // 200
@@ -245,15 +240,9 @@ class BUsersCest extends AbstractCest
         $I->seeResponseIsJson();
         $I->seeResponseContainsJson([
             'success' => true,
-            'data' => [
-                'count' => 1,
-                'items' => [
-                    [
-                        'id' => $this->record_id,
-                        'user_id' => $this->record_id,
-                    ]
-                ],
-            ],
+        ]);
+        $I->seeResponseContainsJson([
+            'user_id' => $this->record_id,
         ]);
     }
 
@@ -289,9 +278,9 @@ class BUsersCest extends AbstractCest
         $I->seeResponseIsJson();
         $I->seeResponseContainsJson([
             'success' => true,
-            'data' => [
-                'count' => 3,
-            ],
+        ]);
+        $I->seeResponseContainsJson([
+            'user_id' => $this->record_id,
         ]);
     }
 
