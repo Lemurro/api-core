@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 30.10.2020
+ * @version 08.12.2020
  */
 
 namespace Lemurro\Api\Core\Profile;
@@ -56,7 +56,7 @@ class ActionIndex extends Action
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 30.10.2020
+     * @version 08.12.2020
      */
     private function getSessions(): array
     {
@@ -76,16 +76,22 @@ class ActionIndex extends Action
 
         if (is_countable($items)) {
             foreach ($items as $item) {
-                $dt = Carbon::createFromFormat('Y-m-d H:i:s', $item->checked_at);
-                $diff_days = $dt->diffInDays($this->now_datetime);
-                $dt_string = $dt->toDateTimeString();
+                $datetime = 'никогда';
 
-                if ($diff_days === 0) {
-                    $date = 'сегодня';
-                } elseif ($diff_days === 1) {
-                    $date = 'вчера';
-                } else {
-                    $date = $this->local_date_time->get($dt_string, 'Y-m-d H:i:s', 'd.m.Y');
+                if (!empty($item->checked_at)) {
+                    $dt = Carbon::createFromFormat('Y-m-d H:i:s', $item->checked_at);
+                    $diff_days = $dt->diffInDays($this->now_datetime);
+                    $dt_string = $dt->toDateTimeString();
+
+                    if ($diff_days === 0) {
+                        $date = 'сегодня';
+                    } elseif ($diff_days === 1) {
+                        $date = 'вчера';
+                    } else {
+                        $date = $this->local_date_time->get($dt_string, 'Y-m-d H:i:s', 'd.m.Y');
+                    }
+
+                    $datetime = $date . ' в ' . $this->local_date_time->get($dt_string, 'Y-m-d H:i:s', 'H:i');
                 }
 
                 [$device_platform, $device_manufacturer, $device_model] = $this->getDeviceInfo($item->device_info);
@@ -97,7 +103,7 @@ class ActionIndex extends Action
                     'device_manufacturer' => $device_manufacturer,
                     'device_model' => $device_model,
                     'geo' => $geo,
-                    'datetime' => $date . ' в ' . $this->local_date_time->get($dt_string, 'Y-m-d H:i:s', 'H:i'),
+                    'datetime' => $datetime,
                 ];
             }
         }
