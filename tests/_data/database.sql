@@ -1,3 +1,20 @@
+DELETE FROM
+    info_users
+WHERE
+    user_id = (
+        SELECT
+            id
+        FROM
+            users
+        WHERE
+            auth_id = 'test@test.test'
+    );
+
+DELETE FROM
+    users
+WHERE
+    auth_id = 'test@test.test';
+
 INSERT INTO
     users
 SET
