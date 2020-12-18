@@ -3,38 +3,38 @@
 root:
   path: /
   controller: '\Lemurro\Api\Core\Version\ControllerGet'
-  methods: [GET, OPTIONS]
+  methods: GET
 
 # /access_sets
 
 access_sets_index:
   path: /access_sets
   controller: '\Lemurro\Api\Core\AccessSets\ControllerIndex'
-  methods: [GET, OPTIONS]
+  methods: GET
 
 access_sets_insert:
   path: /access_sets
   controller: '\Lemurro\Api\Core\AccessSets\ControllerInsert'
-  methods: [POST, OPTIONS]
+  methods: POST
 
 access_sets_get:
   path: /access_sets/{id}
   controller: '\Lemurro\Api\Core\AccessSets\ControllerGet'
-  methods: [GET, OPTIONS]
+  methods: GET
   requirements:
     id: '\d+'
 
 access_sets_save:
   path: /access_sets/{id}
   controller: '\Lemurro\Api\Core\AccessSets\ControllerSave'
-  methods: [POST, OPTIONS]
+  methods: POST
   requirements:
     id: '\d+'
 
 access_sets_remove:
   path: /access_sets/{id}/remove
   controller: '\Lemurro\Api\Core\AccessSets\ControllerRemove'
-  methods: [POST, OPTIONS]
+  methods: POST
   requirements:
     id: '\d+'
 
@@ -43,70 +43,70 @@ access_sets_remove:
 auth_check:
   path: /auth/check
   controller: '\Lemurro\Api\Core\Auth\ControllerCheck'
-  methods: [GET, OPTIONS]
+  methods: GET
 
 auth_code_get:
   path: /auth/code
   controller: '\Lemurro\Api\Core\Auth\Code\ControllerGet'
-  methods: [GET, OPTIONS]
+  methods: GET
 
 auth_code_check:
   path: /auth/code
   controller: '\Lemurro\Api\Core\Auth\Code\ControllerCheck'
-  methods: [POST, OPTIONS]
+  methods: POST
 
 auth_keys_get:
   path: /auth/keys
   controller: '\Lemurro\Api\Core\Auth\ControllerGetKeys'
-  methods: [GET, OPTIONS]
+  methods: GET
 
 # /file
 
 file_upload:
   path: /file/upload
   controller: '\Lemurro\Api\Core\Helpers\File\ControllerUpload'
-  methods: [POST, OPTIONS]
+  methods: POST
 
 file_download_prepare:
   path: /file/download/prepare
   controller: '\Lemurro\Api\Core\Helpers\File\ControllerDownloadPrepare'
-  methods: [POST, OPTIONS]
+  methods: POST
 
 file_download_run:
   path: /file/download/run
   controller: '\Lemurro\Api\Core\Helpers\File\ControllerDownloadRun'
-  methods: [GET, OPTIONS]
+  methods: GET
 
 # /guide
 
 guide_index:
   path: /guide/{type}
   controller: '\Lemurro\Api\Core\Guide\ControllerIndex'
-  methods: [GET, OPTIONS]
+  methods: GET
 
 guide_insert:
   path: /guide/{type}
   controller: '\Lemurro\Api\Core\Guide\ControllerInsert'
-  methods: [POST, OPTIONS]
+  methods: POST
 
 guide_get:
   path: /guide/{type}/{id}
   controller: '\Lemurro\Api\Core\Guide\ControllerGet'
-  methods: [GET, OPTIONS]
+  methods: GET
   requirements:
     id: '\d+'
 
 guide_save:
   path: /guide/{type}/{id}
   controller: '\Lemurro\Api\Core\Guide\ControllerSave'
-  methods: [POST, OPTIONS]
+  methods: POST
   requirements:
     id: '\d+'
 
 guide_remove:
   path: /guide/{type}/{id}/remove
   controller: '\Lemurro\Api\Core\Guide\ControllerRemove'
-  methods: [POST, OPTIONS]
+  methods: POST
   requirements:
     id: '\d+'
 
@@ -115,71 +115,71 @@ guide_remove:
 profile_index:
   path: /profile
   controller: '\Lemurro\Api\Core\Profile\ControllerIndex'
-  methods: [GET, OPTIONS]
+  methods: GET
 
 profile_session_reset:
   path: /profile/session/reset
   controller: '\Lemurro\Api\Core\Profile\Session\ControllerReset'
-  methods: [POST, OPTIONS]
+  methods: POST
 
 # /user
 
 user_get_me:
   path: /user
   controller: '\Lemurro\Api\Core\Users\ControllerGetMe'
-  methods: [GET, OPTIONS]
+  methods: GET
 
 # /users
 
 users_insert:
   path: /users
   controller: '\Lemurro\Api\Core\Users\ControllerInsert'
-  methods: [POST, OPTIONS]
+  methods: POST
 
 users_get:
   path: /users/{id}
   controller: '\Lemurro\Api\Core\Users\ControllerGet'
-  methods: [GET, OPTIONS]
+  methods: GET
   requirements:
     id: '\d+'
 
 users_save:
   path: /users/{id}
   controller: '\Lemurro\Api\Core\Users\ControllerSave'
-  methods: [POST, OPTIONS]
+  methods: POST
   requirements:
     id: '\d+'
 
 users_remove:
   path: /users/{id}/remove
   controller: '\Lemurro\Api\Core\Users\ControllerRemove'
-  methods: [POST, OPTIONS]
+  methods: POST
   requirements:
     id: '\d+'
 
 users_lock:
   path: /users/{id}/lock
   controller: '\Lemurro\Api\Core\Users\ControllerLock'
-  methods: [POST, OPTIONS]
+  methods: POST
   requirements:
     id: '\d+'
 
 users_unlock:
   path: /users/{id}/unlock
   controller: '\Lemurro\Api\Core\Users\ControllerUnlock'
-  methods: [POST, OPTIONS]
+  methods: POST
   requirements:
     id: '\d+'
 
 users_login_by_user:
   path: /users/login_by_user
   controller: '\Lemurro\Api\Core\Users\ControllerLoginByUser'
-  methods: [POST, OPTIONS]
+  methods: POST
 
 users_filter:
   path: /users/filter
   controller: '\Lemurro\Api\Core\Users\ControllerFilter'
-  methods: [POST, OPTIONS]
+  methods: POST
 
 # app routes
 
