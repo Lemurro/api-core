@@ -28,10 +28,13 @@
     "sort-packages": true
   },
   "require": {
+    "ext-ctype": "*",
     "ext-json": "*",
     "ext-iconv": "*",
+    "ext-intl": "*",
     "ext-pdo": "*",
     "ext-fileinfo": "*",
+    "ext-mbstring": "*",
     "giggsey/libphonenumber-for-php": "8.12.*",
     "hellogerard/jobby": "3.5.*",
     "illuminate/database": "8.17.*",
@@ -53,5 +56,15 @@
     "codeception/module-phpbrowser": "^1.0",
     "codeception/module-rest": "^1.2",
     "phpcompatibility/php-compatibility": "^9.3"
+  },
+  "replace": {
+    "symfony/polyfill-ctype": "*",
+    "symfony/polyfill-iconv": "*",
+    "symfony/polyfill-intl-grapheme": "*",
+    "symfony/polyfill-intl-idn": "*",
+    "symfony/polyfill-intl-normalizer": "*",
+    "symfony/polyfill-mbstring": "*",
+    "symfony/polyfill-php72": "*",
+    "symfony/polyfill-php73": "*"
   }
 }
