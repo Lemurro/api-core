@@ -8,10 +8,12 @@
 
 namespace Lemurro\Api\Core\Helpers\File;
 
+use Lemurro\Api\Core\Abstracts\Action;
+
 /**
  * @package Lemurro\Api\Core\Helpers\File
  */
-class FileRights extends AbstractFileAction
+class FileRights extends Action
 {
     /**
      * Проверка доступа пользователя к файлу
@@ -20,6 +22,8 @@ class FileRights extends AbstractFileAction
      * @param string $container_id   ИД контейнера
      *
      * @return boolean
+     *
+     * @throws RuntimeException
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
@@ -31,16 +35,11 @@ class FileRights extends AbstractFileAction
             return true;
         }
 
+        (new ContainerType())->validate($container_type);
+
         $classname = 'Lemurro\\Api\\App\\Checker\\File' . ucfirst($container_type);
+        $class = new $classname($this->dic);
 
-        if (class_exists($classname)) {
-            $class = new $classname($this->dic);
-
-            return call_user_func([$class, 'check'], $container_id);
-        } else {
-            $this->log->error('/File/FileRights.php: Unknown class "' . $classname . '"');
-
-            return false;
-        }
+        return call_user_func([$class, 'check'], $container_id);
     }
 }
