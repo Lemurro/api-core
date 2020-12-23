@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 27.11.2020
+ * @version 23.12.2020
  */
 
 namespace Lemurro\Api\Core\Configuration;
@@ -19,7 +19,7 @@ class Configuration implements ConfigurationInterface
     /**
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 27.11.2020
+     * @version 23.12.2020
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
@@ -47,30 +47,7 @@ class Configuration implements ConfigurationInterface
                 ->booleanNode('file_older_files_enabled')->isRequired()->end()
                 ->booleanNode('data_change_logs_rotator_enabled')->isRequired()->end()
             ->end()->end()
-            ->arrayNode('database')->children()
-                ->arrayNode('mysql')->canBeDisabled()->children()
-                    ->enumNode('driver')->isRequired()->values(['mysql'])->end()
-                    ->scalarNode('host')->isRequired()->end()
-                    ->scalarNode('port')->isRequired()->end()
-                    ->scalarNode('database')->isRequired()->end()
-                    ->scalarNode('username')->isRequired()->end()
-                    ->scalarNode('password')->isRequired()->end()
-                    ->scalarNode('charset')->isRequired()->end()
-                    ->scalarNode('collation')->isRequired()->end()
-                    ->arrayNode('options')->scalarPrototype()->end()->end()
-                ->end()->end()
-                ->arrayNode('pgsql')->canBeDisabled()->children()
-                    ->enumNode('driver')->isRequired()->values(['pgsql'])->end()
-                    ->scalarNode('host')->isRequired()->end()
-                    ->scalarNode('port')->isRequired()->end()
-                    ->scalarNode('database')->isRequired()->end()
-                    ->scalarNode('username')->isRequired()->end()
-                    ->scalarNode('password')->isRequired()->end()
-                    ->scalarNode('charset')->isRequired()->end()
-                    ->scalarNode('schema')->isRequired()->end()
-                    ->scalarNode('sslmode')->isRequired()->end()
-                ->end()->end()
-            ->end()->end()
+            ->variableNode('database')->end()
             ->arrayNode('file')->children()
                 ->scalarNode('path_logs')->isRequired()->end()
                 ->scalarNode('path_temp')->isRequired()->end()
