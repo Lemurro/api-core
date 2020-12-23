@@ -3,21 +3,19 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 14.10.2020
+ * @version 23.12.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\Core\Helpers\Response;
-use Lemurro\Api\Core\Abstracts\Action;
-use Monolog\Logger;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\FileBag;
 
 /**
  * @package Lemurro\Api\Core\Helpers\File
  */
-class ActionUpload extends Action
+class ActionUpload extends AbstractFileAction
 {
     /**
      * @param FileBag $file Загруженный файл
@@ -26,13 +24,10 @@ class ActionUpload extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 14.10.2020
+     * @version 23.12.2020
      */
     public function run($file)
     {
-        /** @var Logger $log */
-        $log = $this->dic['log'];
-
         /** @var UploadedFile $uploaded_file */
         $uploaded_file = $file->get('uploadfile');
 
@@ -51,14 +46,14 @@ class ActionUpload extends Action
                 break;
 
             default:
-                $log->info('File: Неверный вид проверки типа файла: ' . $this->dic['config']['file']['check_file_by']);
+                $this->log->info('File: Неверный вид проверки типа файла: ' . $this->dic['config']['file']['check_file_by']);
 
                 return Response::error400('Неверные настройки приложения, пожалуйста обратитесь к администратору');
                 break;
         }
 
         if ($type_corrected === false) {
-            $log->info('File: Попытка загрузки неразрешённого файла .' . $orig_ext . ': ' . $orig_mime);
+            $this->log->info('File: Попытка загрузки неразрешённого файла .' . $orig_ext . ': ' . $orig_mime);
 
             $allowed_extensions = implode(', ', $this->dic['config']['file']['allowed_extensions']);
 
@@ -86,7 +81,7 @@ class ActionUpload extends Action
         $uploaded_file->move($dest_folder, $file_id);
 
         if (!is_readable($dest_folder . $file_id) || !is_file($dest_folder . $file_id)) {
-            $log->error('File: Файл не был загружен', [
+            $this->log->error('File: Файл не был загружен', [
                 'mime'    => $orig_mime,
                 'size'    => $orig_size,
                 'ext'     => $orig_ext,

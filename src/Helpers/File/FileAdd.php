@@ -11,7 +11,6 @@
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Illuminate\Support\Facades\DB;
-use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
 use Monolog\Logger;
@@ -19,7 +18,7 @@ use Monolog\Logger;
 /**
  * @package Lemurro\Api\Core\Helpers\File
  */
-class FileAdd extends Action
+class FileAdd extends AbstractFileAction
 {
     protected Logger $log;
     protected array $undo_list = [];
@@ -33,12 +32,11 @@ class FileAdd extends Action
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.01.2020
+     *
+     * @version 23.12.2020
      */
     public function run($file_name, $orig_name, $container_type = 'default', $container_id = null)
     {
-        $this->log = $this->dic['log'];
-
         $move_result = $this->moveToStorage($file_name);
         if (isset($move_result['errors'])) {
             return $move_result;
