@@ -5,7 +5,7 @@
  *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 30.10.2020
+ * @version 23.12.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -144,7 +144,7 @@ class FileAdd extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 30.10.2020
+     * @version 23.12.2020
      */
     protected function addToDB($file_name, $orig_name, $container_type, $container_id): array
     {
@@ -168,7 +168,7 @@ class FileAdd extends Action
             'path' => $data['path'],
             'name' => mb_substr($data['name'], 0, 255, 'UTF-8'),
             'ext' => $data['ext'],
-            'container_type' => mb_substr($container_type, 0, 255, 'UTF-8'),
+            'container_type' => $container_type,
             'container_id' => $container_id,
             'created_at' => $this->datetimenow,
         ]);
