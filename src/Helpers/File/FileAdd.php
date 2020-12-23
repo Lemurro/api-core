@@ -31,12 +31,16 @@ class FileAdd extends AbstractFileAction
      *
      * @return array
      *
+     * @throws RuntimeException
+     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
      * @version 23.12.2020
      */
     public function run($file_name, $orig_name, $container_type = 'default', $container_id = null)
     {
+        (new ContainerType())->validate($container_type);
+
         $move_result = $this->moveToStorage($file_name);
         if (isset($move_result['errors'])) {
             return $move_result;
