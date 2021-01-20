@@ -3,7 +3,7 @@
 /**
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 30.10.2020
+ * @version 20.01.2021
  */
 
 namespace Lemurro\Api\Core\Profile\Session;
@@ -39,7 +39,7 @@ class ActionReset extends Action
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 30.10.2020
+     * @version 20.01.2021
      */
     public function run($session): array
     {
@@ -51,7 +51,7 @@ class ActionReset extends Action
             ->first();
 
         if ($record === null) {
-            Response::error404('Сессия не найдена');
+            return Response::error404('Сессия не найдена');
         }
 
         if (
@@ -59,11 +59,11 @@ class ActionReset extends Action
             && (int) $record->user_id === $this->user_id
             && (int) $record->admin_entered === 0
         ) {
-            Response::error404('Сессия не найдена');
+            return Response::error404('Сессия не найдена');
         }
 
         if ($record->session === $this->session_id) {
-            Response::error403('Нельзя завершить активную сессию', false);
+            return Response::error403('Нельзя завершить активную сессию', false);
         }
 
         DB::table('sessions')->delete($record->id);
