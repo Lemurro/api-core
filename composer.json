@@ -34,7 +34,7 @@
     "ext-fileinfo": "*",
     "giggsey/libphonenumber-for-php": "8.12.*",
     "hellogerard/jobby": "3.5.*",
-    "illuminate/database": "8.11.*",
+    "illuminate/database": "8.23.*",
     "monolog/monolog": "2.1.*",
     "nesbot/carbon": "2.37.*",
     "php": ">=7.4.0",
