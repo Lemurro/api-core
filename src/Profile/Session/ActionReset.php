@@ -55,11 +55,11 @@ class ActionReset extends Action
         }
 
         if (
-            $record->session === $session
-            && (int) $record->user_id === $this->user_id
-            && (int) $record->admin_entered === 0
+            $record->session !== $session
+            || (int) $record->user_id !== $this->user_id
+            || (int) $record->admin_entered !== 0
         ) {
-            return Response::error404('Сессия не найдена');
+            return Response::error404('Найденная сессия не прошла проверку');
         }
 
         if ($record->session === $this->session_id) {
