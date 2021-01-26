@@ -11,9 +11,8 @@ jobs:
     strategy:
       matrix:
        include:
-         - lemurro_version: "2.0"
-           sql_file: "database.sql"
          - lemurro_version: "2.1"
+           php_version: "7.4"
            sql_file: "database.my.sql"
 
     env:
@@ -29,9 +28,14 @@ jobs:
       - name: "Start MySQL"
         run: sudo systemctl start mysql.service
 
+      - name: "Setup PHP"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php_version }}
+
       - name: "Install Lemurro"
         run: |
-          composer global require --no-progress --no-scripts --no-plugins lemurro/installer
+          composer global require --no-progress --no-scripts --no-plugins lemurro/installer "^2.1"
           sed -i 's/setTty(true)/setTty(false)/g' ~/.composer/vendor/lemurro/installer/src/NewCommand.php
           ~/.composer/vendor/bin/lemurro new testproject --lv=$LEMURRO_VERSION --api --skip --silent
           composer install --working-dir=$PROJ_FOLDER/api/vendor/lemurro/api-core
