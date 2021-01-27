@@ -111,7 +111,7 @@ class Core
         } else {
             (new AppDIC())->run($this->dic);
 
-            if ($this->maintenance()) {
+            if ($this->isMaintenance()) {
                 $this->response->setData(Response::error(
                     '503 Service Unavailable',
                     'warning',
@@ -129,16 +129,7 @@ class Core
         }
     }
 
-    /**
-     * Проверка на обслуживание проекта
-     *
-     * @return boolean
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 14.10.2020
-     */
-    protected function maintenance()
+    protected function isMaintenance(): bool
     {
         if (isset($this->dic['user']['admin']) && $this->dic['user']['admin']) {
             return false;
