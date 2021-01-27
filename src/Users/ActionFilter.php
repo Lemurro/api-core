@@ -97,7 +97,7 @@ class ActionFilter extends Action
         foreach ($filter as $field => $value) {
             $value = trim($value);
 
-            if ($value != '' && $value != 'all') {
+            if ($value !== '' && $value !== 'all') {
                 switch ($field) {
                     case 'lemurro_user_fio':
                         $query[] = "CONCAT(iu.last_name, ' ', iu.first_name, ' ', iu.second_name) LIKE ?";

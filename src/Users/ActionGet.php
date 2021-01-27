@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- *
- * @version 30.10.2020
- */
-
 namespace Lemurro\Api\Core\Users;
 
 use Illuminate\Support\Facades\DB;
@@ -13,17 +7,10 @@ use Lemurro\Api\App\RunAfter\Users\Get as RunAfterGet;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\Response;
 
-/**
- * @package Lemurro\Api\Core\Users
- */
 class ActionGet extends Action
 {
     /**
      * @param integer $id ИД записи
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 30.10.2020
      */
     public function run($id): array
     {
@@ -41,7 +28,7 @@ class ActionGet extends Action
 
         $record['id'] = $record['user_id'];
 
-        if ($record['roles'] != '') {
+        if ((string) $record['roles'] !== '') {
             $record['roles'] = json_decode($record['roles'], true);
         } else {
             $record['roles'] = [];
