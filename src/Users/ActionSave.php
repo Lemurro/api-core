@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- *
- * @version 30.10.2020
- */
-
 namespace Lemurro\Api\Core\Users;
 
 use Illuminate\Support\Facades\DB;
@@ -17,18 +11,11 @@ use Lemurro\Api\Core\Helpers\LogException;
 use Lemurro\Api\Core\Helpers\Response;
 use Throwable;
 
-/**
- * @package Lemurro\Api\Core\Users
- */
 class ActionSave extends Action
 {
     /**
      * @param integer $id   ИД записи
      * @param array   $data Массив данных
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 30.10.2020
      */
     public function run($id, $data): array
     {
@@ -59,7 +46,7 @@ class ActionSave extends Action
         try {
             DB::beginTransaction();
 
-            if ($id == 1) {
+            if ((int) $id === 1) {
                 $data['auth_id'] = 'lemurro@lemurro';
                 $data['roles'] = ['admin' => 'true'];
                 $data['info_users']['email'] = 'lemurro@lemurro';
@@ -121,10 +108,6 @@ class ActionSave extends Action
 
     /**
      * @return string|null
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 30.10.2020
      */
     protected function getLastActionDate(int $id)
     {

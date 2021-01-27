@@ -1,28 +1,15 @@
 <?php
 
-/**
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- *
- * @version 01.12.2020
- */
-
 namespace Lemurro\Api\Core\Users;
 
 use Illuminate\Support\Facades\DB;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\Response;
 
-/**
- * @package Lemurro\Api\Core\Users
- */
 class ActionFilter extends Action
 {
     /**
      * @param array $filter
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 30.10.2020
      */
     public function run($filter): array
     {
@@ -42,10 +29,6 @@ class ActionFilter extends Action
 
     /**
      * Подготовим список имён полей для валидации
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 01.12.2020
      */
     protected function getFields(): array
     {
@@ -92,10 +75,6 @@ class ActionFilter extends Action
      *
      * @param array $filter
      * @param array $fields
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 01.12.2020
      */
     protected function getSqlWhere($filter, $fields): array
     {
@@ -112,7 +91,7 @@ class ActionFilter extends Action
         ];
         $params = [];
 
-        $roles_type = $filter['lemurro_roles_type'];
+        $roles_type = (int) $filter['lemurro_roles_type'];
         unset($filter['lemurro_roles_type']);
 
         foreach ($filter as $field => $value) {
@@ -130,7 +109,7 @@ class ActionFilter extends Action
                         $role = explode('|', $value);
 
                         if (is_array($role) && count($role) === 2) {
-                            if ($roles_type == 0) {
+                            if ($roles_type === 0) {
                                 $where_roles_type = 'IS NULL';
                             } else {
                                 $where_roles_type = 'IS NOT NULL';
@@ -166,13 +145,7 @@ class ActionFilter extends Action
     }
 
     /**
-     * Получим информацию о пользователях
-     *
      * @param array $sql_where
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 01.12.2020
      */
     protected function getInfoUsers($sql_where): array
     {
@@ -206,11 +179,6 @@ class ActionFilter extends Action
         return $users;
     }
 
-    /**
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 01.12.2020
-     */
     protected function getTableSchema(): string
     {
         if (DB::connection()->getDriverName() === 'pgsql') {

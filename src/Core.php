@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- *
- * @version 01.12.2020
- */
-
 namespace Lemurro\Api\Core;
 
 use Lemurro\Api\App\Overrides\DIC as AppDIC;
@@ -28,9 +22,6 @@ use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
 use Throwable;
 
-/**
- * @package Lemurro\Api\Core
- */
 class Core
 {
     protected Request $request;
@@ -38,11 +29,6 @@ class Core
     protected Container $dic;
     protected Logger $core_log;
 
-    /**
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 01.12.2020
-     */
     public function __construct(string $path_root, string $sql_driver)
     {
         date_default_timezone_set('UTC');
@@ -61,11 +47,6 @@ class Core
         (new Database())->addConnection($this->dic['config']['database'][$sql_driver])->connect();
     }
 
-    /**
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 21.10.2020
-     */
     public function start()
     {
         try {
@@ -93,11 +74,6 @@ class Core
         }
     }
 
-    /**
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 26.10.2020
-     */
     protected function initHeaders(): void
     {
         $origin = $this->getOrigin($this->request->headers->get('Origin', ''));
@@ -109,11 +85,6 @@ class Core
         $this->response->headers->set('Access-Control-Allow-Headers', $headers);
     }
 
-    /**
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 21.10.2020
-     */
     protected function initRoutes(): void
     {
         $fileLocator = new FileLocator([__DIR__, $this->dic['path_root']]);
@@ -128,16 +99,11 @@ class Core
         $this->request->attributes->add($matcher);
     }
 
-    /**
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 21.10.2020
-     */
     protected function initApplication(): void
     {
         (new AppResponse())->run($this->response);
 
-        if ($this->request->getMethod() == 'OPTIONS') {
+        if ($this->request->getMethod() === 'OPTIONS') {
             $allow_methods = 'OPTIONS, ' . $this->request->headers->get('Access-Control-Request-Method');
 
             $this->response->headers->set('Access-Control-Allow-Methods', $allow_methods);
@@ -185,11 +151,6 @@ class Core
         return false;
     }
 
-    /**
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 21.10.2020
-     */
     protected function getOrigin(string $request_origin): string
     {
         $allow_origins = $this->dic['config']['cors']['access_control_allow_origin'];

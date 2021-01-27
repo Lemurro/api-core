@@ -2,10 +2,6 @@
 
 /**
  * Заблокировать \ Разблокировать пользователя
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- *
- * @version 30.10.2020
  */
 
 namespace Lemurro\Api\Core\Users;
@@ -16,18 +12,11 @@ use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
 
-/**
- * @package Lemurro\Api\Core\Users
- */
 class ActionLockUnlock extends Action
 {
     /**
      * @param integer $id     ИД записи
      * @param boolean $locked Статус блокировки (true|false)
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 30.10.2020
      */
     public function run($id, $locked): array
     {
@@ -40,7 +29,7 @@ class ActionLockUnlock extends Action
             return Response::error404('Пользователь не найден');
         }
 
-        if ($id == 1 && $locked) {
+        if ((int) $id === 1 && $locked) {
             return Response::error403('Пользователь с id=1 не может быть заблокирован', false);
         }
 
