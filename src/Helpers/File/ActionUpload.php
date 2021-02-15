@@ -1,40 +1,25 @@
 <?php
 
-/**
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- *
- * @version 23.12.2020
- */
-
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\Core\Helpers\Response;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\FileBag;
 
-/**
- * @package Lemurro\Api\Core\Helpers\File
- */
 class ActionUpload extends AbstractFileAction
 {
     /**
      * @param FileBag $file Загруженный файл
-     *
-     * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 23.12.2020
      */
-    public function run($file)
+    public function run($file): array
     {
         /** @var UploadedFile $uploaded_file */
         $uploaded_file = $file->get('uploadfile');
 
         $orig_tmp = $uploaded_file->getPathname();
-        $orig_mime = mime_content_type($orig_tmp);
+        $orig_mime = mb_strtolower(mime_content_type($orig_tmp), 'UTF-8');
         $orig_size = $uploaded_file->getSize();
-        $orig_ext = $uploaded_file->getClientOriginalExtension();
+        $orig_ext = mb_strtolower($uploaded_file->getClientOriginalExtension(), 'UTF-8');
 
         switch ($this->dic['config']['file']['check_file_by']) {
             case 'type':
