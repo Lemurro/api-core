@@ -22,7 +22,8 @@
     }
   },
   "scripts": {
-    "phpcs": "phpcs -nsp ./src --runtime-set testVersion 7.4 --standard=PHPCompatibility --standard=PSR1 --standard=PSR12 --runtime-set installed_paths ./vendor/phpcompatibility/php-compatibility/PHPCompatibility --report=xml --report-file=./phpcs-report.xml"
+    "phpcs74": "phpcs -nsp ./src --runtime-set testVersion 7.4 --standard=PHPCompatibility --standard=PSR1 --standard=PSR12 --runtime-set installed_paths ./vendor/phpcompatibility/php-compatibility/PHPCompatibility --report=xml --report-file=./phpcs-report.xml",
+    "phpcs80": "phpcs -nsp ./src --runtime-set testVersion 8.0 --standard=PHPCompatibility --standard=PSR1 --standard=PSR12 --runtime-set installed_paths ./vendor/phpcompatibility/php-compatibility/PHPCompatibility --report=xml --report-file=./phpcs-report.xml"
   },
   "config": {
     "sort-packages": true
@@ -40,7 +41,7 @@
     "illuminate/database": "8.23.*",
     "monolog/monolog": "2.2.*",
     "nesbot/carbon": "2.43.*",
-    "php": ">=7.4.0",
+    "php": "7.4.* || 8.0.*",
     "phpmailer/phpmailer": "6.2.*",
     "pimple/pimple": "3.3.*",
     "symfony/http-foundation": "5.2.*",
