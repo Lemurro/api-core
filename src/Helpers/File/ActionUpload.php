@@ -32,7 +32,7 @@ class ActionUpload extends Action
      * @version 06.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    public function run($file)
+    public function run($file): array
     {
         /** @var Logger $log */
         $log = $this->dic['log'];
@@ -41,9 +41,9 @@ class ActionUpload extends Action
         $uploaded_file = $file->get('uploadfile');
 
         $orig_tmp = $uploaded_file->getPathname();
-        $orig_mime = mime_content_type($orig_tmp);
+        $orig_mime = mb_strtolower(mime_content_type($orig_tmp), 'UTF-8');
         $orig_size = $uploaded_file->getSize();
-        $orig_ext = $uploaded_file->getClientOriginalExtension();
+        $orig_ext = mb_strtolower($uploaded_file->getClientOriginalExtension(), 'UTF-8');
 
         switch (SettingsFile::CHECK_FILE_BY) {
             case 'type':
