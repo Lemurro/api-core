@@ -105,6 +105,7 @@ class ActionFilter extends Action
                         break;
 
                     case 'lemurro_roles':
+                        // $value = 'example|!any!'
                         // $value = 'example|read'
                         $role = explode('|', $value);
 
@@ -115,11 +116,18 @@ class ActionFilter extends Action
                                 $where_roles_type = 'IS NOT NULL';
                             }
 
-                            // iu.roles = {"guide":["read"],"example":["read","create-update","delete"]}
-                            // JSON_SEARCH(JSON_EXTRACT(roles, '$.example'), 'one', 'read') IS NOT NULL
-                            $query[] = "JSON_SEARCH(JSON_EXTRACT(roles, ?), 'one', ?) $where_roles_type";
-                            $params[] = '$.' . $role[0]; // example
-                            $params[] = $role[1]; // read
+                            if ($role[1] === '!any!') {
+                                // iu.roles = {"guide":["read"],"example":["read","create-update","delete"]}
+                                // JSON_EXTRACT(roles, '$.example') IS NOT NULL
+                                $query[] = "JSON_EXTRACT(roles, ?) $where_roles_type";
+                                $params[] = '$.' . $role[0]; // example
+                            } else {
+                                // iu.roles = {"guide":["read"],"example":["read","create-update","delete"]}
+                                // JSON_SEARCH(JSON_EXTRACT(roles, '$.example'), 'one', 'read') IS NOT NULL
+                                $query[] = "JSON_SEARCH(JSON_EXTRACT(roles, ?), 'one', ?) $where_roles_type";
+                                $params[] = '$.' . $role[0]; // example
+                                $params[] = $role[1]; // read
+                            }
                         }
                         break;
 
