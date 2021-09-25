@@ -9,8 +9,6 @@
 namespace Lemurro\Api\Core\Auth;
 
 use Lemurro\Api\Core\Abstracts\Controller;
-use Lemurro\Api\Core\Helpers\Response;
-use Lemurro\Api\Core\Session;
 
 /**
  * Class ControllerCheck
@@ -27,15 +25,7 @@ class ControllerCheck extends Controller
      */
     public function start()
     {
-        $result_session_check = (new Session())->check($this->dic['session_id']);
-        if (isset($result_session_check['errors'])) {
-            $this->response->setData($result_session_check);
-        } else {
-            $this->response->setData(Response::data([
-                'id'   => $result_session_check['session'],
-            ]));
-        }
-
+        $this->response->setData((new ActionCheck($this->dic))->run());
         $this->response->send();
     }
 }
