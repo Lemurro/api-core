@@ -8,6 +8,8 @@
 
 namespace Lemurro\Api\Core\Helpers\File;
 
+use Lemurro\Api\Core\Checker\Checker;
+use Monolog\Logger;
 use Pimple\Container;
 
 /**
@@ -24,6 +26,9 @@ abstract class FileChecker
      */
     protected $dic;
 
+    protected Checker $checker;
+    protected Logger $log;
+
     /**
      * Конструктор
      *
@@ -35,6 +40,8 @@ abstract class FileChecker
     public function __construct($dic)
     {
         $this->dic = $dic;
+        $this->checker = new Checker($dic);
+        $this->log = $dic['logfactory']->create('FileChecker');
     }
 
     /**
