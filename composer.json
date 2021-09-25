@@ -47,6 +47,11 @@
     "symfony/yaml": "4.4.*"
   },
   "require-dev": {
+    "codeception/codeception": "^4.1",
+    "codeception/module-asserts": "^1.0",
+    "codeception/module-db": "^1.0",
+    "codeception/module-phpbrowser": "^1.0",
+    "codeception/module-rest": "^1.2",
     "phpcompatibility/php-compatibility": "^9.3"
   },
   "replace": {
