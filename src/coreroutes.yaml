@@ -5,11 +5,6 @@ root:
   controller: '\Lemurro\Api\Core\Version\ControllerGet'
   methods: GET
 
-jserrors:
-  path: /jserrors
-  controller: '\Lemurro\Api\Core\JSErr\ControllerReciever'
-  methods: GET
-
 # /access_sets
 
 access_sets_index:
