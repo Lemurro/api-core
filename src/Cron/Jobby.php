@@ -16,6 +16,7 @@ use Lemurro\Api\Core\Helpers\Console;
 use Lemurro\Api\Core\Helpers\File\FileOlderFiles;
 use Lemurro\Api\Core\Helpers\File\FileOlderTokens;
 use Lemurro\Api\Core\Helpers\LoggerFactory;
+use Lemurro\Api\Core\Session;
 use Monolog\Logger;
 
 /**
@@ -69,6 +70,8 @@ class Jobby
      */
     public function init()
     {
+        $this->authOlderSessions();
+
         if (SettingsCron::FILE_OLDER_TOKENS_ENABLED) {
             $this->fileOlderTokens();
         }
@@ -82,6 +85,32 @@ class Jobby
         }
 
         return $this->jobby;
+    }
+
+    /**
+     * Очистим устаревшие сессии
+     *
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 01.12.2020
+     */
+    protected function authOlderSessions()
+    {
+        try {
+            $this->jobby->add(SettingsCron::NAME_PREFIX . 'AuthOlderSessions', [
+                'enabled'  => true,
+                'schedule' => '30 * * * *', // Каждый час
+                'closure'  => function () {
+                    new Console();
+
+                    (new Session())->clearOlder();
+
+                    return true;
+                },
+            ]);
+        } catch (Exception $e) {
+            $this->log->error($e->getFile() . '(' . $e->getLine() . '): ' . $e->getMessage());
+        }
     }
 
     /**
