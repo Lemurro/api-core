@@ -31,6 +31,8 @@ class FileManipulate extends Action
      */
     public function run($files, $container_type = 'default', $container_id = null)
     {
+        (new ContainerType())->validate($container_type);
+
         $file_add = new FileAdd($this->dic);
         $file_remove = new FileRemove($this->dic);
 

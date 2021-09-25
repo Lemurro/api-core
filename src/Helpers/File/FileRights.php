@@ -9,7 +9,6 @@
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\Core\Abstracts\Action;
-use Monolog\Logger;
 
 /**
  * Class FileRights
@@ -35,19 +34,11 @@ class FileRights extends Action
             return true;
         }
 
+        (new ContainerType())->validate($container_type);
+
         $classname = 'Lemurro\\Api\\App\\Checker\\File' . ucfirst($container_type);
+        $class = new $classname($this->dic);
 
-        if (class_exists($classname)) {
-            $class = new $classname($this->dic);
-
-            return call_user_func([$class, 'check'], $container_id);
-        } else {
-            /** @var Logger $log */
-            $log = $this->dic['log'];
-
-            $log->error('/File/FileRights.php: Unknown class "' . $classname . '"');
-
-            return false;
-        }
+        return call_user_func([$class, 'check'], $container_id);
     }
 }

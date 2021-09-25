@@ -9,10 +9,8 @@
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\App\Configs\SettingsFile;
-use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
-use Monolog\Logger;
 use ORM;
 
 /**
@@ -20,13 +18,8 @@ use ORM;
  *
  * @package Lemurro\Api\Core\Helpers\File
  */
-class FileAdd extends Action
+class FileAdd extends AbstractFileAction
 {
-    /**
-     * @var Logger
-     */
-    protected $log;
-
     /**
      * @var array
      */
@@ -47,7 +40,7 @@ class FileAdd extends Action
      */
     public function run($file_name, $orig_name, $container_type = 'default', $container_id = null)
     {
-        $this->log = $this->dic['log'];
+        (new ContainerType())->validate($container_type);
 
         $move_result = $this->moveToStorage($file_name);
         if (isset($move_result['errors'])) {
