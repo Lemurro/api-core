@@ -16,6 +16,11 @@
       "Lemurro\\Api\\Core\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Lemurro\\Api\\App\\": "stubs/"
+    }
+  },
   "config": {
     "sort-packages": true
   },
