@@ -36,6 +36,10 @@ class ActionInsert extends Action
     {
         $data = (new RunBeforeInsert($this->dic))->run($data);
 
+        if (!is_array($data['roles'])) {
+            $data['roles'] = [];
+        }
+
         $check_auth_id = ORM::for_table('users')
             ->select('id')
             ->where_equal('auth_id', $data['auth_id'])

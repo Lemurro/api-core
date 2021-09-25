@@ -37,6 +37,10 @@ class ActionSave extends Action
     {
         $data = (new RunBeforeSave($this->dic))->run($data);
 
+        if (!isset($data['roles']) || !is_array($data['roles'])) {
+            $data['roles'] = [];
+        }
+
         $check_auth_id = ORM::for_table('users')
             ->select('id')
             ->where_equal('auth_id', $data['auth_id'])
@@ -57,6 +61,7 @@ class ActionSave extends Action
                 $data['info_users']['last_name'] = 'Пользователь';
                 $data['info_users']['first_name'] = 'для';
                 $data['info_users']['second_name'] = 'cli-скриптов';
+                $data['info_users']['email'] = 'lemurro@lemurro';
             }
 
             $user->auth_id = $data['auth_id'];
