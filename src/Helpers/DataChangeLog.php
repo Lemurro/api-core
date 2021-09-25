@@ -1,10 +1,4 @@
 <?php
-/**
- * Добавление записи в лог действий
- *
- * @version 28.03.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Helpers;
 
@@ -12,14 +6,27 @@ use Lemurro\Api\Core\Abstracts\Action;
 use ORM;
 
 /**
- * Class DataChangeLog
- *
- * @package Lemurro\Api\Core\Helpers
+ * Добавление записи в лог действий
  */
 class DataChangeLog extends Action
 {
     /**
-     * Выполним действие
+     * @var string
+     */
+    public const ACTION_INSERT = 'insert';
+
+    /**
+     * @var string
+     */
+    public const ACTION_UPDATE = 'update';
+
+    /**
+     * @var string
+     */
+    public const ACTION_DELETE = 'delete';
+
+    /**
+     * Добавление записи в лог действий
      *
      * @param string  $table_name  Имя таблицы
      * @param string  $action_name Название действия ('insert'|'update'|'delete')
@@ -27,9 +34,6 @@ class DataChangeLog extends Action
      * @param array   $data        Массив данных
      *
      * @return boolean
-     *
-     * @version 29.12.2018
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function insert($table_name, $action_name, $record_id, $data = [])
     {
