@@ -31,10 +31,18 @@ class ActionGet
         $version_android = file_get_contents(SettingsPath::FULL_ROOT . 'version.android');
         $version_ios = file_get_contents(SettingsPath::FULL_ROOT . 'version.ios');
 
+        if ($version_android === false) {
+            $version_android = -1;
+        }
+
+        if ($version_ios === false) {
+            $version_ios = -1;
+        }
+
         return Response::data([
             'version' => [
-                'android' => intval($version_android, 10),
-                'ios'     => intval($version_ios, 10),
+                'android' => (string) $version_android,
+                'ios'     => (string) $version_ios,
             ],
         ]);
     }
