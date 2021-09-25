@@ -11,7 +11,6 @@
 namespace Lemurro\Api\Core\Auth\Code;
 
 use Lemurro\Api\Core\Abstracts\Controller;
-use Lemurro\Api\Core\Helpers\Response;
 
 /**
  * Class ControllerGet
@@ -29,13 +28,10 @@ class ControllerGet extends Controller
      */
     public function start()
     {
-        $auth_id = $this->request->get('auth_id');
-
-        if (empty($auth_id)) {
-            $this->response->setData(Response::error400('Отсутствует параметр "auth_id"'));
-        } else {
-            $this->response->setData((new ActionGet($this->dic))->run($auth_id));
-        }
+        $this->response->setData((new ActionGet($this->dic))->run(
+            (string) $this->request->query->get('auth_id'),
+            (string) $this->request->query->get('ip', '')
+        ));
 
         $this->response->send();
     }

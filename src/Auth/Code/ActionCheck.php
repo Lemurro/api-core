@@ -45,57 +45,64 @@ class ActionCheck extends Action
         $auth = ORM::for_table('auth_codes')
             ->where_equal('auth_id', $auth_id)
             ->find_one();
-        if (is_object($auth)) {
-            if ($auth->code === $auth_code) {
-                $secret = RandomKey::generate(100);
-                $created_at = $this->dic['datetimenow'];
+        if ($auth === false) {
+            return Response::error400('Код отсутствует, перезапустите приложение');
+        }
+
+        if ($auth->code === $auth_code) {
+            $secret = RandomKey::generate(100);
+            $created_at = $this->dic['datetimenow'];
+
+            $ip = null;
+            if (SettingsAuth::SESSIONS_BINDING_TO_IP) {
+                $ip = $_SERVER['REMOTE_ADDR'] ?? null;
+            }
+
+            try {
+                ORM::getDb()->beginTransaction();
 
                 $session = ORM::for_table('sessions')->create();
                 $session->session = $secret;
+                $session->ip = $_SERVER['REMOTE_ADDR'];
                 $session->user_id = $auth->user_id;
                 $session->device_info = json_encode($device_info, JSON_UNESCAPED_UNICODE);
                 $session->geoip = json_encode($geoip, JSON_UNESCAPED_UNICODE);
                 $session->created_at = $created_at;
                 $session->checked_at = $created_at;
-
-                if (SettingsAuth::SESSIONS_BINDING_TO_IP) {
-                    $session->ip = $_SERVER['REMOTE_ADDR'];
-                }
-
                 $session->save();
 
-                if (is_object($session) && isset($session->id)) {
-                    $history_registration = ORM::for_table('history_registrations')->create();
-                    $history_registration->device_uuid = ($device_info['uuid'] ?? 'unknown');
-                    $history_registration->device_platform = ($device_info['platform'] ?? 'unknown');
-                    $history_registration->device_version = ($device_info['version'] ?? 'unknown');
-                    $history_registration->device_manufacturer = ($device_info['manufacturer'] ?? 'unknown');
-                    $history_registration->device_model = ($device_info['model'] ?? 'unknown');
-                    $history_registration->created_at = $created_at;
-                    $history_registration->save();
+                $history_registration = ORM::for_table('history_registrations')->create();
+                $history_registration->device_uuid = ($device_info['uuid'] ?? 'unknown');
+                $history_registration->device_platform = ($device_info['platform'] ?? 'unknown');
+                $history_registration->device_version = ($device_info['version'] ?? 'unknown');
+                $history_registration->device_manufacturer = ($device_info['manufacturer'] ?? 'unknown');
+                $history_registration->device_model = ($device_info['model'] ?? 'unknown');
+                $history_registration->created_at = $created_at;
+                $history_registration->save();
 
-                    $cleaner->clear($auth_id);
+                $cleaner->clear($auth_id);
 
-                    return Response::data([
-                        'session' => $secret,
-                    ]);
-                }
+                ORM::getDb()->commit();
+
+                return Response::data([
+                    'session' => $secret,
+                ]);
+            } catch (\Throwable $th) {
+                ORM::getDb()->rollBack();
 
                 return Response::error500('Произошла ошибка при аутентификации, попробуйте ещё раз');
             }
-
-            if ($auth->attempts < 3) {
-                $auth->attempts++;
-                $auth->save();
-
-                return Response::error400('Неверный код, попробуйте ещё раз');
-            }
-
-            $auth->delete();
-
-            return Response::error401('Попытка взлома, запросите код повторно');
         }
 
-        return Response::error400('Код отсутствует, перезапустите приложение');
+        if ($auth->attempts < 3) {
+            $auth->attempts++;
+            $auth->save();
+
+            return Response::error400('Неверный код, попробуйте ещё раз');
+        }
+
+        $auth->delete();
+
+        return Response::error401('Попытка взлома, запросите код повторно');
     }
 }

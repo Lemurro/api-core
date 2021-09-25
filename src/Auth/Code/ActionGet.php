@@ -91,6 +91,8 @@ class ActionGet extends Action
      */
     private $log;
 
+    private string $ip;
+
     /**
      * ActionGet constructor.
      *
@@ -118,6 +120,7 @@ class ActionGet extends Action
      * Выполним действие
      *
      * @param string $auth_id Номер телефона или электронная почта
+     * @param string $ip
      *
      * @return array
      *
@@ -125,9 +128,14 @@ class ActionGet extends Action
      *
      * @version 10.06.2020
      */
-    public function run($auth_id): array
+    public function run($auth_id, $ip = ''): array
     {
+        if (empty($auth_id)) {
+            return Response::error400('Отсутствует параметр "auth_id"');
+        }
+
         $this->code_cleaner->clear($auth_id);
+        $this->ip = $ip;
 
         try {
             $user = $this->findUser($auth_id);
@@ -262,6 +270,7 @@ class ActionGet extends Action
 
             $auth_code = ORM::for_table('auth_codes')->create();
             $auth_code->auth_id = $this->auth_id;
+            $auth_code->ip = $this->ip;
             $auth_code->code = $this->secret;
             $auth_code->user_id = $this->user_id;
             $auth_code->created_at = $this->datetimenow;

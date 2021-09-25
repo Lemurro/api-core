@@ -51,16 +51,18 @@ class ActionLoginByUser extends Action
         $secret = RandomKey::generate(100);
         $created_at = $this->dic['datetimenow'];
 
+        $ip = null;
+        if (SettingsAuth::SESSIONS_BINDING_TO_IP) {
+            $ip = $_SERVER['REMOTE_ADDR'] ?? null;
+        }
+
         $session = ORM::for_table('sessions')->create();
         $session->session = $secret;
+        $session->ip = $ip;
         $session->user_id = $user_id;
         $session->admin_entered = 1;
         $session->created_at = $created_at;
         $session->checked_at = $created_at;
-
-        if (SettingsAuth::SESSIONS_BINDING_TO_IP) {
-            $session->ip = $_SERVER['REMOTE_ADDR'];
-        }
 
         $session->save();
 

@@ -20,21 +20,29 @@ class Session
     public function check($session_id): array
     {
         if (empty($session_id)) {
-            return Response::error401('Необходимо авторизоваться');
+            return Response::error401('Необходимо авторизоваться [#1]');
         }
 
         $session = ORM::for_table('sessions')
             ->where_equal('session', $session_id)
             ->find_one();
-        if (is_object($session) && $session->session == $session_id) {
-            if (SettingsAuth::SESSIONS_BINDING_TO_IP && $session->ip !== $_SERVER['REMOTE_ADDR']) {
+
+        if ($session === false) {
+            return Response::error401('Необходимо авторизоваться [#2]');
+        }
+
+        if (SettingsAuth::SESSIONS_BINDING_TO_IP) {
+            $ip = $_SERVER['REMOTE_ADDR'] ?? null;
+
+            if ((empty($ip) || $session->ip !== (string) $ip)) {
                 $session->delete();
 
-                return Response::error401('Необходимо авторизоваться');
+                return Response::error401('Необходимо авторизоваться [#3]');
             }
+        }
 
-            $session->checked_at = $checked_at;
-            $session->save();
+        $session->checked_at = Carbon::now('UTC')->toDateTimeString();
+        $session->save();
 
         return $session->as_array();
     }

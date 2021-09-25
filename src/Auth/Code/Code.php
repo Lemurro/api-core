@@ -30,9 +30,10 @@ class Code
     public function clear($auth_id = '')
     {
         $now = Carbon::now('UTC');
+        $older_than = $now->subHours(SettingsAuth::AUTH_CODES_OLDER_THAN)->toDateTimeString();
 
         ORM::for_table('auth_codes')
-            ->where_lt('created_at', $now->subHours(SettingsAuth::AUTH_CODES_OLDER_THAN))
+            ->where_lt('created_at', $older_than)
             ->delete_many();
 
         if ($auth_id != '') {
