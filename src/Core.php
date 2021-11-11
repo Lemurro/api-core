@@ -23,6 +23,7 @@ use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Loader\YamlFileLoader;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
+use Throwable;
 
 /**
  * Инициализация приложения
@@ -111,7 +112,7 @@ class Core
 
             $this->response->setData(Response::error400('Неверный метод маршрута'));
             $this->response->send();
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             LogException::write($this->core_log, $e);
 
             $this->response->setData(Response::error500('Непредвиденная ошибка,<br>подробности в лог-файле'));
