@@ -1,10 +1,4 @@
 <?php
-/**
- * Поиск пользователей по фильтру
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 31.01.2020
- */
 
 namespace Lemurro\Api\Core\Users;
 
@@ -13,9 +7,7 @@ use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
 /**
- * Class ActionFilter
- *
- * @package Lemurro\Api\Core\Users
+ * Поиск пользователей по фильтру
  */
 class ActionFilter extends Action
 {
@@ -89,9 +81,6 @@ class ActionFilter extends Action
      * @param array $fields
      *
      * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 27.09.2019
      */
     protected function getSqlWhere($filter, $fields)
     {
@@ -130,11 +119,18 @@ class ActionFilter extends Action
                                 $where_roles_type = 'IS NOT NULL';
                             }
 
-                            // `iu`.`roles` = {"guide":["read"],"example":["read","create-update","delete"]}
-                            // JSON_SEARCH(`roles`->>'$.example', 'one', 'read') IS NOT NULL
-                            $query[] = "JSON_SEARCH(`roles`->>?, 'one', ?) $where_roles_type";
-                            $params[] = '$.' . $role[0]; // example
-                            $params[] = $role[1]; // read
+                            if ($role[1] === '!any!') {
+                                // `iu`.`roles` = {"guide":["read"],"example":["read","create-update","delete"]}
+                                // JSON_SEARCH(JSON_KEYS(`roles`), 'one', 'example') IS NOT NULL
+                                $query[] = "JSON_SEARCH(JSON_KEYS(`roles`), 'one', ?) $where_roles_type";
+                                $params[] = $role[0]; // example
+                            } else {
+                                // `iu`.`roles` = {"guide":["read"],"example":["read","create-update","delete"]}
+                                // JSON_SEARCH(`roles`->>'$.example', 'one', 'read') IS NOT NULL
+                                $query[] = "JSON_SEARCH(`roles`->>?, 'one', ?) $where_roles_type";
+                                $params[] = '$.' . $role[0]; // example
+                                $params[] = $role[1]; // read
+                            }
                         }
                         break;
 
