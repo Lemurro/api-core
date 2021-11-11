@@ -12,7 +12,11 @@
     }
   ],
   "scripts": {
-    "phpcs74": "phpcs -nsp ./src --runtime-set testVersion 7.4 --standard=PHPCompatibility --standard=PSR1 --standard=PSR12 --runtime-set installed_paths ./vendor/phpcompatibility/php-compatibility/PHPCompatibility --report=xml --report-file=./phpcs-report.xml"
+    "phpcs74": "phpcs -nsp ./src --runtime-set testVersion 7.4 --standard=PHPCompatibility --standard=PSR1 --standard=PSR12 --runtime-set installed_paths ./vendor/phpcompatibility/php-compatibility/PHPCompatibility --report=xml --report-file=./phpcs-report.xml",
+    "test": [
+      "codecept clean",
+      "codecept run api"
+    ]
   },
   "autoload": {
     "psr-4": {
