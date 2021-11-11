@@ -1,11 +1,4 @@
 <?php
-/**
- * Вход под указанным пользователем
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- *
- * @version 24.04.2020
- */
 
 namespace Lemurro\Api\Core\Users;
 
@@ -16,22 +9,14 @@ use Lemurro\Api\Core\Helpers\Response;
 use ORM;
 
 /**
- * Class ActionLoginByUser
- *
- * @package Lemurro\Api\Core\Users
+ * Вход под указанным пользователем
  */
 class ActionLoginByUser extends Action
 {
     /**
-     * Выполним действие
+     * Вход под указанным пользователем
      *
      * @param integer $user_id ИД записи
-     *
-     * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 24.04.2020
      */
     public function run($user_id): array
     {
@@ -40,11 +25,17 @@ class ActionLoginByUser extends Action
             return $user;
         }
 
-        if ((int)$user_id === 1) {
+        $user = $user['data'];
+
+        if ((int) $user_id === 1) {
             return Response::error403('Входить под пользователем с id=1 запрещено', false);
         }
 
-        if ((int)$user['data']['locked'] === 1) {
+        if (isset($user['roles']['admin']) && (bool) $user['roles']['admin'] === true) {
+            return Response::error403('Пользователь является администратором и недоступен для входа', false);
+        }
+
+        if ((int) $user['locked'] === 1) {
             return Response::error403('Пользователь заблокирован и недоступен для входа', false);
         }
 
