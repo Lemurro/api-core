@@ -2,7 +2,6 @@
 
 namespace Lemurro\Api\Core;
 
-use Exception;
 use Lemurro\Api\App\Configs\SettingsMaintenance;
 use Lemurro\Api\App\Configs\SettingsPath;
 use Lemurro\Api\App\Overrides\DIC as AppDIC;
@@ -94,7 +93,7 @@ class Core
                     ));
                     $this->response->send();
                 } else {
-                    $class = $this->request->get('_controller');
+                    $class = (string) $this->request->attributes->get('_controller');
                     $controller = new $class($this->request, $this->response, $this->dic);
                     call_user_func([$controller, 'start']);
                 }

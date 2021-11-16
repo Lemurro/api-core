@@ -1,31 +1,14 @@
 <?php
 
-/**
- * Получение кода аутентификации
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- *
- * @version 17.06.2020
- */
-
 namespace Lemurro\Api\Core\Auth\Code;
 
 use Lemurro\Api\Core\Abstracts\Controller;
 
 /**
- * Class ControllerGet
- *
- * @package Lemurro\Api\Core\Auth\Code
+ * Получение кода аутентификации
  */
 class ControllerGet extends Controller
 {
-    /**
-     * Стартовый метод
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 17.06.2020
-     */
     public function start()
     {
         $this->response->setData((new ActionGet($this->dic))->run(

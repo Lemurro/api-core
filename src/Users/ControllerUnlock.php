@@ -1,28 +1,14 @@
 <?php
-/**
- * Разблокировать пользователя
- *
- * @version 03.06.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Users;
 
 use Lemurro\Api\Core\Abstracts\Controller;
 
 /**
- * Class ControllerUnlock
- *
- * @package Lemurro\Api\Core\Users
+ * Разблокировать пользователя
  */
 class ControllerUnlock extends Controller
 {
-    /**
-     * Стартовый метод
-     *
-     * @version 03.06.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     */
     public function start()
     {
         $checker_checks = [
@@ -31,10 +17,12 @@ class ControllerUnlock extends Controller
         ];
         $checker_result = $this->dic['checker']->run($checker_checks);
         if (is_array($checker_result) && count($checker_result) == 0) {
-            $this->response->setData((new ActionLockUnlock($this->dic))->run(
-                $this->request->get('id'),
-                false
-            ));
+            $this->response->setData(
+                (new ActionLockUnlock($this->dic))->run(
+                    (int) $this->request->attributes->get('id'),
+                    false
+                )
+            );
         } else {
             $this->response->setData($checker_result);
         }

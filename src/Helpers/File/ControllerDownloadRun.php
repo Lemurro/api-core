@@ -1,10 +1,4 @@
 <?php
-/**
- * Скачивание файла
- *
- * @version 26.07.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
@@ -13,21 +7,15 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
- * Class ControllerDownloadRun
- *
- * @package Lemurro\Api\Core\Helpers\File
+ * Скачивание файла
  */
 class ControllerDownloadRun extends Controller
 {
-    /**
-     * Стартовый метод
-     *
-     * @version 26.07.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     */
     public function start()
     {
-        $file_info = (new ActionDownloadRun($this->dic))->run($this->request->get('token'));
+        $file_info = (new ActionDownloadRun($this->dic))->run(
+            $this->request->query->get('token')
+        );
 
         if (isset($file_info['errors'])) {
             $this->response->setData($file_info);
