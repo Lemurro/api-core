@@ -429,6 +429,6 @@ class BUsersCest extends AbstractCest
 
         $I->seeResponseCodeIs(HttpCode::OK); // 200
         $I->seeResponseIsJson();
-        $I->seeResponseContains('{"success":true,"data":{"id":"' . $this->record_id . '"}}');
+        $I->seeResponseContains('{"success":true,"data":{"id":' . $this->record_id . '}}');
     }
 }
