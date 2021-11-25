@@ -1,87 +1,56 @@
 <?php
-/**
- * Токены для скачивания файлов
- *
- * @version 15.05.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
+use Carbon\Carbon;
+use Firebase\JWT\JWT;
+use Lemurro\Api\App\Configs\SettingsFile;
 use Lemurro\Api\Core\Helpers\Response;
 use Lemurro\Api\Core\Abstracts\Action;
-use ORM;
 
 /**
- * Class FileToken
- *
- * @package Lemurro\Api\Core\Helpers\File
+ * Токен для скачивания файлов
  */
 class FileToken extends Action
 {
     /**
-     * Создание токена для скачивания файла (с проверкой на дубликаты)
-     *
-     * @param string $type Тип файла (permanent|temporary)
-     * @param string $path Путь до файла
-     * @param string $name Имя файла для браузера
-     *
-     * @return string
-     *
-     * @version 15.05.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @var string Алгоритм шифрования подписи
      */
-    public function generate($type, $path, $name)
-    {
-        $token = md5(uniqid($this->dic['user']['id'], true));
+    static protected string $alg = 'HS256';
 
-        $record = ORM::for_table('files_downloads')->create();
-        $record->type = $type;
-        $record->path = $path;
-        $record->name = $name;
-        $record->token = $token;
-        $record->created_at = $this->dic['datetimenow'];
-        $record->save();
-        if (is_object($record)) {
-            return $token;
-        } else {
-            return '';
-        }
+    /**
+     * Создание токена для скачивания файла
+     *
+     * @param string $type      Тип файла (permanent|temporary)
+     * @param string $file_path Путь до файла
+     * @param string $file_name Имя файла для браузера
+     */
+    public function generate(string $type, string $file_path, string $file_name): string
+    {
+        $now = Carbon::now();
+
+        $payload = [
+            'iat' => $now->getTimestamp(),
+            'exp' => $now->addHours(SettingsFile::TOKENS_OLDER_THAN_HOURS)->getTimestamp(),
+            'ltp' => $type,
+            'lfp' => $file_path,
+            'lfn' => $file_name,
+        ];
+
+        return JWT::encode($payload, SettingsFile::SECRET_KEY_FOR_TOKENS, self::$alg);
     }
 
     /**
      * Проверим токен и получим путь до файла
-     *
-     * @param string $token Токен
-     *
-     * @return array
-     *
-     * @version 15.05.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    public function getFileInfo($token)
+    public function getFileInfo(string $jwt_token): array
     {
-        $record = ORM::for_table('files_downloads')
-            ->select_many(
-                'type',
-                'path',
-                'name',
-                'token'
-            )
-            ->where_equal('token', $token)
-            ->find_one();
-        if (is_object($record)) {
-            if ($record->token === $token) {
-                return Response::data([
-                    'type' => $record->type,
-                    'path' => $record->path,
-                    'name' => $record->name,
-                ]);
-            } else {
-                return Response::error400('Неверный токен');
-            }
-        } else {
-            return Response::error404('Токен не найден');
-        }
+        $payload = JWT::decode($jwt_token, SettingsFile::SECRET_KEY_FOR_TOKENS, [self::$alg]);
+
+        return Response::data([
+            'type' => $payload->ltp,
+            'path' => $payload->lfp,
+            'name' => $payload->lfn,
+        ]);
     }
 }

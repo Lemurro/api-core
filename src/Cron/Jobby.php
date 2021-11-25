@@ -1,10 +1,4 @@
 <?php
-/**
- * Инициализация Jobby
- *
- * @version 23.08.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Cron;
 
@@ -14,34 +8,18 @@ use Lemurro\Api\App\Configs\SettingsCron;
 use Lemurro\Api\App\Configs\SettingsMail;
 use Lemurro\Api\Core\Helpers\Console;
 use Lemurro\Api\Core\Helpers\File\FileOlderFiles;
-use Lemurro\Api\Core\Helpers\File\FileOlderTokens;
 use Lemurro\Api\Core\Helpers\LoggerFactory;
 use Lemurro\Api\Core\Session;
 use Monolog\Logger;
 
 /**
- * Class Jobby
- *
- * @package Lemurro\Api\Core\Cron
+ * Инициализация Jobby
  */
 class Jobby
 {
-    /**
-     * @var Logger
-     */
-    public $log;
+    public Logger $log;
+    protected JobbyJobby $jobby;
 
-    /**
-     * @var JobbyJobby
-     */
-    protected $jobby;
-
-    /**
-     * Jobby constructor.
-     *
-     * @version 29.04.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     */
     public function __construct()
     {
         date_default_timezone_set('UTC');
@@ -49,32 +27,25 @@ class Jobby
         $this->log = LoggerFactory::create('Jobby');
 
         $this->jobby = new JobbyJobby([
-            'output'         => SettingsCron::LOG_FILE,
-            'recipients'     => implode(',', SettingsCron::ERRORS_EMAILS),
-            'mailer'         => 'smtp',
-            'smtpHost'       => SettingsMail::SMTP_HOST,
-            'smtpPort'       => SettingsMail::SMTP_PORT,
-            'smtpUsername'   => SettingsMail::SMTP_USERNAME,
-            'smtpPassword'   => SettingsMail::SMTP_PASSWORD,
-            'smtpSecurity'   => SettingsMail::SMTP_SECURITY,
-            'smtpSender'     => SettingsMail::APP_EMAIL,
+            'output' => SettingsCron::LOG_FILE,
+            'recipients' => implode(',', SettingsCron::ERRORS_EMAILS),
+            'mailer' => 'smtp',
+            'smtpHost' => SettingsMail::SMTP_HOST,
+            'smtpPort' => SettingsMail::SMTP_PORT,
+            'smtpUsername' => SettingsMail::SMTP_USERNAME,
+            'smtpPassword' => SettingsMail::SMTP_PASSWORD,
+            'smtpSecurity' => SettingsMail::SMTP_SECURITY,
+            'smtpSender' => SettingsMail::APP_EMAIL,
             'smtpSenderName' => 'Jobby',
         ]);
     }
 
     /**
-     * Инициализация
-     *
-     * @version 23.08.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * Инициализация Jobby
      */
     public function init()
     {
         $this->authOlderSessions();
-
-        if (SettingsCron::FILE_OLDER_TOKENS_ENABLED) {
-            $this->fileOlderTokens();
-        }
 
         if (SettingsCron::FILE_OLDER_FILES_ENABLED) {
             $this->fileOlderFiles();
@@ -98,37 +69,12 @@ class Jobby
     {
         try {
             $this->jobby->add(SettingsCron::NAME_PREFIX . 'AuthOlderSessions', [
-                'enabled'  => true,
+                'enabled' => true,
                 'schedule' => '30 * * * *', // Каждый час
-                'closure'  => function () {
+                'closure' => function () {
                     new Console();
 
                     (new Session())->clearOlder();
-
-                    return true;
-                },
-            ]);
-        } catch (Exception $e) {
-            $this->log->error($e->getFile() . '(' . $e->getLine() . '): ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * Очистим устаревшие токены для скачивания
-     *
-     * @version 23.08.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     */
-    protected function fileOlderTokens()
-    {
-        try {
-            $this->jobby->add(SettingsCron::NAME_PREFIX . 'FileOlderTokens', [
-                'enabled'  => true,
-                'schedule' => '*/5 * * * *', // Каждые 5 минут
-                'closure'  => function () {
-                    new Console();
-
-                    (new FileOlderTokens)->clear();
 
                     return true;
                 },
@@ -148,9 +94,9 @@ class Jobby
     {
         try {
             $this->jobby->add(SettingsCron::NAME_PREFIX . 'FileOlderFiles', [
-                'enabled'  => true,
+                'enabled' => true,
                 'schedule' => '0 0 * * *', // Каждый день в 0:00 UTC
-                'closure'  => function () {
+                'closure' => function () {
                     (new FileOlderFiles)->clear();
 
                     return true;
@@ -171,9 +117,9 @@ class Jobby
     {
         try {
             $this->jobby->add(SettingsCron::NAME_PREFIX . 'DataChangeLogsRotator', [
-                'enabled'  => true,
+                'enabled' => true,
                 'schedule' => '0 0 1 1 *', // Каждый год 1 января в 0:00
-                'closure'  => function () {
+                'closure' => function () {
                     $cron = new Console();
                     $dic = $cron->getDIC();
 
