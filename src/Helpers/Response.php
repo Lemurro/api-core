@@ -6,17 +6,15 @@
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  * @author  Евгений Кулагин <ekulagin59@gmail.com>
  *
- * @version 19.06.2020
+ * @version 10.09.2020
  */
 
 namespace Lemurro\Api\Core\Helpers;
 
-use Exception;
-use RuntimeException;
+use Lemurro\Api\Core\Exception\ResponseException;
+use Throwable;
 
 /**
- * Class Response
- *
  * @package Lemurro\Api\Core\Helpers
  */
 class Response
@@ -172,60 +170,15 @@ class Response
     }
 
     /**
-     * Сгенерируем несколько ошибок
+     * Сгенерируем ошибку на основании Throwable
      *
-     * @deprecated Метод будет удалён в v2.0
-     *
-     * @param array $errors Массив ошибок
+     * @param Throwable $e Объект ошибки (используются поля: code и message)
      *
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 19.06.2019
-     */
-    public static function errors($errors): array
-    {
-        if (empty($errors)) {
-            return self::error500('Ошибка при выполнении запроса');
-        }
-
-        $many_errors = [];
-
-        foreach ($errors as $error) {
-            if (isset($error['errors']) && is_array($error['errors']) && !empty($error['errors'])) {
-                $error = $error['errors'][0];
-
-                $one_error = [
-                    'status' => empty($error['status']) ? '500 Internal Server Error' : $error['status'],
-                    'code'   => empty($error['code']) ? 'danger' : $error['code'],
-                    'title'  => empty($error['title']) ? 'Ошибка при выполнении запроса' : $error['title'],
-                ];
-
-                if (!empty($error['meta'])) {
-                    $one_error['meta'] = $error['meta'];
-                }
-
-                $many_errors[] = $one_error;
-            }
-        }
-
-        return [
-            'success' => false,
-            'errors' => $many_errors,
-        ];
-    }
-
-    /**
-     * Сгенерируем ошибку на основании Exception
-     *
-     * @param Exception $e Объект ошибки (используются поля: code и message)
-     *
-     * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 17.04.2020
+     * @version 10.09.2020
      */
     public static function exception($e): array
     {
@@ -264,15 +217,15 @@ class Response
     }
 
     /**
-     * Превратим ошибку в RuntimeException
+     * Превратим ошибку в ResponseException
      *
-     * @param array $errors Результат от методов error*
+     * @param $errors Результат от методов error*
      *
-     * @throws RuntimeException
+     * @throws ResponseException
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 19.06.2020
+     * @version 10.09.2020
      */
     public static function errorToException($errors): void
     {
@@ -290,6 +243,6 @@ class Response
             $code = 500;
         }
 
-        throw new RuntimeException($one_error['title'], $code);
+        throw new ResponseException($one_error['title'], $code);
     }
 }

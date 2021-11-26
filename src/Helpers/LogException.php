@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Добавление в лог информации о пойманном исключении
  *
@@ -29,7 +30,7 @@ class LogException
      * @version 28.05.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    static function write($log, $e)
+    public static function write($log, $e)
     {
         return $log->error($e->getFile() . ' (line: ' . $e->getLine() . ') - ' . $e->getMessage(), $e->getTrace());
     }

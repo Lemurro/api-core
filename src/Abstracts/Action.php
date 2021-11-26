@@ -1,9 +1,11 @@
 <?php
+
 /**
  * Модель действия
  *
- * @version 26.05.2018
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 09.09.2020
  */
 
 namespace Lemurro\Api\Core\Abstracts;
@@ -11,29 +13,22 @@ namespace Lemurro\Api\Core\Abstracts;
 use Pimple\Container;
 
 /**
- * Class Action
- *
  * @package Lemurro\Api\Core\Abstracts
  */
 abstract class Action
 {
-    /**
-     * Контейнер
-     *
-     * @var Container
-     */
-    protected $dic;
+    protected Container $dic;
+    protected string $datetimenow;
 
     /**
-     * Конструктор
-     *
-     * @param Container $dic Контейнер
-     *
-     * @version 26.05.2018
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 09.09.2020
      */
-    public function __construct($dic)
+    public function __construct(Container $dic)
     {
         $this->dic = $dic;
+
+        $this->datetimenow = $dic['datetimenow'];
     }
 }

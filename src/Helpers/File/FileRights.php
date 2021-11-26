@@ -1,9 +1,9 @@
 <?php
+
 /**
- * Проверка доступа пользователя к файлу
- *
- * @version 08.04.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 23.12.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
@@ -11,22 +11,23 @@ namespace Lemurro\Api\Core\Helpers\File;
 use Lemurro\Api\Core\Abstracts\Action;
 
 /**
- * Class FileRights
- *
  * @package Lemurro\Api\Core\Helpers\File
  */
 class FileRights extends Action
 {
     /**
-     * Выполним действие
+     * Проверка доступа пользователя к файлу
      *
      * @param string $container_type Тип контейнера
      * @param string $container_id   ИД контейнера
      *
      * @return boolean
      *
-     * @version 08.04.2019
+     * @throws RuntimeException
+     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 23.12.2020
      */
     public function check($container_type, $container_id)
     {

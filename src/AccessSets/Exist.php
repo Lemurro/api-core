@@ -1,44 +1,39 @@
 <?php
+
 /**
- * Проверка на наличие подобной записи
- *
- * @version 05.06.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 30.10.2020
  */
 
 namespace Lemurro\Api\Core\AccessSets;
 
+use Illuminate\Support\Facades\DB;
 use Lemurro\Api\Core\Helpers\Response;
-use ORM;
 
 /**
- * Class Exist
- *
  * @package Lemurro\Api\Core\AccessSets
  */
 class Exist
 {
     /**
-     * Выполним действие
-     *
      * @param integer $id   ИД записи
      * @param string  $name Строка для проверки
      *
-     * @return array
-     *
-     * @version 05.06.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 30.10.2020
      */
-    static function check($id, $name)
+    public static function check($id, $name): array
     {
-        $exist = ORM::for_table('access_sets')
+        $count = DB::table('access_sets')
             ->select('id')
-            ->where_equal('name', $name)
-            ->where_not_equal('id', $id)
-            ->where_null('deleted_at')
-            ->find_one();
+            ->where('name', '=', $name)
+            ->where('id', '<>', $id)
+            ->whereNull('deleted_at')
+            ->get();
 
-        if (is_object($exist)) {
+        if ($count->count() > 0) {
             return Response::error400('Набор с таким именем уже существует');
         }
 

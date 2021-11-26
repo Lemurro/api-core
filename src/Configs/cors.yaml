@@ -1,0 +1,8 @@
+cors:
+  # Белый список доменов клиентов
+  #   не рекомендуется использовать "*" и отключать access_control_allow_credentials
+  access_control_allow_origin:
+    - "http://lemurro-web.localhost"
+
+  # Использовать Access-Control-Allow-Origin
+  access_control_allow_credentials: true

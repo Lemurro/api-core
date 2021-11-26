@@ -1,0 +1,7 @@
+guides:
+  # Связка конечных точек маршрута справочников и их namespaces для запуска
+  #
+  # конечная точка: example (используется в пути: /guide/example)
+  #      namespace: Example (полный путь до каталога классов: /app/Guide/Example/)
+  classes:
+    # example: "Example"

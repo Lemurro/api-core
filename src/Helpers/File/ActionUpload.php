@@ -1,42 +1,18 @@
 <?php
-/**
- * Загрузка файла во временный каталог
- *
- * @version 06.06.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
-use Lemurro\Api\App\Configs\SettingsFile;
 use Lemurro\Api\Core\Helpers\Response;
-use Lemurro\Api\Core\Abstracts\Action;
-use Monolog\Logger;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\FileBag;
 
-/**
- * Class ActionUpload
- *
- * @package Lemurro\Api\Core\Helpers\File
- */
-class ActionUpload extends Action
+class ActionUpload extends AbstractFileAction
 {
     /**
-     * Выполним действие
-     *
      * @param FileBag $file Загруженный файл
-     *
-     * @return array
-     *
-     * @version 06.06.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($file): array
     {
-        /** @var Logger $log */
-        $log = $this->dic['log'];
-
         /** @var UploadedFile $uploaded_file */
         $uploaded_file = $file->get('uploadfile');
 
@@ -45,26 +21,26 @@ class ActionUpload extends Action
         $orig_size = $uploaded_file->getSize();
         $orig_ext = mb_strtolower($uploaded_file->getClientOriginalExtension(), 'UTF-8');
 
-        switch (SettingsFile::CHECK_FILE_BY) {
+        switch ($this->dic['config']['file']['check_file_by']) {
             case 'type':
-                $type_corrected = in_array($orig_mime, SettingsFile::ALLOWED_TYPES);
+                $type_corrected = in_array($orig_mime, $this->dic['config']['file']['allowed_types']);
                 break;
 
             case 'ext':
-                $type_corrected = in_array($orig_ext, SettingsFile::ALLOWED_EXTENSIONS);
+                $type_corrected = in_array($orig_ext, $this->dic['config']['file']['allowed_extensions']);
                 break;
 
             default:
-                $log->info('File: Неверный вид проверки типа файла: ' . SettingsFile::CHECK_FILE_BY);
+                $this->log->info('File: Неверный вид проверки типа файла: ' . $this->dic['config']['file']['check_file_by']);
 
                 return Response::error400('Неверные настройки приложения, пожалуйста обратитесь к администратору');
                 break;
         }
 
         if ($type_corrected === false) {
-            $log->info('File: Попытка загрузки неразрешённого файла .' . $orig_ext . ': ' . $orig_mime);
+            $this->log->info('File: Попытка загрузки неразрешённого файла .' . $orig_ext . ': ' . $orig_mime);
 
-            $allowed_extensions = implode(', ', SettingsFile::ALLOWED_EXTENSIONS);
+            $allowed_extensions = implode(', ', $this->dic['config']['file']['allowed_extensions']);
 
             return Response::error400('Разрешённые форматы: ' . $allowed_extensions, [
                 'mime' => $orig_mime,
@@ -72,11 +48,11 @@ class ActionUpload extends Action
             ]);
         }
 
-        if ($orig_size > SettingsFile::ALLOWED_SIZE) {
-            return Response::error400('Максимальный размер файла: ' . SettingsFile::MAX_SIZE_FORMATED);
+        if ($orig_size > $this->dic['config']['file']['allowed_size_bytes']) {
+            return Response::error400('Максимальный размер файла: ' . $this->dic['config']['file']['allowed_size_formated']);
         }
 
-        $dest_folder = SettingsFile::TEMP_FOLDER;
+        $dest_folder = $this->dic['config']['file']['path_temp'] . '/';
         $dest_name = md5_file($orig_tmp);
 
         if (isset($this->dic['user']['id'])) {
@@ -90,7 +66,7 @@ class ActionUpload extends Action
         $uploaded_file->move($dest_folder, $file_id);
 
         if (!is_readable($dest_folder . $file_id) || !is_file($dest_folder . $file_id)) {
-            $log->error('File: Файл не был загружен', [
+            $this->log->error('File: Файл не был загружен', [
                 'mime'    => $orig_mime,
                 'size'    => $orig_size,
                 'ext'     => $orig_ext,

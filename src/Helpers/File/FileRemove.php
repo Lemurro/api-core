@@ -1,67 +1,55 @@
 <?php
+
 /**
- * Удаление файла
- *
- * @version 28.03.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ *
+ * @version 04.11.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
-use Lemurro\Api\App\Configs\SettingsFile;
+use Illuminate\Support\Facades\DB;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
 use Pimple\Container;
 
 /**
- * Class FileRemove
- *
  * @package Lemurro\Api\Core\Helpers\File
  */
 class FileRemove extends Action
 {
-    /**
-     * @var FileInfo
-     */
-    protected $file_info;
+    protected FileRights $file_rights;
 
     /**
-     * @var FileRights
-     */
-    protected $file_rights;
-
-    /**
-     * Конструктор
-     *
      * @param Container $dic Контейнер
      *
-     * @version 08.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 04.11.2020
      */
     public function __construct(Container $dic)
     {
         parent::__construct($dic);
 
-        $this->file_info = new FileInfo();
         $this->file_rights = new FileRights($dic);
     }
 
     /**
-     * Выполним действие
-     *
      * @param integer $fileid ИД файла
      *
-     * @return array
-     *
-     * @version 08.01.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     *
+     * @version 04.11.2020
      */
-    public function run($fileid)
+    public function run($fileid): array
     {
-        $info = $this->file_info->getOneORM($fileid);
-        if (is_array($info)) {
-            return $info;
+        $info = DB::table('files')
+            ->where('id', '=', $fileid)
+            ->whereNull('deleted_at')
+            ->first();
+        if ($info === null) {
+            return Response::error404('Файл не найден');
         }
 
         if ($this->file_rights->check($info->container_type, $info->container_id) === false) {
@@ -70,31 +58,38 @@ class FileRemove extends Action
             ]);
         }
 
-        $file_path = SettingsFile::FILE_FOLDER . $info->path;
+        $file_path = $this->dic['config']['file']['path_upload'] . '/' . $info->path;
 
-        if (SettingsFile::FULL_REMOVE) {
-            $info->delete();
-        } else {
-            $info->deleted_at = $this->dic['datetimenow'];
-            $info->save();
-        }
-
-        if (is_object($info)) {
-            /** @var DataChangeLog $datachangelog */
-            $datachangelog = $this->dic['datachangelog'];
-            $datachangelog->insert('files', 'delete', $info->id, $info->as_array());
-
-            if (SettingsFile::FULL_REMOVE) {
-                @unlink($file_path);
+        if ($this->dic['config']['file']['full_remove']) {
+            if (DB::table('files')->delete($fileid) === 0) {
+                return Response::error500('Файл не был удалён, попробуйте ещё раз', [
+                    'file_id' => $fileid,
+                ]);
             }
-
-            return Response::data([
-                'id' => $fileid,
-            ]);
         } else {
-            return Response::error500('Файл не был удалён, попробуйте ещё раз', [
-                'file_id' => $fileid,
-            ]);
+            $affected = DB::table('files')
+                ->where('id', '=', $fileid)
+                ->update([
+                    'deleted_at' => $this->datetimenow,
+                ]);
+
+            if ($affected === 0) {
+                return Response::error500('Файл не был удалён, попробуйте ещё раз', [
+                    'file_id' => $fileid,
+                ]);
+            }
         }
+
+        /** @var DataChangeLog $datachangelog */
+        $datachangelog = $this->dic['datachangelog'];
+        $datachangelog->insert('files', $datachangelog::ACTION_DELETE, $info->id, (array) $info);
+
+        if ($this->dic['config']['file']['full_remove']) {
+            @unlink($file_path);
+        }
+
+        return Response::data([
+            'id' => $fileid,
+        ]);
     }
 }

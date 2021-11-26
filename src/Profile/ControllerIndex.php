@@ -1,42 +1,34 @@
 <?php
+
 /**
- * Профиль пользователя
- *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 24.04.2020
+ * @version 10.09.2020
  */
 
 namespace Lemurro\Api\Core\Profile;
 
 use Lemurro\Api\Core\Abstracts\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class ControllerIndex
- *
  * @package Lemurro\Api\Core\Profile
  */
 class ControllerIndex extends Controller
 {
     /**
-     * Стартовый метод
-     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 24.04.2020
+     * @version 10.09.2020
      */
-    public function start()
+    public function start(): Response
     {
-        $checker_checks = [
+        $this->checker->run([
             'auth' => '',
-        ];
-        $checker_result = $this->dic['checker']->run($checker_checks);
-        if (is_array($checker_result) && empty($checker_result)) {
-            $this->response->setData((new ActionIndex($this->dic))->run());
-        } else {
-            $this->response->setData($checker_result);
-        }
+        ]);
 
-        $this->response->send();
+        $this->response->setData((new ActionIndex($this->dic))->run());
+
+        return $this->response;
     }
 }
