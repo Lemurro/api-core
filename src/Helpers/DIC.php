@@ -1,117 +1,85 @@
 <?php
-
 /**
  * Инициализация Dependency Injection Container
  *
+ * @version 27.08.2019
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
- *
- * @version 14.10.2020
  */
 
 namespace Lemurro\Api\Core\Helpers;
 
 use Carbon\Carbon;
-use Lemurro\Api\Core\Configuration\ConfigFactory;
+use Lemurro\Api\App\Configs\SettingsGeneral;
+use Lemurro\Api\App\Configs\SettingsMail;
+use Lemurro\Api\Core\Checker\Checker;
 use Lemurro\Api\Core\Helpers\SMS\SMS;
-use Lemurro\Api\Core\Session;
-use Lemurro\Api\Core\Users\ActionGet as GetUser;
 use PHPMailer\PHPMailer\PHPMailer;
 use Pimple\Container;
 
 /**
+ * Class DIC
+ *
  * @package Lemurro\Api\Core\Helpers
  */
 class DIC
 {
     /**
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * Инициализация
      *
-     * @version 14.10.2020
+     * @return Container
+     *
+     * @version 27.08.2019
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    public static function init(string $path_root, string $session_id = '', int $utc_offset = 0): Container
+    static function init()
     {
         $dic = new Container();
 
-        $dic['path_root'] = preg_replace('/\/$/', '', $path_root);
-        $dic['session_id'] = $session_id;
-        $dic['utc_offset'] = $utc_offset;
-
-        $dic['config'] = function ($c) {
-            return (new ConfigFactory())->create($c['path_root']);
-        };
-
-        $dic['logfactory'] = function ($c) {
-            return new LoggerFactory($c['config']['file']['path_logs']);
-        };
-
-        $dic['log'] = function ($c) {
-            /** @var LoggerFactory $logfactory */
-            $logfactory = $c['logfactory'];
-
-            return $logfactory->create('Main');
-        };
-
-        $dic['user'] = function ($c) {
-            if (empty($c['session_id'])) {
-                return [];
-            }
-
-            $result_session_check = (new Session($c['config']['auth']))->check($c['session_id']);
-            if (isset($result_session_check['errors'])) {
-                return [];
-            }
-
-            $user_info = (new GetUser($c))->run($result_session_check['user_id']);
-            if (isset($user_info['data'])) {
-                $user_info['data']['admin'] = (isset($user_info['data']['roles']['admin']) ? true : false);
-
-                return $user_info['data'];
-            }
-
-            return [];
-        };
+        $dic['utc_offset'] = 0;
 
         $dic['datetimenow'] = function () {
-            return Carbon::now('UTC')->toDateTimeString();
+            $now = Carbon::now('UTC');
+
+            return $now->toDateTimeString();
         };
 
-        $dic['phpmailer'] = function ($c) {
+        $dic['phpmailer'] = function () {
             $phpmailer = new PHPMailer();
             $phpmailer->isHTML(true);
             $phpmailer->CharSet = 'windows-1251';
-            $phpmailer->From = $c['config']['mail']['app_email'];
-            $phpmailer->FromName = iconv('utf-8', 'windows-1251', $c['config']['general']['app_name']);
+            $phpmailer->From = SettingsMail::APP_EMAIL;
+            $phpmailer->FromName = iconv('utf-8', 'windows-1251', SettingsGeneral::APP_NAME);
 
-            if ($c['config']['mail']['smtp']) {
+            if (SettingsMail::SMTP) {
                 $phpmailer->isSMTP();
                 $phpmailer->SMTPDebug = 0;
                 $phpmailer->SMTPAuth = true;
-                $phpmailer->SMTPSecure = $c['config']['mail']['smtp_security'];
-                $phpmailer->Host = $c['config']['mail']['smtp_host'];
-                $phpmailer->Port = $c['config']['mail']['smtp_port'];
-                $phpmailer->Username = $c['config']['mail']['smtp_username'];
-                $phpmailer->Password = $c['config']['mail']['smtp_password'];
+                $phpmailer->SMTPSecure = SettingsMail::SMTP_SECURITY;
+                $phpmailer->Host = SettingsMail::SMTP_HOST;
+                $phpmailer->Port = SettingsMail::SMTP_PORT;
+                $phpmailer->Username = SettingsMail::SMTP_USERNAME;
+                $phpmailer->Password = SettingsMail::SMTP_PASSWORD;
             }
 
             return $phpmailer;
         };
 
-        if ($dic['config']['mail']['reserve']) {
-            $dic['phpmailer_reserve'] = function ($c) {
+        if (SettingsMail::RESERVE) {
+            $dic['phpmailer_reserve'] = function () {
                 $phpmailer = new PHPMailer();
                 $phpmailer->isHTML(true);
                 $phpmailer->CharSet = 'windows-1251';
-                $phpmailer->From = $c['config']['mail']['reserve_app_email'];
-                $phpmailer->FromName = iconv('utf-8', 'windows-1251', $c['config']['general']['app_name']);
+                $phpmailer->From = SettingsMail::RESERVE_APP_EMAIL;
+                $phpmailer->FromName = iconv('utf-8', 'windows-1251', SettingsGeneral::APP_NAME);
 
                 $phpmailer->isSMTP();
                 $phpmailer->SMTPDebug = 0;
                 $phpmailer->SMTPAuth = true;
-                $phpmailer->SMTPSecure = $c['config']['mail']['reserve_smtp_security'];
-                $phpmailer->Host = $c['config']['mail']['reserve_smtp_host'];
-                $phpmailer->Port = $c['config']['mail']['reserve_smtp_port'];
-                $phpmailer->Username = $c['config']['mail']['reserve_smtp_username'];
-                $phpmailer->Password = $c['config']['mail']['reserve_smtp_password'];
+                $phpmailer->SMTPSecure = SettingsMail::RESERVE_SMTP_SECURITY;
+                $phpmailer->Host = SettingsMail::RESERVE_SMTP_HOST;
+                $phpmailer->Port = SettingsMail::RESERVE_SMTP_PORT;
+                $phpmailer->Username = SettingsMail::RESERVE_SMTP_USERNAME;
+                $phpmailer->Password = SettingsMail::RESERVE_SMTP_PASSWORD;
 
                 return $phpmailer;
             };
@@ -121,12 +89,20 @@ class DIC
             return new Mailer($c);
         };
 
-        $dic['sms'] = function ($c) {
-            return new SMS($c['config']['sms'], $c['logfactory']);
+        $dic['sms'] = function () {
+            return new SMS();
         };
 
         $dic['datachangelog'] = function ($c) {
             return new DataChangeLog($c);
+        };
+
+        $dic['log'] = function () {
+            return LoggerFactory::create('Main');
+        };
+
+        $dic['checker'] = function ($c) {
+            return new Checker($c);
         };
 
         return $dic;

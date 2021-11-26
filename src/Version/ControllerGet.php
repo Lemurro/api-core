@@ -1,30 +1,31 @@
 <?php
-
 /**
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * Получим номер последней версии приложения
  *
- * @version 14.10.2020
+ * @version 13.07.2018
+ * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core\Version;
 
 use Lemurro\Api\Core\Abstracts\Controller;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
+ * Class ControllerGet
+ *
  * @package Lemurro\Api\Core\Version
  */
 class ControllerGet extends Controller
 {
     /**
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * Стартовый метод
      *
-     * @version 14.10.2020
+     * @version 13.07.2018
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    public function start(): Response
+    public function start()
     {
-        $this->response->setData((new ActionGet())->run($this->dic['path_root']));
-
-        return $this->response;
+        $this->response->setData((new ActionGet())->run());
+        $this->response->send();
     }
 }

@@ -1,23 +1,29 @@
 <?php
 
 /**
+ * Подготовка файла к скачиванию
+ *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 04.11.2020
+ * @version 27.05.2020
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
-use Illuminate\Support\Facades\DB;
+use Lemurro\Api\App\Configs\SettingsFile;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\Response;
 
 /**
+ * Class ActionDownloadPrepare
+ *
  * @package Lemurro\Api\Core\Helpers\File
  */
 class ActionDownloadPrepare extends Action
 {
     /**
+     * Выполним действие
+     *
      * @param integer|string $fileid   ИД постоянного файла или имя временого файла
      * @param string         $filename Имя файла (для браузера)
      *
@@ -36,28 +42,28 @@ class ActionDownloadPrepare extends Action
     }
 
     /**
+     * Постоянный файл
+     *
      * @param integer $fileid   ИД постоянного файла
      * @param string  $filename Имя файла (для браузера)
      *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @return array
      *
-     * @version 04.11.2020
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 15.01.2020
      */
-    protected function permanentFile($fileid, $filename): array
+    protected function permanentFile($fileid, $filename)
     {
-        $info = DB::table('files')
-            ->where('id', '=', $fileid)
-            ->whereNull('deleted_at')
-            ->first();
-        if ($info === null) {
-            return Response::error404('Файл не найден');
+        $info = (new FileInfo())->getOneORM($fileid);
+        if (is_array($info)) {
+            return $info;
         }
 
         if ((new FileRights($this->dic))->check($info->container_type, $info->container_id) === false) {
             return Response::error403('Доступ ограничен', false);
         }
 
-        $file_path = $this->dic['config']['file']['path_upload'] . '/' . $info->path;
+        $file_path = SettingsFile::FILE_FOLDER . $info->path;
 
         if (!is_readable($file_path) || !is_file($file_path)) {
             return Response::error404('Файл не найден');
@@ -76,14 +82,15 @@ class ActionDownloadPrepare extends Action
     }
 
     /**
+     * Временный файл
+     *
      * @param string $fileid   Имя временого файла
      * @param string $filename Имя файла (для браузера)
      *
      * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 14.10.2020
+     * @version 15.01.2020
      */
     protected function temporaryFile($fileid, $filename)
     {
@@ -101,7 +108,7 @@ class ActionDownloadPrepare extends Action
             return Response::error404('Файл не найден');
         }
 
-        $file_path = $this->dic['config']['file']['path_temp'] . '/' . $fileid;
+        $file_path = SettingsFile::TEMP_FOLDER . $fileid;
 
         if (!is_readable($file_path) || !is_file($file_path)) {
             return Response::error404('Файл не найден');
@@ -120,6 +127,8 @@ class ActionDownloadPrepare extends Action
     }
 
     /**
+     * Определим имя файла
+     *
      * @param string $orig_filename Оригинальное имя файла
      * @param string $new_filename  Имя файла (для браузера)
      *

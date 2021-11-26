@@ -1,72 +1,91 @@
 <?php
 
 /**
+ * Сброс выбранной сессии
+ *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 20.01.2021
+ * @version 11.05.2020
  */
 
 namespace Lemurro\Api\Core\Profile\Session;
 
-use Illuminate\Support\Facades\DB;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\Response;
+use ORM;
 use Pimple\Container;
 
 /**
+ * Class ActionReset
+ *
  * @package Lemurro\Api\Core\Profile\Session
  */
 class ActionReset extends Action
 {
-    private string $session_id;
-    private int $user_id;
+    /**
+     * @var string
+     */
+    private $session_id;
 
     /**
+     * @var int
+     */
+    private $user_id;
+
+    /**
+     * ActionIndex constructor.
+     *
+     * @param Container $dic
+     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 30.10.2020
+     * @version 11.05.2020
      */
-    public function __construct(Container $dic)
+    public function __construct($dic)
     {
         parent::__construct($dic);
 
-        $this->session_id = (string) $dic['session_id'];
-        $this->user_id = (int) $dic['user']['id'];
+        $this->session_id = $dic['session_id'];
+        $this->user_id = $dic['user']['id'];
     }
 
     /**
+     * Выполним действие
+     *
      * @param string $session
+     *
+     * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 20.01.2021
+     * @version 11.05.2020
      */
     public function run($session): array
     {
-        $record = DB::table('sessions')
-            ->where('session', '=', $session)
-            ->where('user_id', '=', $this->user_id)
-            ->where('admin_entered', '=', 0)
-            ->orderByDesc('checked_at')
-            ->first();
+        $record = ORM::for_table('sessions')
+            ->where_equal('session', $session)
+            ->where_equal('user_id', $this->user_id)
+            ->where_equal('admin_entered', '0')
+            ->order_by_desc('checked_at')
+            ->find_one();
 
-        if ($record === null) {
-            return Response::error404('Сессия не найдена');
+        if (!is_object($record)) {
+            Response::error404('Сессия не найдена');
         }
 
         if (
-            $record->session !== $session
-            || (int) $record->user_id !== $this->user_id
-            || (int) $record->admin_entered !== 0
+            $record->session === $session
+            && $record->user_id === $this->user_id
+            && (int) $record->admin_entered === 0
         ) {
-            return Response::error404('Найденная сессия не прошла проверку');
+            Response::error404('Сессия не найдена');
         }
 
         if ($record->session === $this->session_id) {
-            return Response::error403('Нельзя завершить активную сессию', false);
+            Response::error403('Нельзя завершить активную сессию', false);
         }
 
-        DB::table('sessions')->delete($record->id);
+        $record->delete();
 
         return Response::data([
             'success' => true,

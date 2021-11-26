@@ -1,34 +1,42 @@
 <?php
-
 /**
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * Получим одну запись по ИД
  *
- * @version 30.10.2020
+ * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 15.10.2019
  */
 
 namespace Lemurro\Api\Core\AccessSets;
 
-use Illuminate\Support\Facades\DB;
+use ORM;
 
 /**
+ * Class OneRecord
+ *
  * @package Lemurro\Api\Core\AccessSets
  */
 class OneRecord
 {
     /**
+     * Выполним действие
+     *
      * @param integer $id ИД записи
      *
-     * @return object|null
+     * @return ORM|false
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 30.10.2020
+     * @version 15.10.2019
      */
-    public static function get($id)
+    static function get($id)
     {
-        return DB::table('access_sets')
-            ->where('id', '=', $id)
-            ->whereNull('deleted_at')
-            ->first();
+        $record = ORM::for_table('access_sets')
+            ->where_null('deleted_at')
+            ->find_one($id);
+
+        if (!is_object($record) || $record->id != $id) {
+            return false;
+        }
+
+        return $record;
     }
 }

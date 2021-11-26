@@ -1,45 +1,56 @@
 <?php
-
 /**
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * Отправка SMS
  *
- * @version 14.10.2020
+ * @version 28.03.2019
+ * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core\Helpers\SMS;
 
-use Lemurro\Api\Core\Abstracts\GatewaySMS;
 use Lemurro\Api\Core\Helpers\LoggerFactory;
-use Monolog\Logger;
 
 /**
+ * Class SMS
+ *
  * @package Lemurro\Api\Core\Helpers\SMS
  */
 class SMS
 {
-    protected array $config_sms;
-    protected Logger $log;
+    /**
+     * Логгер
+     *
+     * @var object
+     */
+    protected $log;
 
     /**
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * Конструктор
      *
-     * @version 14.10.2020
+     * @version 31.01.2019
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    public function __construct(array $config_sms, LoggerFactory $logfactory)
+    public function __construct()
     {
-        $this->config_sms = $config_sms;
-        $this->log = $logfactory->create('SMS');
+        $this->log = LoggerFactory::create('SMS');
     }
 
     /**
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * Отправка SMS
      *
-     * @version 14.10.2020
+     * @param string $phone   Номер телефона получателя
+     * @param string $message Сообщение
+     * @param string $gateway Шлюз для передачи
+     *
+     * @return boolean
+     *
+     * @version 26.07.2018
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    public function send(string $phone, string $message, GatewaySMS $gateway = null): bool
+    public function send($phone, $message, $gateway = null)
     {
         if ($gateway === null) {
-            $gateway = new GatewaySMSRU($this->config_sms);
+            $gateway = new GatewaySMSRU();
         }
 
         $result = $gateway->send($phone, $message);

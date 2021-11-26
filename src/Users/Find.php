@@ -1,27 +1,42 @@
 <?php
+/**
+ * Поиск пользователя
+ *
+ * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 22.11.2019
+ */
 
 namespace Lemurro\Api\Core\Users;
 
-use Illuminate\Support\Facades\DB;
+use ORM;
 
+/**
+ * Class Find
+ *
+ * @package Lemurro\Api\Core\Users
+ */
 class Find
 {
     /**
+     * Найдем пользователя по идентификатору
+     *
      * @param string $auth_id Номер телефона или электронная почта
+     *
+     * @return array
+     *
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @version 22.11.2019
      */
-    public function run($auth_id): array
+    public function run($auth_id)
     {
-        $user = DB::table('users')
-            ->where('auth_id', '=', $auth_id)
-            ->whereNull('deleted_at')
-            ->first();
-
-        if ($user === null) {
+        $user = ORM::for_table('users')
+            ->where_equal('auth_id', $auth_id)
+            ->where_null('deleted_at')
+            ->find_one();
+        if (is_object($user) && mb_strtolower($user->auth_id, 'UTF-8') == mb_strtolower($auth_id, 'UTF-8')) {
+            return $user->as_array();
+        } else {
             return [];
-        }
-
-        if (mb_strtolower($user->auth_id, 'UTF-8') === mb_strtolower($auth_id, 'UTF-8')) {
-            return (array) $user;
         }
     }
 }

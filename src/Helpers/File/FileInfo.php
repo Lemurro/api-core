@@ -1,62 +1,99 @@
 <?php
-
 /**
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * Получим информацию по одному или нескольким файлам
  *
- * @version 30.10.2020
+ * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * @version 15.10.2019
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
+use Lemurro\Api\Core\Helpers\Response;
+use ORM;
 
 /**
+ * Class FileInfo
+ *
  * @package Lemurro\Api\Core\Helpers\File
  */
 class FileInfo
 {
     /**
+     * Получим информацию по одному файлу
+     *
      * @param integer $id ИД файла
      *
-     * @return object|null
+     * @return ORM|array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 30.10.2020
+     * @version 15.10.2019
      */
-    public function getOne($id)
+    public function getOneORM($id)
     {
-        return DB::table('files')
-            ->select(
-                'id',
-                'name',
-                'ext',
-                'created_at'
-            )
-            ->where('id', '=', $id)
-            ->whereNull('deleted_at')
-            ->first();
+        $info = ORM::for_table('files')
+            ->where_null('deleted_at')
+            ->find_one($id);
+        if (is_object($info) && $info->id == $id) {
+            return $info;
+        } else {
+            return Response::error404('Файл не найден');
+        }
     }
 
     /**
-     * @param array $ids ИД файлов
+     * Получим информацию по одному файлу
+     *
+     * @param integer $id ИД файла
+     *
+     * @return array
      *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 30.10.2020
+     * @version 15.10.2019
      */
-    public function getMany($ids): Collection
+    public function getOne($id)
     {
-        return DB::table('files')
-            ->select(
+        $info = ORM::for_table('files')
+            ->select_many(
                 'id',
                 'name',
                 'ext',
                 'created_at'
             )
-            ->whereIn('id', $ids)
-            ->whereNull('deleted_at')
-            ->get();
+            ->where_null('deleted_at')
+            ->find_one($id);
+        if (is_object($info) && $info->id == $id) {
+            return Response::data($info->as_array());
+        } else {
+            return Response::error404('Файл не найден');
+        }
+    }
+
+    /**
+     * Получим информацию по нескольким файлам
+     *
+     * @param array $ids ИД файлов
+     *
+     * @return array
+     *
+     * @version 08.01.2019
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     */
+    public function getMany($ids)
+    {
+        $info = ORM::for_table('files')
+            ->select_many(
+                'id',
+                'name',
+                'ext',
+                'created_at'
+            )
+            ->where_id_in($ids)
+            ->where_null('deleted_at')
+            ->find_array();
+        if (is_array($info)) {
+            return Response::data($info);
+        } else {
+            return Response::error500('Произошла ошибка при получении данных');
+        }
     }
 }

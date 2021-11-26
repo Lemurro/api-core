@@ -1,36 +1,41 @@
 <?php
-
 /**
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
+ * Загрузка файла во временный каталог
  *
- * @version 10.09.2020
+ * @version 28.03.2019
+ * @author  Дмитрий Щербаков <atomcms@ya.ru>
  */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\Core\Abstracts\Controller;
-use Symfony\Component\HttpFoundation\Response;
+use Lemurro\Api\Core\Checker\Checker;
 
 /**
+ * Class ControllerUpload
+ *
  * @package Lemurro\Api\Core\Helpers\File
  */
 class ControllerUpload extends Controller
 {
     /**
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * Стартовый метод
      *
-     * @version 10.09.2020
+     * @version 08.01.2019
+     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    public function start(): Response
+    public function start()
     {
-        $this->checker->run([
+        $checker_checks = [
             'auth' => '',
-        ]);
+        ];
+        $checker_result = (new Checker($this->dic))->run($checker_checks);
+        if (count($checker_result) > 0) {
+            $this->response->setData($checker_result);
+        } else {
+            $this->response->setData((new ActionUpload($this->dic))->run($this->request->files));
+        }
 
-        $this->response->setData((new ActionUpload($this->dic))->run(
-            $this->request->files
-        ));
-
-        return $this->response;
+        $this->response->send();
     }
 }

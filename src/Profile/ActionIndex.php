@@ -1,48 +1,71 @@
 <?php
 
 /**
+ * Профиль пользователя
+ *
  * @author  Дмитрий Щербаков <atomcms@ya.ru>
  *
- * @version 08.12.2020
+ * @version 11.05.2020
  */
 
 namespace Lemurro\Api\Core\Profile;
 
 use Carbon\Carbon;
 use DateTime;
-use Illuminate\Support\Facades\DB;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\LocalDateTime;
 use Lemurro\Api\Core\Helpers\Response;
+use ORM;
 use Pimple\Container;
 
 /**
+ * Class ActionIndex
+ *
  * @package Lemurro\Api\Core\Profile
  */
 class ActionIndex extends Action
 {
-    private int $user_id;
-    private DateTime $now_datetime;
-    private LocalDateTime $local_date_time;
+    /**
+     * @var int
+     */
+    private $user_id;
 
     /**
+     * @var DateTime
+     */
+    private $now_datetime;
+
+    /**
+     * @var LocalDateTime
+     */
+    private $local_date_time;
+
+    /**
+     * ActionIndex constructor.
+     *
+     * @param Container $dic
+     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 30.10.2020
+     * @version 11.05.2020
      */
-    public function __construct(Container $dic)
+    public function __construct($dic)
     {
         parent::__construct($dic);
 
-        $this->user_id = (int) $dic['user']['id'];
+        $this->user_id = $dic['user']['id'];
         $this->now_datetime = Carbon::now();
         $this->local_date_time = new LocalDateTime($dic);
     }
 
     /**
+     * Выполним действие
+     *
+     * @return array
+     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 30.10.2020
+     * @version 24.04.2020
      */
     public function run(): array
     {
@@ -54,56 +77,54 @@ class ActionIndex extends Action
     }
 
     /**
+     * Список сессий
+     *
+     * @return array
+     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 08.12.2020
+     * @version 11.05.2020
      */
     private function getSessions(): array
     {
         $data = [];
 
-        $items = DB::table('sessions')
-            ->select(
+        $items = ORM::for_table('sessions')
+            ->select_many(
                 'session',
                 'device_info',
                 'geoip',
                 'checked_at'
             )
-            ->where('user_id', '=', $this->user_id)
-            ->where('admin_entered', '=', 0)
-            ->orderByDesc('checked_at')
-            ->get();
+            ->where_equal('user_id', $this->user_id)
+            ->where_equal('admin_entered', '0')
+            ->order_by_desc('checked_at')
+            ->find_array();
 
-        if (is_countable($items)) {
+        if (is_array($items) && !empty($items)) {
             foreach ($items as $item) {
-                $datetime = 'никогда';
+                $dt = Carbon::createFromFormat('Y-m-d H:i:s', $item['checked_at']);
+                $diff_days = $dt->diffInDays($this->now_datetime);
+                $dt_string = $dt->toDateTimeString();
 
-                if (!empty($item->checked_at)) {
-                    $dt = Carbon::createFromFormat('Y-m-d H:i:s', $item->checked_at);
-                    $diff_days = $dt->diffInDays($this->now_datetime);
-                    $dt_string = $dt->toDateTimeString();
-
-                    if ($diff_days === 0) {
-                        $date = 'сегодня';
-                    } elseif ($diff_days === 1) {
-                        $date = 'вчера';
-                    } else {
-                        $date = $this->local_date_time->get($dt_string, 'Y-m-d H:i:s', 'd.m.Y');
-                    }
-
-                    $datetime = $date . ' в ' . $this->local_date_time->get($dt_string, 'Y-m-d H:i:s', 'H:i');
+                if ($diff_days === 0) {
+                    $date = 'сегодня';
+                } elseif ($diff_days === 1) {
+                    $date = 'вчера';
+                } else {
+                    $date = $this->local_date_time->get($dt_string, 'Y-m-d H:i:s', 'd.m.Y');
                 }
 
-                [$device_platform, $device_manufacturer, $device_model] = $this->getDeviceInfo($item->device_info);
-                $geo = $this->getGeoInfo($item->geoip);
+                [$device_platform, $device_manufacturer, $device_model] = $this->getDeviceInfo($item['device_info']);
+                $geo = $this->getGeoInfo($item['geoip']);
 
                 $data[] = [
-                    'session' => $item->session,
-                    'device_platform' => $device_platform,
+                    'session'             => $item['session'],
+                    'device_platform'     => $device_platform,
                     'device_manufacturer' => $device_manufacturer,
-                    'device_model' => $device_model,
-                    'geo' => $geo,
-                    'datetime' => $datetime,
+                    'device_model'        => $device_model,
+                    'geo'                 => $geo,
+                    'datetime'            => $date . ' в ' . $this->local_date_time->get($dt_string, 'Y-m-d H:i:s', 'H:i'),
                 ];
             }
         }
@@ -116,9 +137,11 @@ class ActionIndex extends Action
      *
      * @param string $device_info
      *
+     * @return array
+     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 30.10.2020
+     * @version 11.05.2020
      */
     private function getDeviceInfo($device_info): array
     {
@@ -158,9 +181,11 @@ class ActionIndex extends Action
      *
      * @param string $geoip
      *
+     * @return string
+     *
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      *
-     * @version 30.10.2020
+     * @version 11.05.2020
      */
     private function getGeoInfo($geoip): string
     {
