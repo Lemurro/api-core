@@ -61,7 +61,7 @@ jobs:
           cp $CONFIGS_FOLDER/SettingsGeneral.example.php $CONFIGS_FOLDER/SettingsGeneral.php
           cp $CONFIGS_FOLDER/SettingsMail.example.php $CONFIGS_FOLDER/SettingsMail.php
           cp $CONFIGS_FOLDER/SettingsMaintenance.example.php $CONFIGS_FOLDER/SettingsMaintenance.php
-          cp $CONFIGS_FOLDER/SettingsPathexample.php $CONFIGS_FOLDER/SettingsPath.php
+          cp $CONFIGS_FOLDER/SettingsPath.example.php $CONFIGS_FOLDER/SettingsPath.php
           cp $CONFIGS_FOLDER/SettingsSMS.example.php $CONFIGS_FOLDER/SettingsSMS.php
           sed -i 's/PASSWORD = ''/PASSWORD = 'root'/g' $CONFIGS_FOLDER/SettingsDatabase.php
 
