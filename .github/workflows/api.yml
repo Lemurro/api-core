@@ -13,8 +13,8 @@ jobs:
         include:
           - lemurro_version: "1.10"
             sql_file: "database.sql"
+            php_version: "7.4"
             operating-system: ubuntu-20.04
-            php-version: 7.4
 
     env:
       PROJ_FOLDER: /home/runner/work/api-core/api-core/testproject
@@ -25,11 +25,14 @@ jobs:
     steps:
       - name: "Checkout"
         uses: actions/checkout@v2
-        with:
-          php-version: ${{ matrix.php-version }}
 
       - name: "Start MySQL"
         run: sudo systemctl start mysql.service
+
+      - name: "Setup PHP"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php_version }}
 
       - name: "Versions"
         run: |
