@@ -16,15 +16,16 @@ jobs:
             php_version: "7.4"
             operating-system: ubuntu-20.04
 
-    env:
-      PROJ_FOLDER: /home/runner/work/api-core/api-core/testproject
-      CONFIGS_FOLDER: /home/runner/work/api-core/api-core/testproject/api/app/Configs
-      APP_TESTS_FOLDER: /home/runner/work/api-core/api-core/testproject/api/tests
-      CORE_TESTS_FOLDER: /home/runner/work/api-core/api-core/testproject/api/vendor/lemurro/api-core/tests
-
     steps:
       - name: "Checkout"
         uses: actions/checkout@v2
+
+      - name: "Set environment variables"
+        run: |
+          echo "PROJ_FOLDER=$GITHUB_WORKSPACE/testproject" >> $GITHUB_ENV
+          echo "CONFIGS_FOLDER=$GITHUB_WORKSPACE/testproject/api/app/Configs" >> $GITHUB_ENV
+          echo "APP_TESTS_FOLDER=$GITHUB_WORKSPACE/testproject/api/tests" >> $GITHUB_ENV
+          echo "CORE_TESTS_FOLDER=$GITHUB_WORKSPACE/testproject/api/vendor/lemurro/api-core/tests" >> $GITHUB_ENV
 
       - name: "Start MySQL"
         run: sudo systemctl start mysql.service
@@ -66,7 +67,7 @@ jobs:
           cp $CONFIGS_FOLDER/SettingsMaintenance.example.php $CONFIGS_FOLDER/SettingsMaintenance.php
           cp $CONFIGS_FOLDER/SettingsPath.example.php $CONFIGS_FOLDER/SettingsPath.php
           cp $CONFIGS_FOLDER/SettingsSMS.example.php $CONFIGS_FOLDER/SettingsSMS.php
-          sed -i 's/PASSWORD = ''/PASSWORD = 'root'/g' $CONFIGS_FOLDER/SettingsDatabase.php
+          sed -i "s/PASSWORD = ''/PASSWORD = 'root'/g" $CONFIGS_FOLDER/SettingsDatabase.php
 
       - name: "Configuration application tests"
         run: |
@@ -81,7 +82,11 @@ jobs:
           cat $CORE_TESTS_FOLDER/api.suite.yml
 
       - name: "Running web server"
-        run: php -S localhost:8000 -t $PROJ_FOLDER/api/public &
+        run: |
+          cp /etc/php/${{ matrix.php_version }}/cli/php.ini $GITHUB_WORKSPACE/php.ini
+          sed -i 's/log_errors = Off/log_errors = On/g' $GITHUB_WORKSPACE/php.ini
+          sed -i "s|;error_log = php_errors.log|error_log = $GITHUB_WORKSPACE/php_errors.log|g" $GITHUB_WORKSPACE/php.ini
+          php -S localhost:8000 -t $PROJ_FOLDER/api/public -c $GITHUB_WORKSPACE/php.ini &
 
       - name: "Running core tests"
         run: |
@@ -92,3 +97,8 @@ jobs:
         run: |
           cd $PROJ_FOLDER/api
           php vendor/bin/codecept run api
+
+      - name: "Debug"
+        if: failure()
+        run: |
+          cat $GITHUB_WORKSPACE/php_errors.log
