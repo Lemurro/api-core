@@ -20,9 +20,9 @@ class FileManipulate extends Action
     /**
      * Выполним действие
      *
-     * @param array  $files          Массив файлов
-     * @param string $container_type Тип контейнера
-     * @param string $container_id   ИД контейнера
+     * @param array   $files          Массив файлов
+     * @param string  $container_type Тип контейнера
+     * @param ?string $container_id   ИД контейнера
      *
      * @return array
      *

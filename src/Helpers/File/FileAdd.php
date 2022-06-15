@@ -28,10 +28,10 @@ class FileAdd extends AbstractFileAction
     /**
      * Выполним действие
      *
-     * @param string $file_name      Имя файла во временном каталоге
-     * @param string $orig_name      Оригинальное имя файла
-     * @param string $container_type Тип контейнера
-     * @param string $container_id   ИД контейнера
+     * @param string  $file_name      Имя файла во временном каталоге
+     * @param string  $orig_name      Оригинальное имя файла
+     * @param string  $container_type Тип контейнера
+     * @param ?string $container_id   ИД контейнера
      *
      * @return array
      *
@@ -150,7 +150,7 @@ class FileAdd extends AbstractFileAction
      * @param string $file_name      Имя файла в постоянном хранилище
      * @param string $orig_name      Оригинальное имя файла
      * @param string $container_type Тип контейнера
-     * @param string $container_id   ИД контейнера
+     * @param ?string $container_id   ИД контейнера
      *
      * @return array
      *
