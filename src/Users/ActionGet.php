@@ -23,7 +23,8 @@ class ActionGet extends Action
     {
         $sql = <<<'SQL'
             SELECT
-                iu.*
+                iu.*,
+                u.*
             FROM info_users AS iu
             LEFT OUTER JOIN users AS u
                 ON u.id = iu.user_id
