@@ -30,24 +30,26 @@ class ActionInsert extends Action
             return Response::error400('Пользователь с такими данными для входа уже существует');
         }
 
-        if (!is_array($data['roles'])) {
-            $data['roles'] = [];
-        }
-
-        $json_roles = json_encode($data['roles']);
-
-        $new_user_info = [];
-        if (isset($data['info_users']) && is_array($data['info_users'])) {
-            foreach ($data['info_users'] as $key => $value) {
-                $new_user_info[$key] = $value;
+        $data = $this->dbal->transactional(function() use ($data): array {
+            if (!is_array($data['roles'])) {
+                $data['roles'] = [];
             }
-        }
-        $new_user_info['roles'] = $json_roles;
-        $new_user_info['created_at'] = $this->dic['datetimenow'];
 
-        $user_id = $this->dbal->transactional(function() use ($auth_id, $new_user_info): int {
+            $json_roles = json_encode($data['roles']);
+
+            $new_user_info = [];
+            if (isset($data['info_users']) && is_array($data['info_users'])) {
+                foreach ($data['info_users'] as $key => $value) {
+                    $new_user_info[$key] = $value;
+                    $data[$key] = $value;
+                }
+            }
+            unset($data['info_users']);
+            $new_user_info['roles'] = $json_roles;
+            $new_user_info['created_at'] = $this->dic['datetimenow'];
+
             $cnt = $this->dbal->insert('users', [
-                'auth_id' => $auth_id,
+                'auth_id' => $data['auth_id'],
                 'created_at' => $this->dic['datetimenow'],
             ]);
             if ($cnt !== 1) {
@@ -65,24 +67,15 @@ class ActionInsert extends Action
 
             /** @var DataChangeLog $data_change_log */
             $data_change_log = $this->dic['datachangelog'];
-            $data_change_log->insert('users', 'insert', $user_id, [
-                'auth_id' => $auth_id,
-                'user_id' => $user_id,
-                'user_info' => $new_user_info,
-            ]);
+            $data_change_log->insert('users', 'insert', $user_id, $data);
 
-            return $user_id;
+            $data['id'] = $user_id;
+            $data['locked'] = false;
+            $data['last_action_date'] = null;
+            $data['roles'] = $json_roles;
+
+            return $data;
         });
-
-        if (isset($data['info_users']) && !empty($data['info_users'])) {
-            $data = array_merge($data, $data['info_users']);
-            unset($data['info_users']);
-        }
-
-        $data['id'] = $user_id;
-        $data['locked'] = false;
-        $data['last_action_date'] = null;
-        $data['roles'] = $json_roles;
 
         return (new RunAfterInsert($this->dic))->run($data);
     }

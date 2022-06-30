@@ -28,22 +28,26 @@ class ActionInsert extends Action
             $data['roles'] = [];
         }
 
-        $cnt = $this->dbal->insert('access_sets', [
-            'name' => $data['name'],
-            'roles' => json_encode($data['roles']),
-            'created_at' => $this->dic['datetimenow'],
-        ]);
-        if ($cnt !== 1) {
-            return Response::error500('Произошла ошибка при добавлении информации о пользователе, попробуйте ещё раз');
-        }
+        $id = $this->dbal->transactional(function () use ($data): int {
+            $cnt = $this->dbal->insert('access_sets', [
+                'name' => $data['name'],
+                'roles' => json_encode($data['roles']),
+                'created_at' => $this->dic['datetimenow'],
+            ]);
+            if ($cnt !== 1) {
+                return Response::error500('Произошла ошибка при добавлении информации о пользователе, попробуйте ещё раз');
+            }
 
-        $id = $this->dbal->lastInsertId();
+            $id = $this->dbal->lastInsertId();
+
+            /** @var DataChangeLog $data_change_log */
+            $data_change_log = $this->dic['datachangelog'];
+            $data_change_log->insert('access_sets', 'insert', $id, $data);
+
+            return $id;
+        });
 
         $data['id'] = $id;
-
-        /** @var DataChangeLog $data_change_log */
-        $data_change_log = $this->dic['datachangelog'];
-        $data_change_log->insert('access_sets', 'insert', $id, $data);
 
         return Response::data($data);
     }

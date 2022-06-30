@@ -36,25 +36,26 @@ class ActionLockUnlock extends Action
             return $user_info;
         }
 
-        $cnt = $this->dbal->update('users', [
-            'locked' => $locked,
-            'updated_at' => $this->dic['datetimenow'],
-        ], [
-            'id' => $id
-        ]);
-        if ($cnt !== 1) {
-            return Response::error500('Произошла ошибка при изменении статуса блокировки пользователя, попробуйте ещё раз');
-        }
+        $this->dbal->transactional(function () use ($id, $locked, $user): void {
+            $this->dbal->update('users', [
+                'locked' => (int)$locked,
+                'updated_at' => $this->dic['datetimenow'],
+            ], [
+                'id' => $id
+            ]);
 
-        /** @var DataChangeLog $data_change_log */
-        $data_change_log = $this->dic['datachangelog'];
-        $data_change_log->insert('users', 'update', $id, $user);
+            $user['locked'] = (int)$locked;
+
+            /** @var DataChangeLog $data_change_log */
+            $data_change_log = $this->dic['datachangelog'];
+            $data_change_log->insert('users', 'update', $id, $user);
+
+            if ($locked) {
+                $this->dbal->delete('sessions', ['user_id' => $id]);
+            }
+        });
 
         $user_info['data']['locked'] = $locked;
-
-        if ($locked) {
-            $this->dbal->delete('sessions', ['user_id' => $id]);
-        }
 
         return (new RunAfterLockUnlock($this->dic))->run($user_info['data']);
     }
