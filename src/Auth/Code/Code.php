@@ -1,45 +1,34 @@
 <?php
-/**
- * Очистка устаревших кодов аутентификации
- *
- * @version 13.12.2018
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Auth\Code;
 
 use Carbon\Carbon;
+use Doctrine\DBAL\Connection;
 use Lemurro\Api\App\Configs\SettingsAuth;
-use ORM;
 
 /**
- * Class Code
- *
- * @package Lemurro\Api\Core\Auth\Code
+ * Очистка устаревших кодов аутентификации
  */
 class Code
 {
-    /**
-     * Выполним действие
-     *
-     * @param string $auth_id Идентификатор пользователя (номер телефона или электронная почта)
-     *
-     * @version 13.12.2018
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     */
-    public function clear($auth_id = '')
+    protected Connection $dbal;
+
+    public function __construct(Connection $dbal)
     {
-        $now = Carbon::now('UTC');
-        $older_than = $now->subHours(SettingsAuth::AUTH_CODES_OLDER_THAN)->toDateTimeString();
+        $this->dbal = $dbal;
+    }
 
-        ORM::for_table('auth_codes')
-            ->where_lt('created_at', $older_than)
-            ->delete_many();
+    /**
+     * Очистка устаревших кодов аутентификации
+     */
+    public function clear(?string $auth_id = null): void
+    {
+        $this->dbal->executeStatement('DELETE FROM auth_codes WHERE created_at <= ?', [
+            Carbon::now('UTC')->subHours(SettingsAuth::AUTH_CODES_OLDER_THAN)->toDateTimeString(),
+        ]);
 
-        if ($auth_id != '') {
-            ORM::for_table('auth_codes')
-                ->where_equal('auth_id', $auth_id)
-                ->delete_many();
+        if (!empty($auth_id)) {
+            $this->dbal->delete('auth_codes', ['auth_id' => $auth_id]);
         }
     }
 }

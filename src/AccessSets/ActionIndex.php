@@ -1,42 +1,23 @@
 <?php
-/**
- * Список
- *
- * @version 05.06.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\AccessSets;
 
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\Response;
-use ORM;
 
 /**
- * Class ActionIndex
- *
- * @package Lemurro\Api\Core\AccessSets
+ * Список
  */
 class ActionIndex extends Action
 {
     /**
-     * Выполним действие
+     * Список
      *
      * @return array
-     *
-     * @version 05.06.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run()
     {
-        $sets = ORM::for_table('access_sets')
-            ->where_null('deleted_at')
-            ->find_array();
-
-        if (!is_array($sets)) {
-            return Response::error500('При получении наборов произошла ошибка, попробуйте ещё раз');
-        }
-
+        $sets = (array)$this->dbal->fetchAllAssociative('SELECT * FROM access_sets WHERE deleted_at IS NULL');
         $count = count($sets);
 
         if ($count > 0) {

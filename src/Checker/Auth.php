@@ -1,34 +1,27 @@
 <?php
-/**
- * Проверка аутентификации
- *
- * @version 13.04.2018
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Checker;
 
+use Doctrine\DBAL\Connection;
 use Lemurro\Api\Core\Session;
 
 /**
- * Class Auth
- *
- * @package Lemurro\Api\Core\Checker
+ * Проверка аутентификации
  */
 class Auth
 {
-    /**
-     * Запуск проверки
-     *
-     * @param string $session_id ИД сессии
-     *
-     * @return array
-     *
-     * @version 13.04.2018
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     */
-    public function run($session_id)
+    protected Connection $dbal;
+
+    public function __construct(Connection $dbal)
     {
-        return (new Session())->check($session_id);
+        $this->dbal = $dbal;
+    }
+
+    /**
+     * Проверка аутентификации
+     */
+    public function run(string $session_id): array
+    {
+        return (new Session($this->dbal))->check($session_id);
     }
 }

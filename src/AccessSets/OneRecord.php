@@ -1,40 +1,29 @@
 <?php
-/**
- * Получим одну запись по ИД
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 15.10.2019
- */
 
 namespace Lemurro\Api\Core\AccessSets;
 
-use ORM;
+use Doctrine\DBAL\Connection;
 
 /**
- * Class OneRecord
- *
- * @package Lemurro\Api\Core\AccessSets
+ * Получим одну запись по ИД
  */
 class OneRecord
 {
-    /**
-     * Выполним действие
-     *
-     * @param integer $id ИД записи
-     *
-     * @return ORM|false
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.10.2019
-     */
-    static function get($id)
-    {
-        $record = ORM::for_table('access_sets')
-            ->where_null('deleted_at')
-            ->find_one($id);
+    protected Connection $dbal;
 
-        if (!is_object($record) || $record->id != $id) {
-            return false;
+    public function __construct(Connection $dbal)
+    {
+        $this->dbal = $dbal;
+    }
+
+    /**
+     * Получим одну запись по ИД
+     */
+    public function get(int $id): ?array
+    {
+        $record = $this->dbal->fetchAssociative('SELECT * FROM access_sets WHERE id = ? AND deleted_at IS NULL', [$id]);
+        if ($record === false) {
+            return null;
         }
 
         return $record;

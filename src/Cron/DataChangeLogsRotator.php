@@ -1,10 +1,4 @@
 <?php
-/**
- * Ротация таблицы data_change_logs
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 11.02.2020
- */
 
 namespace Lemurro\Api\Core\Cron;
 
@@ -12,20 +6,14 @@ use Carbon\Carbon;
 use Lemurro\Api\App\Configs\SettingsCron;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\Mailer;
-use ORM;
 
 /**
- * Class DataChangeLogsRotator
- *
- * @package Lemurro\Api\Core\Cron
+ * Ротация таблицы data_change_logs
  */
 class DataChangeLogsRotator extends Action
 {
     /**
      * Выполним ротацию
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 11.02.2020
      */
     public function execute()
     {
@@ -33,13 +21,13 @@ class DataChangeLogsRotator extends Action
         $step2 = false;
 
         // Создаем новую таблицу, структуру берём из активной таблицы
-        if (ORM::raw_execute('CREATE TABLE `data_change_logs_new` LIKE `data_change_logs`')) {
+        if ($this->dbal->executeStatement('CREATE TABLE data_change_logs_new LIKE data_change_logs')) {
             // Переименовываем активную таблицу в архивную
             $past_year = Carbon::now()->subMonth()->format('Y');
-            $step1 = ORM::raw_execute('ALTER TABLE `data_change_logs` RENAME `data_change_logs_' . $past_year . '`');
+            $step1 = $this->dbal->executeStatement('ALTER TABLE data_change_logs RENAME data_change_logs_' . $past_year);
 
             // Делаем новую таблицу активной
-            $step2 = ORM::raw_execute('ALTER TABLE `data_change_logs_new` RENAME `data_change_logs`');
+            $step2 = $this->dbal->executeStatement('ALTER TABLE data_change_logs_new RENAME data_change_logs');
         }
 
         if ($step1 && $step2) {

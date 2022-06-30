@@ -3,7 +3,6 @@
 namespace Lemurro\Api\Core\Helpers;
 
 use Lemurro\Api\Core\Abstracts\Action;
-use ORM;
 
 /**
  * Добавление записи в лог действий
@@ -43,18 +42,18 @@ class DataChangeLog extends Action
             $user_id = 0;
         }
 
-        $log = ORM::for_table('data_change_logs')->create();
-        $log->user_id = $user_id;
-        $log->table_name = $table_name;
-        $log->action_name = $action_name;
-        $log->record_id = $record_id;
-        $log->data = json_encode($data, JSON_UNESCAPED_UNICODE);
-        $log->created_at = $this->dic['datetimenow'];
-        $log->save();
-        if (is_object($log) && isset($log->id)) {
-            return true;
-        } else {
+        $cnt = $this->dbal->insert('data_change_logs', [
+            'user_id' => $user_id,
+            'table_name' => $table_name,
+            'action_name' => $action_name,
+            'record_id' => $record_id,
+            'data' => json_encode($data, JSON_UNESCAPED_UNICODE),
+            'created_at' => $this->dic['datetimenow'],
+        ]);
+        if ($cnt !== 1) {
             return false;
         }
+
+        return true;
     }
 }

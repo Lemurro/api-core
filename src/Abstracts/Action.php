@@ -1,39 +1,21 @@
 <?php
-/**
- * Модель действия
- *
- * @version 26.05.2018
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Abstracts;
 
+use Doctrine\DBAL\Connection;
 use Pimple\Container;
 
 /**
- * Class Action
- *
- * @package Lemurro\Api\Core\Abstracts
+ * Модель действия
  */
 abstract class Action
 {
-    /**
-     * Контейнер
-     *
-     * @var Container
-     */
-    protected $dic;
+    protected Container $dic;
+    protected Connection $dbal;
 
-    /**
-     * Конструктор
-     *
-     * @param Container $dic Контейнер
-     *
-     * @version 26.05.2018
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     */
-    public function __construct($dic)
+    public function __construct(Container $dic)
     {
         $this->dic = $dic;
+        $this->dbal = $dic['dbal'];
     }
 }

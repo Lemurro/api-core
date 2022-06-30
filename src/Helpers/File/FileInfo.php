@@ -1,99 +1,83 @@
 <?php
-/**
- * Получим информацию по одному или нескольким файлам
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 15.10.2019
- */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
+use Doctrine\DBAL\Connection;
 use Lemurro\Api\Core\Helpers\Response;
-use ORM;
 
 /**
- * Class FileInfo
- *
- * @package Lemurro\Api\Core\Helpers\File
+ * Получим информацию по одному или нескольким файлам
  */
 class FileInfo
 {
-    /**
-     * Получим информацию по одному файлу
-     *
-     * @param integer $id ИД файла
-     *
-     * @return ORM|array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.10.2019
-     */
-    public function getOneORM($id)
+    protected Connection $dbal;
+
+    public function __construct(Connection $dbal)
     {
-        $info = ORM::for_table('files')
-            ->where_null('deleted_at')
-            ->find_one($id);
-        if (is_object($info) && $info->id == $id) {
-            return $info;
-        } else {
-            return Response::error404('Файл не найден');
-        }
+        $this->dbal = $dbal;
     }
 
     /**
      * Получим информацию по одному файлу
      *
      * @param integer $id ИД файла
-     *
-     * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.10.2019
      */
-    public function getOne($id)
+    public function getById($id): ?array
     {
-        $info = ORM::for_table('files')
-            ->select_many(
-                'id',
-                'name',
-                'ext',
-                'created_at'
-            )
-            ->where_null('deleted_at')
-            ->find_one($id);
-        if (is_object($info) && $info->id == $id) {
-            return Response::data($info->as_array());
-        } else {
+        $info = $this->dbal->fetchAssociative('SELECT * FROM files WHERE id = ? AND deleted_at IS NULL', [$id]);
+        if ($info === false) {
+            return null;
+        }
+
+        return $info;
+    }
+
+    /**
+     * Получим информацию по одному файлу
+     *
+     * @param integer $id ИД файла
+     */
+    public function getOne($id): array
+    {
+        $sql = <<<'SQL'
+            SELECT
+                id,
+                name,
+                ext,
+                created_at
+            FROM files
+            WHERE id = ?
+                AND deleted_at IS NULL
+            SQL;
+
+        $info = $this->dbal->fetchAssociative($sql, [$id]);
+        if ($info === false) {
             return Response::error404('Файл не найден');
         }
+
+        return Response::data($info);
     }
 
     /**
      * Получим информацию по нескольким файлам
      *
      * @param array $ids ИД файлов
-     *
-     * @return array
-     *
-     * @version 08.01.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    public function getMany($ids)
+    public function getMany($ids): array
     {
-        $info = ORM::for_table('files')
-            ->select_many(
-                'id',
-                'name',
-                'ext',
-                'created_at'
-            )
-            ->where_id_in($ids)
-            ->where_null('deleted_at')
-            ->find_array();
-        if (is_array($info)) {
-            return Response::data($info);
-        } else {
-            return Response::error500('Произошла ошибка при получении данных');
-        }
+        $sql = <<<'SQL'
+            SELECT
+                id,
+                name,
+                ext,
+                created_at
+            FROM files
+            WHERE id IN (?)
+                AND deleted_at IS NULL
+            SQL;
+
+        return Response::data(
+            $this->dbal->fetchAllAssociative($sql, [$ids], [Connection::PARAM_INT_ARRAY])
+        );
     }
 }

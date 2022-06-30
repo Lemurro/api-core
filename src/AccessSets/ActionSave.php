@@ -1,10 +1,4 @@
 <?php
-/**
- * Изменение
- *
- * @version 05.06.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\AccessSets;
 
@@ -13,54 +7,50 @@ use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
 
 /**
- * Class ActionSave
- *
- * @package Lemurro\Api\Core\AccessSets
+ * Изменение
  */
 class ActionSave extends Action
 {
     /**
-     * Выполним действие
+     * Изменение
      *
      * @param integer $id   ИД записи
      * @param array   $data Массив данных
      *
      * @return array
-     *
-     * @version 05.06.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($id, $data)
     {
-        $record = OneRecord::get($id);
-        if (!is_object($record)) {
+        $record = (new OneRecord($this->dbal))->get((int)$id);
+        if (empty($record)) {
             return Response::error404('Набор не найден');
         }
 
-        $exist = Exist::check($id, $data['name']);
-        if (isset($exist['errors'])) {
-            return $exist;
+        if ((new Exist($this->dbal))->check((int)$id, (string)$data['name'])) {
+            return Response::error400('Набор с таким именем уже существует');
         }
 
         if (!isset($data['roles']) || !is_array($data['roles'])) {
             $data['roles'] = [];
         }
 
-        $record->name = $data['name'];
-        $record->roles = json_encode($data['roles']);
-        $record->updated_at = $this->dic['datetimenow'];
-        $record->save();
-        if (is_object($record) && isset($record->id)) {
-            $result = $record->as_array();
-            $result['roles'] = $data['roles'];
+        $record['name'] = $data['name'];
+        $record['roles'] = $data['roles'];
+
+        $this->dbal->transactional(function () use ($id, $record): void {
+            $this->dbal->update('access_sets', [
+                'name' => $record['name'],
+                'roles' => json_encode($record['roles']),
+                'updated_at' => $this->dic['datetimenow'],
+            ], [
+                'id' => $id
+            ]);
 
             /** @var DataChangeLog $data_change_log */
             $data_change_log = $this->dic['datachangelog'];
-            $data_change_log->insert('access_sets', 'update', $id, $result);
+            $data_change_log->insert('access_sets', 'update', $id, $record);
+        });
 
-            return Response::data($result);
-        } else {
-            return Response::error500('Произошла ошибка при изменении набора, попробуйте ещё раз');
-        }
+        return Response::data($record);
     }
 }

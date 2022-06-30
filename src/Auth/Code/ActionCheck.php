@@ -1,29 +1,20 @@
 <?php
-/**
- * Проверка кода аутентификации
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- *
- * @version 24.04.2020
- */
 
 namespace Lemurro\Api\Core\Auth\Code;
 
+use Doctrine\DBAL\Connection;
 use Lemurro\Api\App\Configs\SettingsAuth;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\RandomKey;
 use Lemurro\Api\Core\Helpers\Response;
-use ORM;
 
 /**
- * Class ActionCheck
- *
- * @package Lemurro\Api\Core\Auth\Code
+ * Проверка кода аутентификации
  */
 class ActionCheck extends Action
 {
     /**
-     * Выполним действие
+     * Проверка кода аутентификации
      *
      * @param string $auth_id     Номер телефона или электронная почта
      * @param string $auth_code   Код из СМС или письма
@@ -31,77 +22,68 @@ class ActionCheck extends Action
      * @param array  $geoip       Информация о геолокации
      *
      * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 24.04.2020
      */
     public function run($auth_id, $auth_code, $device_info, $geoip): array
     {
-        $cleaner = new Code();
+        $cleaner = new Code($this->dbal);
 
         $cleaner->clear();
 
-        $auth = ORM::for_table('auth_codes')
-            ->where_equal('auth_id', $auth_id)
-            ->find_one();
+        $auth = $this->dbal->fetchAssociative('SELECT * FROM auth_codes WHERE auth_id = ?', [$auth_id]);
         if ($auth === false) {
             return Response::error400('Код отсутствует, перезапустите приложение');
         }
 
-        if ($auth->code === $auth_code) {
-            $secret = RandomKey::generate(100);
-            $created_at = $this->dic['datetimenow'];
+        if ($auth['code'] === $auth_code) {
+            $session = $this->dbal->transactional(function (Connection $dbal) use ($auth, $device_info, $geoip, $cleaner, $auth_id): string {
+                $ip = null;
+                if (SettingsAuth::SESSIONS_BINDING_TO_IP) {
+                    $ip = $_SERVER['REMOTE_ADDR'] ?? null;
+                }
 
-            $ip = null;
-            if (SettingsAuth::SESSIONS_BINDING_TO_IP) {
-                $ip = $_SERVER['REMOTE_ADDR'] ?? null;
-            }
+                $secret = RandomKey::generate(100);
+                $created_at = $this->dic['datetimenow'];
 
-            try {
-                ORM::getDb()->beginTransaction();
+                $dbal->insert('sessions', [
+                    'session' => $secret,
+                    'ip' => $ip,
+                    'user_id' => $auth['user_id'],
+                    'device_info' => json_encode($device_info, JSON_UNESCAPED_UNICODE),
+                    'geoip' => json_encode($geoip, JSON_UNESCAPED_UNICODE),
+                    'created_at' => $created_at,
+                    'checked_at' => $created_at,
+                ]);
 
-                $session = ORM::for_table('sessions')->create();
-                $session->session = $secret;
-                $session->ip = $_SERVER['REMOTE_ADDR'];
-                $session->user_id = $auth->user_id;
-                $session->device_info = json_encode($device_info, JSON_UNESCAPED_UNICODE);
-                $session->geoip = json_encode($geoip, JSON_UNESCAPED_UNICODE);
-                $session->created_at = $created_at;
-                $session->checked_at = $created_at;
-                $session->save();
-
-                $history_registration = ORM::for_table('history_registrations')->create();
-                $history_registration->device_uuid = ($device_info['uuid'] ?? 'unknown');
-                $history_registration->device_platform = ($device_info['platform'] ?? 'unknown');
-                $history_registration->device_version = ($device_info['version'] ?? 'unknown');
-                $history_registration->device_manufacturer = ($device_info['manufacturer'] ?? 'unknown');
-                $history_registration->device_model = ($device_info['model'] ?? 'unknown');
-                $history_registration->created_at = $created_at;
-                $history_registration->save();
+                $dbal->insert('history_registrations', [
+                    'device_uuid' => $device_info['uuid'] ?? 'unknown',
+                    'device_platform' => $device_info['platform'] ?? 'unknown',
+                    'device_version' => $device_info['version'] ?? 'unknown',
+                    'device_manufacturer' => $device_info['manufacturer'] ?? 'unknown',
+                    'device_model' => $device_info['model'] ?? 'unknown',
+                    'created_at' => $created_at,
+                ]);
 
                 $cleaner->clear($auth_id);
 
-                ORM::getDb()->commit();
+                return $secret;
+            });
 
-                return Response::data([
-                    'session' => $secret,
-                ]);
-            } catch (\Throwable $th) {
-                ORM::getDb()->rollBack();
-
-                return Response::error500('Произошла ошибка при аутентификации, попробуйте ещё раз');
-            }
+            return Response::data([
+                'session' => $session,
+            ]);
         }
 
-        if ($auth->attempts < 3) {
-            $auth->attempts++;
-            $auth->save();
+        if ($auth['attempts'] < 3) {
+            $this->dbal->update('auth_codes', [
+                'attempts' => $auth['attempts'] + 1,
+            ], [
+                'auth_id' => $auth_id
+            ]);
 
             return Response::error400('Неверный код, попробуйте ещё раз');
         }
 
-        $auth->delete();
+        $this->dbal->delete('auth_codes', ['auth_id' => $auth_id]);
 
         return Response::error401('Попытка взлома, запросите код повторно');
     }

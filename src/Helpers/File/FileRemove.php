@@ -1,10 +1,4 @@
 <?php
-/**
- * Удаление файла
- *
- * @version 28.03.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
@@ -15,9 +9,7 @@ use Lemurro\Api\Core\Helpers\Response;
 use Pimple\Container;
 
 /**
- * Class FileRemove
- *
- * @package Lemurro\Api\Core\Helpers\File
+ * Удаление файла
  */
 class FileRemove extends Action
 {
@@ -32,69 +24,57 @@ class FileRemove extends Action
     protected $file_rights;
 
     /**
-     * Конструктор
-     *
      * @param Container $dic Контейнер
-     *
-     * @version 08.01.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function __construct(Container $dic)
     {
         parent::__construct($dic);
 
-        $this->file_info = new FileInfo();
+        $this->file_info = new FileInfo($this->dbal);
         $this->file_rights = new FileRights($dic);
     }
 
     /**
-     * Выполним действие
+     * Удаление файла
      *
      * @param integer $fileid ИД файла
      *
      * @return array
-     *
-     * @version 08.01.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($fileid)
     {
-        $info = $this->file_info->getOneORM($fileid);
-        if (is_array($info)) {
-            return $info;
+        $info = $this->file_info->getById($fileid);
+        if (empty($info)) {
+            return Response::error404('Файл не найден');
         }
 
-        if ($this->file_rights->check($info->container_type, $info->container_id) === false) {
+        if ($this->file_rights->check($info['container_type'], $info['container_id']) === false) {
             return Response::error403('Доступ ограничен', false, [
                 'file_id' => $fileid,
             ]);
         }
 
-        $file_path = SettingsFile::FILE_FOLDER . $info->path;
-
-        if (SettingsFile::FULL_REMOVE) {
-            $info->delete();
-        } else {
-            $info->deleted_at = $this->dic['datetimenow'];
-            $info->save();
-        }
-
-        if (is_object($info)) {
-            /** @var DataChangeLog $datachangelog */
-            $datachangelog = $this->dic['datachangelog'];
-            $datachangelog->insert('files', 'delete', $info->id, $info->as_array());
+        $this->dbal->transactional(function () use ($fileid, $info): void {
+            $file_path = SettingsFile::FILE_FOLDER . $info['path'];
 
             if (SettingsFile::FULL_REMOVE) {
+                $this->dbal->delete('files', ['id' => $fileid]);
                 @unlink($file_path);
+            } else {
+                $this->dbal->update('files', [
+                    'deleted_at' => $this->dic['datetimenow'],
+                ], [
+                    'id' => $fileid
+                ]);
             }
 
-            return Response::data([
-                'id' => $fileid,
-            ]);
-        } else {
-            return Response::error500('Файл не был удалён, попробуйте ещё раз', [
-                'file_id' => $fileid,
-            ]);
-        }
+            /** @var DataChangeLog $datachangelog */
+            $datachangelog = $this->dic['datachangelog'];
+            $datachangelog->insert('files', 'delete', $fileid, $info);
+        });
+
+        return Response::data([
+            'id' => $fileid,
+        ]);
     }
 }

@@ -1,10 +1,4 @@
 <?php
-/**
- * Получение
- *
- * @version 05.06.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\AccessSets;
 
@@ -12,30 +6,23 @@ use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\Response;
 
 /**
- * Class ActionGet
- *
- * @package Lemurro\Api\Core\AccessSets
+ * Получение
  */
 class ActionGet extends Action
 {
     /**
-     * Выполним действие
+     * Получение
      *
      * @param integer $id ИД записи
      *
      * @return array
-     *
-     * @version 05.06.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($id)
     {
-        $record = OneRecord::get($id);
-        if (!is_object($record)) {
+        $record = (new OneRecord($this->dbal))->get((int)$id);
+        if (empty($record)) {
             return Response::error404('Набор не найден');
         }
-
-        $record = $record->as_array();
 
         if (empty($record['roles'])) {
             $record['roles'] = [];

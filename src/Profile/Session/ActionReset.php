@@ -1,24 +1,13 @@
 <?php
 
-/**
- * Сброс выбранной сессии
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- *
- * @version 11.05.2020
- */
-
 namespace Lemurro\Api\Core\Profile\Session;
 
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\Response;
-use ORM;
 use Pimple\Container;
 
 /**
- * Class ActionReset
- *
- * @package Lemurro\Api\Core\Profile\Session
+ * Сброс выбранной сессии
  */
 class ActionReset extends Action
 {
@@ -33,13 +22,7 @@ class ActionReset extends Action
     private $user_id;
 
     /**
-     * ActionIndex constructor.
-     *
      * @param Container $dic
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 11.05.2020
      */
     public function __construct($dic)
     {
@@ -50,42 +33,43 @@ class ActionReset extends Action
     }
 
     /**
-     * Выполним действие
+     * Сброс выбранной сессии
      *
      * @param string $session
      *
      * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 11.05.2020
      */
     public function run($session): array
     {
-        $record = ORM::for_table('sessions')
-            ->where_equal('session', $session)
-            ->where_equal('user_id', $this->user_id)
-            ->where_equal('admin_entered', '0')
-            ->order_by_desc('checked_at')
-            ->find_one();
+        $sql = <<<'SQL'
+            SELECT * FROM sessions
+            WHERE session = :session
+                AND user_id = :user_id
+                AND admin_entered = '0'
+            ORDER BY checked_at DESC
+            SQL;
 
-        if (!is_object($record)) {
+        $record = $this->dbal->fetchAssociative($sql, [
+            'session' => $session,
+            'user_id' => $this->user_id,
+        ]);
+        if ($record === false) {
             Response::error404('Сессия не найдена');
         }
 
         if (
-            $record->session === $session
-            && $record->user_id === $this->user_id
-            && (int) $record->admin_entered === 0
+            $record['session'] === $session
+            && $record['user_id'] === $this->user_id
+            && (int)$record['admin_entered'] === 0
         ) {
             Response::error404('Сессия не найдена');
         }
 
-        if ($record->session === $this->session_id) {
+        if ($record['session'] === $this->session_id) {
             Response::error403('Нельзя завершить активную сессию', false);
         }
 
-        $record->delete();
+        $this->dbal->delete('sessions', ['session' => $session]);
 
         return Response::data([
             'success' => true,

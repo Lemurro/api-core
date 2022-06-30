@@ -1,47 +1,32 @@
 <?php
-/**
- * Проверка на наличие подобной записи
- *
- * @version 05.06.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\AccessSets;
 
-use Lemurro\Api\Core\Helpers\Response;
-use ORM;
+use Doctrine\DBAL\Connection;
 
 /**
- * Class Exist
- *
- * @package Lemurro\Api\Core\AccessSets
+ * Проверка на наличие набора с переданным именем
  */
 class Exist
 {
-    /**
-     * Выполним действие
-     *
-     * @param integer $id   ИД записи
-     * @param string  $name Строка для проверки
-     *
-     * @return array
-     *
-     * @version 05.06.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     */
-    static function check($id, $name)
-    {
-        $exist = ORM::for_table('access_sets')
-            ->select('id')
-            ->where_equal('name', $name)
-            ->where_not_equal('id', $id)
-            ->where_null('deleted_at')
-            ->find_one();
+    protected Connection $dbal;
 
-        if (is_object($exist)) {
-            return Response::error400('Набор с таким именем уже существует');
+    public function __construct(Connection $dbal)
+    {
+        $this->dbal = $dbal;
+    }
+
+    /**
+     * Проверка на наличие набора с переданным именем
+     */
+    public function check(int $id, string $name): bool
+    {
+        $exist_name = $this->dbal->fetchOne('SELECT name FROM access_sets WHERE name == ? AND id != ? AND deleted_at IS NULL', [$name, $id]);
+
+        if ($exist_name !== false && $exist_name === $name) {
+            return true;
         }
 
-        return Response::data([]);
+        return $exist_name;
     }
 }

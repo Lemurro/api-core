@@ -1,13 +1,5 @@
 <?php
 
-/**
- * Профиль пользователя
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- *
- * @version 11.05.2020
- */
-
 namespace Lemurro\Api\Core\Profile;
 
 use Carbon\Carbon;
@@ -15,13 +7,10 @@ use DateTime;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\LocalDateTime;
 use Lemurro\Api\Core\Helpers\Response;
-use ORM;
 use Pimple\Container;
 
 /**
- * Class ActionIndex
- *
- * @package Lemurro\Api\Core\Profile
+ * Профиль пользователя
  */
 class ActionIndex extends Action
 {
@@ -44,10 +33,6 @@ class ActionIndex extends Action
      * ActionIndex constructor.
      *
      * @param Container $dic
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 11.05.2020
      */
     public function __construct($dic)
     {
@@ -59,13 +44,7 @@ class ActionIndex extends Action
     }
 
     /**
-     * Выполним действие
-     *
-     * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 24.04.2020
+     * Профиль пользователя
      */
     public function run(): array
     {
@@ -78,55 +57,51 @@ class ActionIndex extends Action
 
     /**
      * Список сессий
-     *
-     * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 11.05.2020
      */
     private function getSessions(): array
     {
         $data = [];
 
-        $items = ORM::for_table('sessions')
-            ->select_many(
-                'session',
-                'device_info',
-                'geoip',
-                'checked_at'
-            )
-            ->where_equal('user_id', $this->user_id)
-            ->where_equal('admin_entered', '0')
-            ->order_by_desc('checked_at')
-            ->find_array();
+        $sql = <<<'SQL'
+            SELECT
+                session,
+                device_info,
+                geoip,
+                checked_at
+            FROM sessions
+            WHERE user_id = :user_id
+                AND admin_entered = :admin_entered
+            ORDER BY checked_at DESC
+            SQL;
+        $items = $this->dbal->fetchAllAssociative($sql, [
+            'user_id' => $this->user_id,
+            'admin_entered' => 0,
+        ]);
 
-        if (is_array($items) && !empty($items)) {
-            foreach ($items as $item) {
-                $dt = Carbon::createFromFormat('Y-m-d H:i:s', $item['checked_at']);
-                $diff_days = $dt->diffInDays($this->now_datetime);
-                $dt_string = $dt->toDateTimeString();
+        foreach ($items as $item) {
+            $dt = Carbon::createFromFormat('Y-m-d H:i:s', $item['checked_at']);
+            $diff_days = $dt->diffInDays($this->now_datetime);
+            $dt_string = $dt->toDateTimeString();
 
-                if ($diff_days === 0) {
-                    $date = 'сегодня';
-                } elseif ($diff_days === 1) {
-                    $date = 'вчера';
-                } else {
-                    $date = $this->local_date_time->get($dt_string, 'Y-m-d H:i:s', 'd.m.Y');
-                }
-
-                [$device_platform, $device_manufacturer, $device_model] = $this->getDeviceInfo($item['device_info']);
-                $geo = $this->getGeoInfo($item['geoip']);
-
-                $data[] = [
-                    'session'             => $item['session'],
-                    'device_platform'     => $device_platform,
-                    'device_manufacturer' => $device_manufacturer,
-                    'device_model'        => $device_model,
-                    'geo'                 => $geo,
-                    'datetime'            => $date . ' в ' . $this->local_date_time->get($dt_string, 'Y-m-d H:i:s', 'H:i'),
-                ];
+            if ($diff_days === 0) {
+                $date = 'сегодня';
+            } elseif ($diff_days === 1) {
+                $date = 'вчера';
+            } else {
+                $date = $this->local_date_time->get($dt_string, 'Y-m-d H:i:s', 'd.m.Y');
             }
+
+            [$device_platform, $device_manufacturer, $device_model] = $this->getDeviceInfo($item['device_info']);
+            $geo = $this->getGeoInfo($item['geoip']);
+
+            $data[] = [
+                'session' => $item['session'],
+                'device_platform' => $device_platform,
+                'device_manufacturer' => $device_manufacturer,
+                'device_model' => $device_model,
+                'geo' => $geo,
+                'datetime' => $date . ' в ' . $this->local_date_time->get($dt_string, 'Y-m-d H:i:s', 'H:i'),
+            ];
         }
 
         return $data;

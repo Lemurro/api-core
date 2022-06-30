@@ -4,7 +4,6 @@ namespace Lemurro\Api\Core\Users;
 
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\Response;
-use ORM;
 
 /**
  * Поиск пользователей по фильтру
@@ -17,9 +16,6 @@ class ActionFilter extends Action
      * @param array $filter
      *
      * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 27.09.2019
      */
     public function run($filter)
     {
@@ -41,36 +37,25 @@ class ActionFilter extends Action
      * Подготовим список имён полей для валидации
      *
      * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 27.09.2019
      */
     protected function getFields()
     {
         $info_users = [];
         $users = [];
 
-        $cols_info_users = ORM::for_table('info_users')
-            ->raw_query('SHOW COLUMNS FROM `info_users`')
-            ->find_many();
-        if (is_array($cols_info_users)) {
-            foreach ($cols_info_users as $cols_info_user) {
-                $info_users[] = $cols_info_user->Field;
-            }
+        $cols_info_users = $this->dbal->fetchAllAssociative('SHOW COLUMNS FROM info_users');
+        foreach ($cols_info_users as $cols_info_user) {
+            $info_users[] = $cols_info_user['Field'];
         }
 
-        $cols_users = ORM::for_table('users')
-            ->raw_query('SHOW COLUMNS FROM `users`')
-            ->find_many();
-        if (is_array($cols_users)) {
-            foreach ($cols_users as $cols_user) {
-                $users[] = $cols_user->Field;
-            }
+        $cols_users = $this->dbal->fetchAllAssociative('SHOW COLUMNS FROM users');
+        foreach ($cols_users as $cols_user) {
+            $users[] = $cols_user['Field'];
         }
 
         return [
             'info_users' => $info_users,
-            'users'      => $users,
+            'users' => $users,
         ];
     }
 
@@ -161,38 +146,30 @@ class ActionFilter extends Action
      * @param array $sql_where
      *
      * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 31.01.2020
      */
     protected function getInfoUsers($sql_where)
     {
-        $users = ORM::for_table('info_users')
-            ->raw_query('SELECT
+        $sql = <<<SQL
+            SELECT
                 `iu`.*,
                 `u`.*,
                 `s1`.`checked_at`
-                FROM `info_users` `iu`
-                    LEFT JOIN `users` `u` ON `u`.`id` = `iu`.`user_id`
-                    LEFT JOIN `sessions` `s1` ON `s1`.`user_id` = `iu`.`user_id`
-                    LEFT JOIN `sessions` `s2` ON `s1`.`user_id` = `s2`.`user_id` AND `s1`.`checked_at` < `s2`.`checked_at`
-                WHERE ' . $sql_where['query'] . '
-                    AND `iu`.`deleted_at` IS NULL
-                    AND `s2`.`id` IS NULL
-                ORDER BY `s1`.`checked_at` DESC
-                ', $sql_where['params'])
-            ->find_array();
+            FROM `info_users` `iu`
+                LEFT JOIN `users` `u` ON `u`.`id` = `iu`.`user_id`
+                LEFT JOIN `sessions` `s1` ON `s1`.`user_id` = `iu`.`user_id`
+                LEFT JOIN `sessions` `s2` ON `s1`.`user_id` = `s2`.`user_id` AND `s1`.`checked_at` < `s2`.`checked_at`
+            WHERE {$sql_where['query']}
+                AND `iu`.`deleted_at` IS NULL
+                AND `s2`.`id` IS NULL
+            ORDER BY `s1`.`checked_at` DESC
+            SQL;
 
-        if (!is_array($users)) {
-            return [];
-        }
+        $users = $this->dbal->fetchAllAssociative($sql, $sql_where['params']);
 
-        if ($users > 0) {
-            foreach ($users as &$item) {
-                $item['id'] = $item['user_id'];
-                $item['locked'] = ($item['locked'] === '1');
-                $item['last_action_date'] = $item['checked_at'];
-            }
+        foreach ($users as &$item) {
+            $item['id'] = $item['user_id'];
+            $item['locked'] = ($item['locked'] === '1');
+            $item['last_action_date'] = $item['checked_at'];
         }
 
         return $users;
