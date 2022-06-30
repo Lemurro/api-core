@@ -2,7 +2,6 @@
 
 namespace Lemurro\Api\Core\Users;
 
-use Doctrine\DBAL\Connection;
 use Lemurro\Api\App\RunAfter\Users\Remove as RunAfterRemove;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\DataChangeLog;
@@ -26,31 +25,31 @@ class ActionRemove extends Action
             return Response::error403('Пользователь с id=1 не может быть удалён', false);
         }
 
-        $user = $this->dbal->fetchAssociative('SELECT * FROM users WHERE id = ? deleted_at IS NULL', [$id]);
-        if ($user === false || $user['id'] !== $id) {
+        $user = $this->dbal->fetchAssociative('SELECT * FROM users WHERE id = ? AND deleted_at IS NULL', [$id]);
+        if ($user === false || (int)$user['id'] !== (int)$id) {
             return Response::error404('Пользователь не найден');
         }
 
         $info = $this->dbal->fetchAssociative('SELECT * FROM info_users WHERE user_id = ?', [$id]);
-        if ($info === false || $info['user_id'] !== $id) {
+        if ($info === false || (int)$info['user_id'] !== (int)$id) {
             return Response::error404('Информация о пользователе не найдена');
         }
 
-        $this->dbal->transactional(function (Connection $dbal) use ($id): void {
-            $dbal->update('users', [
+        $this->dbal->transactional(function () use ($id): void {
+            $this->dbal->update('users', [
                 'deleted_at' => $this->dic['datetimenow'],
             ], [
                 'id' => $id
             ]);
 
-            $dbal->update('info_users', [
+            $this->dbal->update('info_users', [
                 'deleted_at' => $this->dic['datetimenow'],
             ], [
                 'user_id' => $id
             ]);
 
-            $dbal->delete('auth_codes', ['user_id' => $id]);
-            $dbal->delete('sessions', ['user_id' => $id]);
+            $this->dbal->delete('auth_codes', ['user_id' => $id]);
+            $this->dbal->delete('sessions', ['user_id' => $id]);
 
             /** @var DataChangeLog $data_change_log */
             $data_change_log = $this->dic['datachangelog'];
