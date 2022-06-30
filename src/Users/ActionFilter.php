@@ -89,7 +89,7 @@ class ActionFilter extends Action
             if ($value != '' && $value != 'all') {
                 switch ($field) {
                     case 'lemurro_user_fio':
-                        $query[] = "CONCAT(`iu`.`last_name`,' ',`iu`.`first_name`,' ',`iu`.`second_name`) LIKE ?";
+                        $query[] = "CONCAT(iu.last_name,' ',iu.first_name,' ',iu.second_name) LIKE ?";
                         $params[] = '%' . $value . '%';
                         break;
 
@@ -105,14 +105,14 @@ class ActionFilter extends Action
                             }
 
                             if ($role[1] === '!any!') {
-                                // `iu`.`roles` = {"guide":["read"],"example":["read","create-update","delete"]}
-                                // JSON_SEARCH(JSON_KEYS(`roles`), 'one', 'example') IS NOT NULL
-                                $query[] = "JSON_SEARCH(JSON_KEYS(`roles`), 'one', ?) $where_roles_type";
+                                // iu.roles = {"guide":["read"],"example":["read","create-update","delete"]}
+                                // JSON_SEARCH(JSON_KEYS(roles), 'one', 'example') IS NOT NULL
+                                $query[] = "JSON_SEARCH(JSON_KEYS(roles), 'one', ?) $where_roles_type";
                                 $params[] = $role[0]; // example
                             } else {
-                                // `iu`.`roles` = {"guide":["read"],"example":["read","create-update","delete"]}
-                                // JSON_SEARCH(`roles`->>'$.example', 'one', 'read') IS NOT NULL
-                                $query[] = "JSON_SEARCH(`roles`->>?, 'one', ?) $where_roles_type";
+                                // iu.roles = {"guide":["read"],"example":["read","create-update","delete"]}
+                                // JSON_SEARCH(roles->>'$.example', 'one', 'read') IS NOT NULL
+                                $query[] = "JSON_SEARCH(roles->>?, 'one', ?) $where_roles_type";
                                 $params[] = '$.' . $role[0]; // example
                                 $params[] = $role[1]; // read
                             }
@@ -121,11 +121,11 @@ class ActionFilter extends Action
 
                     default:
                         if (in_array($field, $fields['info_users'], true)) {
-                            $query[] = '`iu`.`' . $field . '` = ?';
+                            $query[] = 'iu.' . $field . ' = ?';
                             $params[] = $value;
                         } else {
                             if (in_array($field, $fields['users'], true)) {
-                                $query[] = '`u`.`' . $field . '` = ?';
+                                $query[] = 'u.' . $field . ' = ?';
                                 $params[] = $value;
                             }
                         }
@@ -151,17 +151,21 @@ class ActionFilter extends Action
     {
         $sql = <<<SQL
             SELECT
-                `iu`.*,
-                `u`.*,
-                `s1`.`checked_at`
-            FROM `info_users` `iu`
-                LEFT JOIN `users` `u` ON `u`.`id` = `iu`.`user_id`
-                LEFT JOIN `sessions` `s1` ON `s1`.`user_id` = `iu`.`user_id`
-                LEFT JOIN `sessions` `s2` ON `s1`.`user_id` = `s2`.`user_id` AND `s1`.`checked_at` < `s2`.`checked_at`
+                iu.*,
+                u.*,
+                s1.checked_at
+            FROM info_users AS iu
+            LEFT JOIN users AS u
+                ON u.id = iu.user_id
+            LEFT JOIN sessions AS s1
+                ON s1.user_id = iu.user_id
+            LEFT JOIN sessions AS s2
+                ON s1.user_id = s2.user_id
+                    AND s1.checked_at < s2.checked_at
             WHERE {$sql_where['query']}
-                AND `iu`.`deleted_at` IS NULL
-                AND `s2`.`id` IS NULL
-            ORDER BY `s1`.`checked_at` DESC
+                AND iu.deleted_at IS NULL
+                AND s2.id IS NULL
+            ORDER BY s1.checked_at DESC
             SQL;
 
         $users = $this->dbal->fetchAllAssociative($sql, $sql_where['params']);
