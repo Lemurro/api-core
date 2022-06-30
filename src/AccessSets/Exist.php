@@ -21,7 +21,7 @@ class Exist
      */
     public function check(int $id, string $name): bool
     {
-        $exist_name = $this->dbal->fetchOne('SELECT name FROM access_sets WHERE name == ? AND id != ? AND deleted_at IS NULL', [$name, $id]);
+        $exist_name = $this->dbal->fetchOne('SELECT name FROM access_sets WHERE name = ? AND id != ? AND deleted_at IS NULL', [$name, $id]);
 
         if ($exist_name !== false && $exist_name === $name) {
             return true;
