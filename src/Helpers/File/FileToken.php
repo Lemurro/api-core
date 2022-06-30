@@ -4,9 +4,10 @@ namespace Lemurro\Api\Core\Helpers\File;
 
 use Carbon\Carbon;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Lemurro\Api\App\Configs\SettingsFile;
-use Lemurro\Api\Core\Helpers\Response;
 use Lemurro\Api\Core\Abstracts\Action;
+use Lemurro\Api\Core\Helpers\Response;
 
 /**
  * Токен для скачивания файлов
@@ -45,7 +46,7 @@ class FileToken extends Action
      */
     public function getFileInfo(string $jwt_token): array
     {
-        $payload = JWT::decode($jwt_token, SettingsFile::SECRET_KEY_FOR_TOKENS, [self::$alg]);
+        $payload = JWT::decode($jwt_token, new Key(SettingsFile::SECRET_KEY_FOR_TOKENS, self::$alg), [self::$alg]);
 
         return Response::data([
             'type' => $payload->ltp,
