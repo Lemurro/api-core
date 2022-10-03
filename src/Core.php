@@ -61,10 +61,16 @@ class Core
 
         $this->core_log = LoggerFactory::create('Core');
 
-        $dbal = DB::init();
+        try {
+            $dbal = DB::init();
 
-        $this->initRoutes();
-        $this->initDIC($dbal);
+            $this->initRoutes();
+            $this->initDIC($dbal);
+        } catch (Throwable $e) {
+            LogException::write($this->core_log, $e);
+
+            throw $e;
+        }
     }
 
     /**
