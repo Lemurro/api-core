@@ -1,31 +1,20 @@
 <?php
-/**
- * Какие-либо проверки перед запуском контроллера маршрута
- *
- * @version 29.10.2018
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Checker;
 
 use Lemurro\Api\Core\Abstracts\Action;
 
 /**
- * Class Checker
- *
- * @package Lemurro\Api\Core\Checker
+ * Какие-либо проверки перед запуском контроллера маршрута
  */
 class Checker extends Action
 {
     /**
-     * Зарегистрируем пользователя по идентификатору
+     * Какие-либо проверки перед запуском контроллера маршрута
      *
      * @param array $checks Массив проверок
      *
      * @return array
-     *
-     * @version 29.10.2018
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($checks)
     {
@@ -33,7 +22,7 @@ class Checker extends Action
             foreach ($checks as $check_type => $check_info) {
                 switch ($check_type) {
                     case 'auth':
-                        $check_result = (new Auth())->run($this->dic['session_id']);
+                        $check_result = (new Auth($this->dbal))->run((string)$this->dic['session_id']);
                         break;
 
                     case 'role':

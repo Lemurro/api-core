@@ -1,10 +1,4 @@
 <?php
-/**
- * Удаление
- *
- * @version 05.06.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\AccessSets;
 
@@ -13,41 +7,37 @@ use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
 
 /**
- * Class ActionRemove
- *
- * @package Lemurro\Api\Core\AccessSets
+ * Удаление
  */
 class ActionRemove extends Action
 {
     /**
-     * Выполним действие
+     * Удаление
      *
      * @param integer $id ИД записи
      *
      * @return array
-     *
-     * @version 05.06.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function run($id)
     {
-        $record = OneRecord::get($id);
-        if (!is_object($record)) {
+        if (empty((new OneRecord($this->dbal))->get((int)$id))) {
             return Response::error404('Набор не найден');
         }
 
-        $record->deleted_at = $this->dic['datetimenow'];
-        $record->save();
-        if (is_object($record) && isset($record->id)) {
+        $this->dbal->transactional(function () use ($id): void {
+            $this->dbal->update('access_sets', [
+                'deleted_at' => $this->dic['datetimenow'],
+            ], [
+                'id' => $id
+            ]);
+
             /** @var DataChangeLog $data_change_log */
             $data_change_log = $this->dic['datachangelog'];
             $data_change_log->insert('access_sets', 'delete', $id);
+        });
 
-            return Response::data([
-                'id' => $id,
-            ]);
-        } else {
-            return Response::error500('Произошла ошибка при удалении набора, попробуйте ещё раз');
-        }
+        return Response::data([
+            'id' => $id,
+        ]);
     }
 }

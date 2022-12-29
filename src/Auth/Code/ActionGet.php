@@ -1,13 +1,5 @@
 <?php
 
-/**
- * Получение кода аутентификации
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- *
- * @version 17.06.2020
- */
-
 namespace Lemurro\Api\Core\Auth\Code;
 
 use Carbon\Carbon;
@@ -25,14 +17,11 @@ use Lemurro\Api\Core\Helpers\SMS\SMS;
 use Lemurro\Api\Core\Users\ActionInsert as InsertUser;
 use Lemurro\Api\Core\Users\Find as FindUser;
 use Monolog\Logger;
-use ORM;
 use Pimple\Container;
 use RuntimeException;
 
 /**
- * Class ActionGet
- *
- * @package Lemurro\Api\Core\Auth\Code
+ * Получение кода аутентификации
  */
 class ActionGet extends Action
 {
@@ -94,13 +83,7 @@ class ActionGet extends Action
     private string $ip;
 
     /**
-     * ActionGet constructor.
-     *
      * @param Container $dic
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 10.06.2020
      */
     public function __construct($dic)
     {
@@ -109,24 +92,20 @@ class ActionGet extends Action
         $this->mailer = $dic['mailer'];
         $this->sms = $dic['sms'];
         $this->datetimenow = $dic['datetimenow'];
-        $this->code_cleaner = new Code();
-        $this->user_finder = new FindUser();
+        $this->code_cleaner = new Code($this->dbal);
+        $this->user_finder = new FindUser($this->dbal);
         $this->user_inserter = new InsertUser($dic);
         $this->phone_validator = new Phone();
         $this->log = LoggerFactory::create('Auth');
     }
 
     /**
-     * Выполним действие
+     * Получение кода аутентификации
      *
      * @param string $auth_id Номер телефона или электронная почта
      * @param string $ip
      *
      * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 10.06.2020
      */
     public function run($auth_id, $ip = ''): array
     {
@@ -140,7 +119,7 @@ class ActionGet extends Action
         try {
             $user = $this->findUser($auth_id);
 
-            if ((int) $user['locked'] === 1) {
+            if ((int)$user['locked'] === 1) {
                 throw new RuntimeException('Пользователь заблокирован и недоступен для входа', 403);
             }
 
@@ -165,16 +144,11 @@ class ActionGet extends Action
      * @param string $auth_id
      *
      * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 10.06.2020
      */
     private function findUser($auth_id): array
     {
-        $user = $this->user_finder->run($auth_id);
-
-        if (is_array($user) && !empty($user)) {
+        $user = $this->user_finder->getByAuthId((string)$auth_id);
+        if (!empty($user)) {
             return $user;
         }
 
@@ -195,19 +169,12 @@ class ActionGet extends Action
 
     /**
      * Защита от брутфорса
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 17.06.2020
      */
     private function bruteForceProtection(): void
     {
         $lastday = Carbon::now()->subDay()->toDateTimeString();
 
-        $count = ORM::for_table('auth_codes_lasts')
-            ->where_equal('user_id', $this->user_id)
-            ->where_gte('created_at', $lastday)
-            ->count();
+        $count = $this->dbal->fetchOne('SELECT COUNT(user_id) AS cnt FROM auth_codes_lasts WHERE user_id = ? AND created_at >= ?', [$this->user_id, $lastday]);
         if ($count >= SettingsAuth::ATTEMPTS_PER_DAY) {
             throw new RuntimeException('Попытка брутфорса (user_id: ' . $this->user_id . ')', 403);
         }
@@ -215,14 +182,10 @@ class ActionGet extends Action
 
     /**
      * Генерация уникального кода
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 10.06.2020
      */
     private function generateCode(): void
     {
-        $exist_codes = $this->getExistCodes();
+        $exist_codes = $this->dbal->fetchAllKeyValue('SELECT id, code FROM auth_codes');
 
         $this->secret = RandomNumber::generate(4);
         while (in_array($this->secret, $exist_codes)) {
@@ -231,74 +194,30 @@ class ActionGet extends Action
     }
 
     /**
-     * Получение существующих кодов
-     *
-     * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 10.06.2020
-     */
-    private function getExistCodes(): array
-    {
-        $exist_codes = [];
-
-        $auth_codes = ORM::for_table('auth_codes')
-            ->select('code')
-            ->find_array();
-
-        if (is_array($auth_codes) && !empty($auth_codes)) {
-            foreach ($auth_codes as $item) {
-                $exist_codes[] = $item['code'];
-            }
-        }
-
-        return $exist_codes;
-    }
-
-    /**
      * Сохранение кода в БД
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 17.06.2020
      */
     private function saveCode(): void
     {
-        try {
-            ORM::get_db()->beginTransaction();
+        $this->dbal->transactional(function (): void {
+            $this->dbal->insert('auth_codes', [
+                'auth_id' => $this->auth_id,
+                'ip' => $this->ip,
+                'code' => $this->secret,
+                'user_id' => $this->user_id,
+                'created_at' => $this->datetimenow,
+            ]);
 
-            $auth_code = ORM::for_table('auth_codes')->create();
-            $auth_code->auth_id = $this->auth_id;
-            $auth_code->ip = $this->ip;
-            $auth_code->code = $this->secret;
-            $auth_code->user_id = $this->user_id;
-            $auth_code->created_at = $this->datetimenow;
-            $auth_code->save();
-
-            $auth_code_last = ORM::for_table('auth_codes_lasts')->create();
-            $auth_code_last->user_id = $this->user_id;
-            $auth_code_last->created_at = $this->datetimenow;
-            $auth_code_last->save();
-
-            ORM::get_db()->commit();
-        } catch (Exception $e) {
-            ORM::get_db()->rollBack();
-
-            LogException::write($this->log, $e);
-
-            throw new RuntimeException('Произошла ошибка при сохранении в БД', 500);
-        }
+            $this->dbal->insert('auth_codes_lasts', [
+                'user_id' => $this->user_id,
+                'created_at' => $this->datetimenow,
+            ]);
+        });
     }
 
     /**
      * Отправка кода пользователю
      *
      * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 10.06.2020
      */
     private function sendCode(): array
     {
@@ -337,10 +256,6 @@ class ActionGet extends Action
      * Отправка кода на электронную почту
      *
      * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 10.06.2020
      */
     private function sendEmail()
     {
@@ -352,7 +267,7 @@ class ActionGet extends Action
             ],
             [
                 '[APP_NAME]' => SettingsGeneral::APP_NAME,
-                '[SECRET]'   => $this->secret,
+                '[SECRET]' => $this->secret,
             ]
         );
 
@@ -365,10 +280,6 @@ class ActionGet extends Action
      * Отправка кода в виде смс
      *
      * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 10.06.2020
      */
     private function sendSms()
     {

@@ -1,22 +1,13 @@
 <?php
-/**
- * Переносим файл в постоянное хранилище и добавляем в базу
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 15.01.2020
- */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\App\Configs\SettingsFile;
 use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
-use ORM;
 
 /**
- * Class FileAdd
- *
- * @package Lemurro\Api\Core\Helpers\File
+ * Переносим файл в постоянное хранилище и добавляем в базу
  */
 class FileAdd extends AbstractFileAction
 {
@@ -26,17 +17,14 @@ class FileAdd extends AbstractFileAction
     protected $undo_list = [];
 
     /**
-     * Выполним действие
+     * Переносим файл в постоянное хранилище и добавляем в базу
      *
-     * @param string $file_name      Имя файла во временном каталоге
-     * @param string $orig_name      Оригинальное имя файла
-     * @param string $container_type Тип контейнера
-     * @param string $container_id   ИД контейнера
+     * @param string  $file_name      Имя файла во временном каталоге
+     * @param string  $orig_name      Оригинальное имя файла
+     * @param string  $container_type Тип контейнера
+     * @param ?string $container_id   ИД контейнера
      *
      * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.01.2020
      */
     public function run($file_name, $orig_name, $container_type = 'default', $container_id = null)
     {
@@ -59,22 +47,15 @@ class FileAdd extends AbstractFileAction
      * Возвращаем файлы обратно во временное хранилище
      *
      * @return boolean
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.10.2019
      */
     public function undo()
     {
         if (!empty($this->undo_list)) {
-            foreach ($this->undo_list as $path_file => $item) {
+            foreach ($this->undo_list as $item) {
                 rename($item['destination_file'], $item['source_file']);
 
                 if (isset($item['id'])) {
-                    $file = ORM::for_table('files')
-                        ->find_one($item['id']);
-                    if (is_object($file) && $file->id == $item['id']) {
-                        $file->delete();
-                    }
+                    $this->dbal->delete('files', ['id' => $item['id']]);
                 }
             }
         }
@@ -88,9 +69,6 @@ class FileAdd extends AbstractFileAction
      * @param string $source_file_name Имя файла во временном каталоге
      *
      * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.01.2020
      */
     protected function moveToStorage($source_file_name)
     {
@@ -150,12 +128,9 @@ class FileAdd extends AbstractFileAction
      * @param string $file_name      Имя файла в постоянном хранилище
      * @param string $orig_name      Оригинальное имя файла
      * @param string $container_type Тип контейнера
-     * @param string $container_id   ИД контейнера
+     * @param ?string $container_id   ИД контейнера
      *
      * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.01.2020
      */
     protected function addToDB($file_name, $orig_name, $container_type, $container_id)
     {
@@ -175,16 +150,15 @@ class FileAdd extends AbstractFileAction
             $data['ext'] = 'ext';
         }
 
-        $item = ORM::for_table('files')->create();
-        $item->path = $data['path'];
-        $item->name = mb_substr($data['name'], 0, 255, 'UTF-8');
-        $item->ext = $data['ext'];
-        $item->container_type = mb_substr($container_type, 0, 255, 'UTF-8');
-        $item->container_id = $container_id;
-        $item->created_at = $this->dic['datetimenow'];
-        $item->save();
-
-        if (!is_object($item) || !isset($item->id)) {
+        $cnt = $this->dbal->insert('files', [
+            'path' => $data['path'],
+            'name' => mb_substr($data['name'], 0, 255, 'UTF-8'),
+            'ext' => $data['ext'],
+            'container_type' => mb_substr($container_type, 0, 255, 'UTF-8'),
+            'container_id' => $container_id,
+            'created_at' => $this->dic['datetimenow'],
+        ]);
+        if ($cnt !== 1) {
             $this->log->error('File: Файл не был добавлен', $data);
 
             return Response::error500('Файл не был добавлен, попробуйте загрузить файл снова', [
@@ -195,16 +169,18 @@ class FileAdd extends AbstractFileAction
             ]);
         }
 
+        $id = $this->dbal->lastInsertId();
+
         /** @var DataChangeLog $datachangelog */
         $datachangelog = $this->dic['datachangelog'];
-        $datachangelog->insert('files', 'insert', $item->id, $data);
+        $datachangelog->insert('files', 'insert', $id, $data);
 
         if (isset($this->undo_list[$file_name])) {
-            $this->undo_list[$file_name]['id'] = $item->id;
+            $this->undo_list[$file_name]['id'] = $id;
         }
 
         return Response::data([
-            'id' => $item->id,
+            'id' => $id,
         ]);
     }
 }

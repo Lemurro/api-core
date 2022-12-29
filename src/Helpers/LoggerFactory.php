@@ -15,8 +15,8 @@ class LoggerFactory
     /**
      * Создание логгера
      *
-     * @param string $name Имя логгера (используется для имени файла, если не указан используется 'main')
-     * @param string $channel_name Канал логгера (если не указан используется 'Main')
+     * @param string  $name         Имя логгера (используется для имени файла, если не указан используется 'main')
+     * @param ?string $channel_name Канал логгера (если не указан используется 'Main')
      *
      * @return Logger
      */

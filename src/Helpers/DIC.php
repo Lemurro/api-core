@@ -1,14 +1,9 @@
 <?php
-/**
- * Инициализация Dependency Injection Container
- *
- * @version 27.08.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Helpers;
 
 use Carbon\Carbon;
+use Doctrine\DBAL\Connection;
 use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\App\Configs\SettingsMail;
 use Lemurro\Api\Core\Checker\Checker;
@@ -17,25 +12,20 @@ use PHPMailer\PHPMailer\PHPMailer;
 use Pimple\Container;
 
 /**
- * Class DIC
- *
- * @package Lemurro\Api\Core\Helpers
+ * Инициализация Dependency Injection Container
  */
 class DIC
 {
     /**
-     * Инициализация
-     *
-     * @return Container
-     *
-     * @version 27.08.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * Инициализация Dependency Injection Container
      */
-    static function init()
+    static function init(?Connection $dbal = null): Container
     {
         $dic = new Container();
 
         $dic['utc_offset'] = 0;
+
+        $dic['dbal'] = $dbal;
 
         $dic['datetimenow'] = function () {
             $now = Carbon::now('UTC');
@@ -54,6 +44,7 @@ class DIC
                 $phpmailer->isSMTP();
                 $phpmailer->SMTPDebug = 0;
                 $phpmailer->SMTPAuth = true;
+                $phpmailer->SMTPAutoTLS = !empty(SettingsMail::SMTP_SECURITY);
                 $phpmailer->SMTPSecure = SettingsMail::SMTP_SECURITY;
                 $phpmailer->Host = SettingsMail::SMTP_HOST;
                 $phpmailer->Port = SettingsMail::SMTP_PORT;
@@ -75,6 +66,7 @@ class DIC
                 $phpmailer->isSMTP();
                 $phpmailer->SMTPDebug = 0;
                 $phpmailer->SMTPAuth = true;
+                $phpmailer->SMTPAutoTLS = !empty(SettingsMail::RESERVE_SMTP_SECURITY);
                 $phpmailer->SMTPSecure = SettingsMail::RESERVE_SMTP_SECURITY;
                 $phpmailer->Host = SettingsMail::RESERVE_SMTP_HOST;
                 $phpmailer->Port = SettingsMail::RESERVE_SMTP_PORT;

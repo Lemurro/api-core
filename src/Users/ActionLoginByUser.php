@@ -6,7 +6,6 @@ use Lemurro\Api\App\Configs\SettingsAuth;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\RandomKey;
 use Lemurro\Api\Core\Helpers\Response;
-use ORM;
 
 /**
  * Вход под указанным пользователем
@@ -47,22 +46,20 @@ class ActionLoginByUser extends Action
             $ip = $_SERVER['REMOTE_ADDR'] ?? null;
         }
 
-        $session = ORM::for_table('sessions')->create();
-        $session->session = $secret;
-        $session->ip = $ip;
-        $session->user_id = $user_id;
-        $session->admin_entered = 1;
-        $session->created_at = $created_at;
-        $session->checked_at = $created_at;
-
-        $session->save();
-
-        if (is_object($session) && isset($session->id)) {
-            return Response::data([
-                'session' => $secret,
-            ]);
+        $cnt = $this->dbal->insert('sessions', [
+            'session' => $secret,
+            'ip' => $ip,
+            'user_id' => $user_id,
+            'admin_entered' => 1,
+            'created_at' => $created_at,
+            'checked_at' => $created_at,
+        ]);
+        if ($cnt !== 1) {
+            return Response::error500('Произошла ошибка при аутентификации, попробуйте ещё раз');
         }
 
-        return Response::error500('Произошла ошибка при аутентификации, попробуйте ещё раз');
+        return Response::data([
+            'session' => $secret,
+        ]);
     }
 }

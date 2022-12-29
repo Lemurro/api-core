@@ -1,10 +1,4 @@
 <?php
-/**
- * Заблокировать \ Разблокировать пользователя
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 19.11.2019
- */
 
 namespace Lemurro\Api\Core\Users;
 
@@ -12,63 +6,57 @@ use Lemurro\Api\App\RunAfter\Users\LockUnlock as RunAfterLockUnlock;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\DataChangeLog;
 use Lemurro\Api\Core\Helpers\Response;
-use ORM;
 
 /**
- * Class ActionLockUnlock
- *
- * @package Lemurro\Api\Core\Users
+ * Заблокировать \ Разблокировать пользователя
  */
 class ActionLockUnlock extends Action
 {
     /**
-     * Выполним действие
+     * Заблокировать \ Разблокировать пользователя
      *
      * @param integer $id     ИД записи
      * @param boolean $locked Статус блокировки (true|false)
      *
      * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 19.11.2019
      */
     public function run($id, $locked)
     {
-        $user = ORM::for_table('users')
-            ->where_null('deleted_at')
-            ->find_one($id);
-        if (is_object($user) && $user->id == $id) {
-            if ($id == 1 && $locked) {
-                return Response::error403('Пользователь с id=1 не может быть заблокирован', false);
-            }
+        if ($id == 1 && $locked) {
+            return Response::error403('Пользователь с id=1 не может быть заблокирован', false);
+        }
 
-            $user_info = (new ActionGet($this->dic))->run($id);
-            if (isset($user_info['errors'])) {
-                return $user_info;
-            }
-
-            $user->locked = $locked;
-            $user->updated_at = $this->dic['datetimenow'];
-            $user->save();
-            if (is_object($user) && isset($user->id)) {
-                /** @var DataChangeLog $data_change_log */
-                $data_change_log = $this->dic['datachangelog'];
-                $data_change_log->insert('users', 'update', $id, $user->as_array());
-
-                $user_info['data']['locked'] = $locked;
-
-                if ($locked) {
-                    ORM::for_table('sessions')
-                        ->where_equal('user_id', $id)
-                        ->delete_many();
-                }
-
-                return (new RunAfterLockUnlock($this->dic))->run($user_info['data']);
-            } else {
-                return Response::error500('Произошла ошибка при изменении статуса блокировки пользователя, попробуйте ещё раз');
-            }
-        } else {
+        $user = $this->dbal->fetchAssociative('SELECT * FROM users WHERE id = ? AND deleted_at IS NULL', [$id]);
+        if ($user === false) {
             return Response::error404('Пользователь не найден');
         }
+
+        $user_info = (new ActionGet($this->dic))->run($id);
+        if (isset($user_info['errors'])) {
+            return $user_info;
+        }
+
+        $this->dbal->transactional(function () use ($id, $locked, $user): void {
+            $this->dbal->update('users', [
+                'locked' => (int)$locked,
+                'updated_at' => $this->dic['datetimenow'],
+            ], [
+                'id' => $id
+            ]);
+
+            $user['locked'] = (int)$locked;
+
+            /** @var DataChangeLog $data_change_log */
+            $data_change_log = $this->dic['datachangelog'];
+            $data_change_log->insert('users', 'update', $id, $user);
+
+            if ($locked) {
+                $this->dbal->delete('sessions', ['user_id' => $id]);
+            }
+        });
+
+        $user_info['data']['locked'] = $locked;
+
+        return (new RunAfterLockUnlock($this->dic))->run($user_info['data']);
     }
 }

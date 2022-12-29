@@ -3,30 +3,32 @@
 namespace Lemurro\Api\Core;
 
 use Carbon\Carbon;
+use Doctrine\DBAL\Connection;
 use Lemurro\Api\App\Configs\SettingsAuth;
 use Lemurro\Api\Core\Helpers\Response;
-use ORM;
 
 /**
  * Работа с сессиями
  */
 class Session
 {
+    protected Connection $dbal;
+
+    public function __construct(Connection $dbal)
+    {
+        $this->dbal = $dbal;
+    }
+
     /**
      * Проверка валидности сессии
-     *
-     * @param string $session_id ИД сессии
      */
-    public function check($session_id): array
+    public function check(string $session_id): array
     {
         if (empty($session_id)) {
             return Response::error401('Необходимо авторизоваться [#1]');
         }
 
-        $session = ORM::for_table('sessions')
-            ->where_equal('session', $session_id)
-            ->find_one();
-
+        $session = $this->dbal->fetchAssociative('SELECT * FROM sessions WHERE session = ?', [$session_id]);
         if ($session === false) {
             return Response::error401('Необходимо авторизоваться [#2]');
         }
@@ -34,17 +36,20 @@ class Session
         if (SettingsAuth::SESSIONS_BINDING_TO_IP) {
             $ip = $_SERVER['REMOTE_ADDR'] ?? null;
 
-            if ((empty($ip) || $session->ip !== (string) $ip)) {
-                $session->delete();
+            if ((empty($ip) || $session['ip'] !== (string) $ip)) {
+                $this->dbal->delete('sessions', ['session' => $session_id]);
 
                 return Response::error401('Необходимо авторизоваться [#3]');
             }
         }
 
-        $session->checked_at = Carbon::now('UTC')->toDateTimeString();
-        $session->save();
+        $this->dbal->update('sessions', [
+            'checked_at' => Carbon::now('UTC')->toDateTimeString(),
+        ], [
+            'session' => $session_id,
+        ]);
 
-        return $session->as_array();
+        return $session;
     }
 
     /**
@@ -52,10 +57,8 @@ class Session
      */
     public function clearOlder(): void
     {
-        $older_than = Carbon::now('UTC')->subDays(SettingsAuth::SESSIONS_OLDER_THAN)->toDateTimeString();
-
-        ORM::for_table('sessions')
-            ->where_lt('checked_at', $older_than)
-            ->delete_many();
+        $this->dbal->executeStatement('DELETE FROM sessions WHERE checked_at <= ?', [
+            Carbon::now('UTC')->subDays(SettingsAuth::SESSIONS_OLDER_THAN)->toDateTimeString(),
+        ]);
     }
 }

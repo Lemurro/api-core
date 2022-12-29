@@ -2,6 +2,7 @@
 
 namespace Lemurro\Api\Core;
 
+use Doctrine\DBAL\Connection;
 use Lemurro\Api\App\Configs\SettingsMaintenance;
 use Lemurro\Api\App\Configs\SettingsPath;
 use Lemurro\Api\App\Overrides\DIC as AppDIC;
@@ -60,10 +61,16 @@ class Core
 
         $this->core_log = LoggerFactory::create('Core');
 
-        DB::init();
+        try {
+            $dbal = DB::init();
 
-        $this->initRoutes();
-        $this->initDIC();
+            $this->initRoutes();
+            $this->initDIC($dbal);
+        } catch (Throwable $e) {
+            LogException::write($this->core_log, $e);
+
+            throw $e;
+        }
     }
 
     /**
@@ -93,6 +100,20 @@ class Core
                     ));
                     $this->response->send();
                 } else {
+                    $class_name = 'Lemurro\\Api\\App\\Middlewares\\MiddlewareForAll';
+                    if (class_exists($class_name)) {
+                        $middleware = new $class_name($this->request, $this->response, $this->dic);
+                        $this->response = call_user_func([$middleware, 'execute']);
+                    }
+
+                    $route_middleware = $this->request->attributes->get('middleware');
+                    if (!empty($route_middleware)) {
+                        if (class_exists($route_middleware)) {
+                            $middleware = new $route_middleware($this->request, $this->response, $this->dic);
+                            $this->response = call_user_func([$middleware, 'execute']);
+                        }
+                    }
+
                     $class = (string) $this->request->attributes->get('_controller');
                     $controller = new $class($this->request, $this->response, $this->dic);
                     call_user_func([$controller, 'start']);
@@ -152,19 +173,16 @@ class Core
 
     /**
      * Инициализация DIC
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 02.08.2019
      */
-    protected function initDIC()
+    protected function initDIC(Connection $dbal): void
     {
-        $this->dic = DIC::init();
+        $this->dic = DIC::init($dbal);
 
-        $this->dic['session_id'] = $this->request->server->get('HTTP_X_SESSION_ID');
-        $this->dic['utc_offset'] = $this->request->server->get('HTTP_X_UTC_OFFSET', 0);
+        $this->dic['session_id'] = (string)$this->request->server->get('HTTP_X_SESSION_ID');
+        $this->dic['utc_offset'] = (int)$this->request->server->get('HTTP_X_UTC_OFFSET', 0);
 
-        $this->dic['user'] = function ($c) {
-            $result_session_check = (new Session())->check($c['session_id']);
+        $this->dic['user'] = function ($c) use ($dbal) {
+            $result_session_check = (new Session($dbal))->check($c['session_id']);
             if (isset($result_session_check['errors'])) {
                 return [];
             } else {

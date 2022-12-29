@@ -1,42 +1,35 @@
 <?php
-/**
- * Поиск пользователя
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 22.11.2019
- */
 
 namespace Lemurro\Api\Core\Users;
 
-use ORM;
+use Doctrine\DBAL\Connection;
 
 /**
- * Class Find
- *
- * @package Lemurro\Api\Core\Users
+ * Поиск пользователя
  */
 class Find
 {
+    protected Connection $dbal;
+
+    public function __construct(Connection $dbal)
+    {
+        $this->dbal = $dbal;
+    }
+
     /**
      * Найдем пользователя по идентификатору
-     *
-     * @param string $auth_id Номер телефона или электронная почта
-     *
-     * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 22.11.2019
      */
-    public function run($auth_id)
+    public function getByAuthId(string $auth_id): ?array
     {
-        $user = ORM::for_table('users')
-            ->where_equal('auth_id', $auth_id)
-            ->where_null('deleted_at')
-            ->find_one();
-        if (is_object($user) && mb_strtolower($user->auth_id, 'UTF-8') == mb_strtolower($auth_id, 'UTF-8')) {
-            return $user->as_array();
-        } else {
-            return [];
+        $user = $this->dbal->fetchAssociative('SELECT * FROM users WHERE auth_id = ? AND deleted_at IS NULL', [$auth_id]);
+
+        if (
+            $user !== false
+            && mb_strtolower($user['auth_id'], 'UTF-8') === mb_strtolower($auth_id, 'UTF-8')
+        ) {
+            return $user;
         }
+
+        return null;
     }
 }

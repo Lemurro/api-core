@@ -1,13 +1,5 @@
 <?php
 
-/**
- * Подготовка файла к скачиванию
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- *
- * @version 27.05.2020
- */
-
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\App\Configs\SettingsFile;
@@ -15,22 +7,17 @@ use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\Response;
 
 /**
- * Class ActionDownloadPrepare
- *
- * @package Lemurro\Api\Core\Helpers\File
+ * Подготовка файла к скачиванию
  */
 class ActionDownloadPrepare extends Action
 {
     /**
-     * Выполним действие
+     * Подготовка файла к скачиванию
      *
      * @param integer|string $fileid   ИД постоянного файла или имя временого файла
      * @param string         $filename Имя файла (для браузера)
      *
      * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.01.2020
      */
     public function run($fileid, $filename = '')
     {
@@ -48,30 +35,27 @@ class ActionDownloadPrepare extends Action
      * @param string  $filename Имя файла (для браузера)
      *
      * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.01.2020
      */
     protected function permanentFile($fileid, $filename)
     {
-        $info = (new FileInfo())->getOneORM($fileid);
-        if (is_array($info)) {
-            return $info;
+        $info = (new FileInfo($this->dbal))->getById($fileid);
+        if (empty($info)) {
+            return Response::error404('Файл не найден');
         }
 
-        if ((new FileRights($this->dic))->check($info->container_type, $info->container_id) === false) {
+        if ((new FileRights($this->dic))->check($info['container_type'], $info['container_id']) === false) {
             return Response::error403('Доступ ограничен', false);
         }
 
-        $file_path = SettingsFile::FILE_FOLDER . $info->path;
+        $file_path = SettingsFile::FILE_FOLDER . $info['path'];
 
         if (!is_readable($file_path) || !is_file($file_path)) {
             return Response::error404('Файл не найден');
         }
 
-        $name = $this->getFilename($info->name . '.' . $info->ext, $filename);
+        $name = $this->getFilename($info['name'] . '.' . $info['ext'], $filename);
 
-        $token = (new FileToken($this->dic))->generate('permanent', $info->path, $name);
+        $token = (new FileToken($this->dic))->generate('permanent', $info['path'], $name);
         if (empty($token)) {
             return Response::error500('Ключ для скачивания файла не был создан, попробуйте ещё раз');
         }
@@ -88,9 +72,6 @@ class ActionDownloadPrepare extends Action
      * @param string $filename Имя файла (для браузера)
      *
      * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 15.01.2020
      */
     protected function temporaryFile($fileid, $filename)
     {
@@ -133,10 +114,6 @@ class ActionDownloadPrepare extends Action
      * @param string $new_filename  Имя файла (для браузера)
      *
      * @return string
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 27.05.2020
      */
     private function getFilename($orig_filename, $new_filename)
     {

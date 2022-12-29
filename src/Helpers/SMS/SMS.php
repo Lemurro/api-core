@@ -1,19 +1,11 @@
 <?php
-/**
- * Отправка SMS
- *
- * @version 28.03.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Helpers\SMS;
 
 use Lemurro\Api\Core\Helpers\LoggerFactory;
 
 /**
- * Class SMS
- *
- * @package Lemurro\Api\Core\Helpers\SMS
+ * Отправка SMS
  */
 class SMS
 {
@@ -26,9 +18,6 @@ class SMS
 
     /**
      * Конструктор
-     *
-     * @version 31.01.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function __construct()
     {
@@ -38,14 +27,11 @@ class SMS
     /**
      * Отправка SMS
      *
-     * @param string $phone   Номер телефона получателя
-     * @param string $message Сообщение
-     * @param string $gateway Шлюз для передачи
+     * @param string  $phone   Номер телефона получателя
+     * @param string  $message Сообщение
+     * @param ?string $gateway Шлюз для передачи
      *
      * @return boolean
-     *
-     * @version 26.07.2018
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
     public function send($phone, $message, $gateway = null)
     {
