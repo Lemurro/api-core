@@ -44,6 +44,7 @@ class DIC
                 $phpmailer->isSMTP();
                 $phpmailer->SMTPDebug = 0;
                 $phpmailer->SMTPAuth = true;
+                $phpmailer->SMTPAutoTLS = !empty(SettingsMail::SMTP_SECURITY);
                 $phpmailer->SMTPSecure = SettingsMail::SMTP_SECURITY;
                 $phpmailer->Host = SettingsMail::SMTP_HOST;
                 $phpmailer->Port = SettingsMail::SMTP_PORT;
@@ -65,6 +66,7 @@ class DIC
                 $phpmailer->isSMTP();
                 $phpmailer->SMTPDebug = 0;
                 $phpmailer->SMTPAuth = true;
+                $phpmailer->SMTPAutoTLS = !empty(SettingsMail::RESERVE_SMTP_SECURITY);
                 $phpmailer->SMTPSecure = SettingsMail::RESERVE_SMTP_SECURITY;
                 $phpmailer->Host = SettingsMail::RESERVE_SMTP_HOST;
                 $phpmailer->Port = SettingsMail::RESERVE_SMTP_PORT;
