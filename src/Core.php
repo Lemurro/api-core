@@ -100,6 +100,20 @@ class Core
                     ));
                     $this->response->send();
                 } else {
+                    $class_name = 'Lemurro\\Api\\App\\Middlewares\\MiddlewareForAll';
+                    if (class_exists($class_name)) {
+                        $middleware = new $class_name($this->request, $this->response, $this->dic);
+                        $this->response = call_user_func([$middleware, 'execute']);
+                    }
+
+                    $route_middleware = $this->request->attributes->get('middleware');
+                    if (!empty($route_middleware)) {
+                        if (class_exists($route_middleware)) {
+                            $middleware = new $route_middleware($this->request, $this->response, $this->dic);
+                            $this->response = call_user_func([$middleware, 'execute']);
+                        }
+                    }
+
                     $class = (string) $this->request->attributes->get('_controller');
                     $controller = new $class($this->request, $this->response, $this->dic);
                     call_user_func([$controller, 'start']);
