@@ -32,6 +32,7 @@
     "sort-packages": true
   },
   "require": {
+    "doctrine/dbal": "3.3.6",
     "ext-json": "*",
     "ext-iconv": "*",
     "ext-pdo": "*",
