@@ -72,9 +72,10 @@ class Jobby
                 'enabled' => true,
                 'schedule' => '30 * * * *', // Каждый час
                 'closure' => function () {
-                    new Console();
+                    $cron = new Console();
+                    $dic = $cron->getDIC();
 
-                    (new Session())->clearOlder();
+                    (new Session($dic['dbal']))->clearOlder();
 
                     return true;
                 },
