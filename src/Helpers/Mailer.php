@@ -1,10 +1,4 @@
 <?php
-/**
- * Отправка электронных писем
- *
- * @version 16.07.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Helpers;
 
@@ -17,9 +11,7 @@ use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 
 /**
- * Class Mailer
- *
- * @package Lemurro\Api\Core\Helpers
+ * Отправка электронных писем
  */
 class Mailer
 {
@@ -89,7 +81,7 @@ class Mailer
     {
         // Проверяем наличие шаблона
         if (constant('\Lemurro\Api\App\Configs\EmailTemplates::' . $template_name) !== null) {
-            if (SettingsGeneral::PRODUCTION === false AND SettingsMail::SMTP === false) {
+            if (SettingsGeneral::PRODUCTION === false and SettingsMail::SMTP === false) {
                 return true;
             } else {
                 // Очищаемся от старых данных

@@ -1,19 +1,11 @@
 <?php
-/**
- * Список
- *
- * @version 05.06.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\AccessSets;
 
 use Lemurro\Api\Core\Abstracts\Controller;
 
 /**
- * Class ControllerIndex
- *
- * @package Lemurro\Api\Core\AccessSets
+ * Список
  */
 class ControllerIndex extends Controller
 {

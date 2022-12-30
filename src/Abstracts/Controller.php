@@ -1,21 +1,13 @@
 <?php
-/**
- * Шаблон контроллера
- *
- * @version 10.10.2018
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Abstracts;
 
 use Pimple\Container;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class Controller
- *
- * @package Lemurro\Api\Core\Abstracts
+ * Шаблон контроллера
  */
 abstract class Controller
 {

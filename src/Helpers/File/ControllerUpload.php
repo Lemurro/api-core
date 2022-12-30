@@ -1,10 +1,4 @@
 <?php
-/**
- * Загрузка файла во временный каталог
- *
- * @version 28.03.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
@@ -12,9 +6,7 @@ use Lemurro\Api\Core\Abstracts\Controller;
 use Lemurro\Api\Core\Checker\Checker;
 
 /**
- * Class ControllerUpload
- *
- * @package Lemurro\Api\Core\Helpers\File
+ * Загрузка файла во временный каталог
  */
 class ControllerUpload extends Controller
 {

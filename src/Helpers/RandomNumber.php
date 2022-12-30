@@ -1,17 +1,9 @@
 <?php
 
-/**
- * Генератор случайного числа определенной длины
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- *
- * @version 15.09.2020
- */
-
 namespace Lemurro\Api\Core\Helpers;
 
 /**
- * @package Lemurro\Api\Core\Helpers
+ * Генератор случайного числа определенной длины
  */
 class RandomNumber
 {
@@ -21,12 +13,8 @@ class RandomNumber
      * @param integer $length Длина строки
      *
      * @return integer
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 15.09.2020
      */
-    static function generate($length = 10)
+    public static function generate($length = 10)
     {
         $key = '';
 

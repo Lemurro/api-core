@@ -5,7 +5,6 @@ namespace Lemurro\Api\Core\Helpers;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Lemurro\Api\App\Configs\SettingsDatabase;
-use ORM;
 use PDO;
 
 /**
@@ -16,7 +15,7 @@ class DB
     /**
      * Инициализация
      */
-    static function init(): ?Connection
+    public static function init(): ?Connection
     {
         if (SettingsDatabase::NEED_CONNECT) {
             $conn = DriverManager::getConnection([
@@ -33,8 +32,6 @@ class DB
                     PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
                 ],
             ]);
-
-            ORM::set_db($conn->getNativeConnection());
 
             return $conn;
         }

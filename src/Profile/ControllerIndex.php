@@ -1,20 +1,11 @@
 <?php
-/**
- * Профиль пользователя
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- *
- * @version 24.04.2020
- */
 
 namespace Lemurro\Api\Core\Profile;
 
 use Lemurro\Api\Core\Abstracts\Controller;
 
 /**
- * Class ControllerIndex
- *
- * @package Lemurro\Api\Core\Profile
+ * Профиль пользователя
  */
 class ControllerIndex extends Controller
 {

@@ -1,19 +1,11 @@
 <?php
-/**
- * Получим номер последней версии приложения
- *
- * @version 13.07.2018
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Version;
 
 use Lemurro\Api\Core\Abstracts\Controller;
 
 /**
- * Class ControllerGet
- *
- * @package Lemurro\Api\Core\Version
+ * Получим номер последней версии приложения
  */
 class ControllerGet extends Controller
 {

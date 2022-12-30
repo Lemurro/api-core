@@ -1,19 +1,11 @@
 <?php
-/**
- * Манипуляции с файлами (добавление и удаление)
- *
- * @version 06.06.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\Core\Abstracts\Action;
 
 /**
- * Class FileManipulate
- *
- * @package Lemurro\Api\Core\Helpers\File
+ * Манипуляции с файлами (добавление и удаление)
  */
 class FileManipulate extends Action
 {

@@ -1,21 +1,13 @@
 <?php
-/**
- * Скачивание файла
- *
- * @version 26.07.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\App\Configs\SettingsFile;
-use Lemurro\Api\Core\Helpers\Response;
 use Lemurro\Api\Core\Abstracts\Action;
+use Lemurro\Api\Core\Helpers\Response;
 
 /**
- * Class ActionDownloadRun
- *
- * @package Lemurro\Api\Core\Helpers\File
+ * Скачивание файла
  */
 class ActionDownloadRun extends Action
 {

@@ -1,17 +1,9 @@
 <?php
-/**
- * Создание уникального имени для файла (с проверкой на дубликаты)
- *
- * @version 28.03.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
 /**
- * Class FileName
- *
- * @package Lemurro\Api\Core\Helpers\File
+ * Создание уникального имени для файла (с проверкой на дубликаты)
  */
 class FileName
 {

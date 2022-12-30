@@ -1,10 +1,4 @@
 <?php
-/**
- * Получим номер последней версии приложения
- *
- * @version 24.12.2018
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Version;
 
@@ -12,9 +6,7 @@ use Lemurro\Api\App\Configs\SettingsPath;
 use Lemurro\Api\Core\Helpers\Response;
 
 /**
- * Class ActionGet
- *
- * @package Lemurro\Api\Core\Version
+ * Получим номер последней версии приложения
  */
 class ActionGet
 {

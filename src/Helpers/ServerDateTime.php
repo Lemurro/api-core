@@ -1,10 +1,4 @@
 <?php
-/**
- * Получение серверного времени из локального времени переданного в виде параметра
- *
- * @version 13.12.2018
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Helpers;
 
@@ -12,9 +6,7 @@ use Carbon\Carbon;
 use Lemurro\Api\Core\Abstracts\Action;
 
 /**
- * Class ServerDateTime
- *
- * @package Lemurro\Api\Core\Helpers
+ * Получение серверного времени из локального времени переданного в виде параметра
  */
 class ServerDateTime extends Action
 {

@@ -17,7 +17,7 @@ class FileToken extends Action
     /**
      * @var string Алгоритм шифрования подписи
      */
-    static protected string $alg = 'HS256';
+    protected static string $alg = 'HS256';
 
     /**
      * Создание токена для скачивания файла

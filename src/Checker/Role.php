@@ -1,19 +1,11 @@
 <?php
-/**
- * Проверка прав доступа
- *
- * @version 29.12.2018
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Checker;
 
 use Lemurro\Api\Core\Helpers\Response;
 
 /**
- * Class Role
- *
- * @package Lemurro\Api\Core\Checker
+ * Проверка прав доступа
  */
 class Role
 {

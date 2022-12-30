@@ -1,19 +1,11 @@
 <?php
-/**
- * Проверка валидности сессии
- *
- * @version 24.12.2018
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Auth;
 
 use Lemurro\Api\Core\Abstracts\Controller;
 
 /**
- * Class ControllerCheck
- *
- * @package Lemurro\Api\Core\Auth
+ * Проверка валидности сессии
  */
 class ControllerCheck extends Controller
 {

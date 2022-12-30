@@ -98,7 +98,7 @@ class Jobby
                 'enabled' => true,
                 'schedule' => '0 0 * * *', // Каждый день в 0:00 UTC
                 'closure' => function () {
-                    (new FileOlderFiles)->clear();
+                    (new FileOlderFiles())->clear();
 
                     return true;
                 },

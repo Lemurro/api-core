@@ -1,19 +1,11 @@
 <?php
-/**
- * Проверка доступа пользователя к файлу
- *
- * @version 08.04.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\Core\Abstracts\Action;
 
 /**
- * Class FileRights
- *
- * @package Lemurro\Api\Core\Helpers\File
+ * Проверка доступа пользователя к файлу
  */
 class FileRights extends Action
 {

@@ -1,10 +1,4 @@
 <?php
-/**
- * Шлюз для отправки sms: sms.ru
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 24.10.2019
- */
 
 namespace Lemurro\Api\Core\Helpers\SMS;
 
@@ -12,9 +6,7 @@ use Lemurro\Api\App\Configs\SettingsSMS;
 use Lemurro\Api\Core\Abstracts\GatewaySMS;
 
 /**
- * Class GatewaySMSRU
- *
- * @package Lemurro\Api\Core\Helpers\SMS
+ * Шлюз для отправки sms: sms.ru
  */
 class GatewaySMSRU implements GatewaySMS
 {

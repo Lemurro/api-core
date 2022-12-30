@@ -30,7 +30,7 @@ class ActionInsert extends Action
             return Response::error400('Пользователь с такими данными для входа уже существует');
         }
 
-        $data = $this->dbal->transactional(function() use ($data): array {
+        $data = $this->dbal->transactional(function () use ($data): array {
             if (!is_array($data['roles'])) {
                 $data['roles'] = [];
             }

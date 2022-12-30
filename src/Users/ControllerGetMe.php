@@ -1,10 +1,4 @@
 <?php
-/**
- * Информация о пользователе под которым пришёл запрос
- *
- * @version 26.07.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Users;
 
@@ -13,9 +7,7 @@ use Lemurro\Api\Core\Abstracts\Controller;
 use Lemurro\Api\Core\Helpers\Response;
 
 /**
- * Class ControllerGetMe
- *
- * @package Lemurro\Api\Core\Users
+ * Информация о пользователе под которым пришёл запрос
  */
 class ControllerGetMe extends Controller
 {

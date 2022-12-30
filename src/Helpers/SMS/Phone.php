@@ -1,10 +1,4 @@
 <?php
-/**
- * Валидация телефона
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 24.10.2019
- */
 
 namespace Lemurro\Api\Core\Helpers\SMS;
 
@@ -15,9 +9,7 @@ use libphonenumber\PhoneNumberUtil;
 use Monolog\Logger;
 
 /**
- * Class Phone
- *
- * @package Lemurro\Api\Core\Helpers\SMS
+ * Валидация телефона
  */
 class Phone
 {

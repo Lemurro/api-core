@@ -1,10 +1,4 @@
 <?php
-/**
- * Добавление в лог информации о пойманном исключении
- *
- * @version 28.05.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Helpers;
 
@@ -12,9 +6,7 @@ use Exception;
 use Monolog\Logger;
 
 /**
- * Class LogException
- *
- * @package Lemurro\Api\Core\Helpers
+ * Добавление в лог информации о пойманном исключении
  */
 class LogException
 {
@@ -29,7 +21,7 @@ class LogException
      * @version 28.05.2019
      * @author  Дмитрий Щербаков <atomcms@ya.ru>
      */
-    static function write($log, $e)
+    public static function write($log, $e)
     {
         return $log->error($e->getFile() . ' (line: ' . $e->getLine() . ') - ' . $e->getMessage(), $e->getTrace());
     }

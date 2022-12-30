@@ -1,24 +1,16 @@
 <?php
-/**
- * Загрузка файла во временный каталог
- *
- * @version 06.06.2019
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\App\Configs\SettingsFile;
-use Lemurro\Api\Core\Helpers\Response;
 use Lemurro\Api\Core\Abstracts\Action;
+use Lemurro\Api\Core\Helpers\Response;
 use Monolog\Logger;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\FileBag;
 
 /**
- * Class ActionUpload
- *
- * @package Lemurro\Api\Core\Helpers\File
+ * Загрузка файла во временный каталог
  */
 class ActionUpload extends Action
 {

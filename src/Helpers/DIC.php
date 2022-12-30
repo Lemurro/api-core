@@ -19,7 +19,7 @@ class DIC
     /**
      * Инициализация Dependency Injection Container
      */
-    static function init(?Connection $dbal = null): Container
+    public static function init(?Connection $dbal = null): Container
     {
         $dic = new Container();
 

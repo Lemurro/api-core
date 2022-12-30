@@ -1,10 +1,4 @@
 <?php
-/**
- * Очистим устаревшие файлы во временном каталоге
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @version 20.01.2020
- */
 
 namespace Lemurro\Api\Core\Helpers\File;
 
@@ -12,9 +6,7 @@ use Carbon\Carbon;
 use Lemurro\Api\App\Configs\SettingsFile;
 
 /**
- * Class FileOlderFiles
- *
- * @package Lemurro\Api\Core\Helpers\File
+ * Очистим устаревшие файлы во временном каталоге
  */
 class FileOlderFiles
 {
