@@ -12,7 +12,8 @@
     }
   ],
   "scripts": {
-    "phpcs74": "phpcs -nsp ./src --runtime-set testVersion 7.4 --standard=PHPCompatibility --standard=PSR1 --standard=PSR12 --runtime-set installed_paths ./vendor/phpcompatibility/php-compatibility/PHPCompatibility --report=xml --report-file=./phpcs-report.xml",
+    "phpcs80": "phpcs -nsp ./src --runtime-set testVersion 8.0 --standard=PHPCompatibility --standard=PSR1 --standard=PSR12 --runtime-set installed_paths ./vendor/phpcompatibility/php-compatibility/PHPCompatibility --report=xml --report-file=./phpcs-report.xml",
+    "run-before-test": "php -S 127.0.0.1:8000 -t ../api/public",
     "test": [
       "codecept clean",
       "codecept run api"
@@ -32,20 +33,19 @@
     "sort-packages": true
   },
   "require": {
-    "doctrine/dbal": "3.3.6",
+    "doctrine/dbal": "3.3.*",
     "ext-json": "*",
     "ext-iconv": "*",
     "ext-pdo": "*",
     "ext-fileinfo": "*",
-    "firebase/php-jwt": "6.1.0",
-    "giggsey/libphonenumber-for-php": "8.12.43",
-    "hellogerard/jobby": "3.5.0",
-    "j4mie/idiorm": "1.5.7",
-    "monolog/monolog": "2.3.5",
-    "nesbot/carbon": "2.57.0",
-    "php": "7.4.*",
-    "phpmailer/phpmailer": "6.5.4",
-    "pimple/pimple": "3.5.0",
+    "firebase/php-jwt": "6.3.*",
+    "giggsey/libphonenumber-for-php": "8.13.*",
+    "hellogerard/jobby": "3.5.*",
+    "monolog/monolog": "2.8.*",
+    "nesbot/carbon": "2.64.*",
+    "php": "8.0.*",
+    "phpmailer/phpmailer": "6.7.*",
+    "pimple/pimple": "3.5.*",
     "symfony/http-foundation": "5.4.*",
     "symfony/http-kernel": "5.4.*",
     "symfony/routing": "5.4.*",
@@ -53,12 +53,12 @@
     "symfony/yaml": "5.4.*"
   },
   "require-dev": {
-    "codeception/codeception": "4.1.29",
-    "codeception/module-asserts": "2.0.1",
-    "codeception/module-db": "2.0.1",
-    "codeception/module-phpbrowser": "2.0.1",
-    "codeception/module-rest": "2.0.1",
-    "phpcompatibility/php-compatibility": "9.3.5"
+    "codeception/codeception": "5.0.*",
+    "codeception/module-asserts": "3.0.*",
+    "codeception/module-db": "3.1.*",
+    "codeception/module-phpbrowser": "3.0.*",
+    "codeception/module-rest": "3.3.*",
+    "phpcompatibility/php-compatibility": "9.3.*"
   },
   "replace": {
     "symfony/polyfill-ctype": "*",
