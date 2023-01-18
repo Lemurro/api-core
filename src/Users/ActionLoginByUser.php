@@ -3,6 +3,7 @@
 namespace Lemurro\Api\Core\Users;
 
 use Lemurro\Api\App\Configs\SettingsAuth;
+use Lemurro\Api\App\Configs\SettingsGeneral;
 use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\RandomKey;
 use Lemurro\Api\Core\Helpers\Response;
@@ -30,18 +31,22 @@ class ActionLoginByUser extends Action
             return Response::error403('Входить под пользователем с id=1 запрещено', false);
         }
 
-        if (isset($user['roles']['admin']) && (bool) $user['roles']['admin'] === true) {
-            return Response::error403('Пользователь является администратором и недоступен для входа', false);
-        }
+        /** @psalm-suppress TypeDoesNotContainType */
+        if (SettingsGeneral::SERVER_TYPE === SettingsGeneral::SERVER_TYPE_PROD) {
+            if (isset($user['roles']['admin']) && (bool) $user['roles']['admin'] === true) {
+                return Response::error403('Пользователь является администратором и недоступен для входа', false);
+            }
 
-        if ((int) $user['locked'] === 1) {
-            return Response::error403('Пользователь заблокирован и недоступен для входа', false);
+            if ((int) $user['locked'] === 1) {
+                return Response::error403('Пользователь заблокирован и недоступен для входа', false);
+            }
         }
 
         $secret = RandomKey::generate(100);
         $created_at = $this->dic['datetimenow'];
 
         $ip = null;
+        /** @psalm-suppress TypeDoesNotContainType */
         if (SettingsAuth::SESSIONS_BINDING_TO_IP) {
             $ip = $_SERVER['REMOTE_ADDR'] ?? null;
         }
