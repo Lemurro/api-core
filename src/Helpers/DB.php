@@ -17,6 +17,7 @@ class DB
      */
     public static function init(): ?Connection
     {
+        /** @psalm-suppress RedundantCondition */
         if (SettingsDatabase::NEED_CONNECT) {
             $conn = DriverManager::getConnection([
                 'driver' => 'pdo_mysql',

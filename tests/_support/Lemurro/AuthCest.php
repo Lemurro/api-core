@@ -7,18 +7,25 @@ use Codeception\Util\HttpCode;
 
 class AuthCest
 {
-    protected string $code;
-    protected string $session;
+    protected string $code = '';
+    protected string $session = '';
 
-    public function _before(ApiTester $I)
+    /**
+     * @psalm-suppress UndefinedClass
+     * @psalm-suppress UndefinedMagicMethod
+     */
+    public function _before(ApiTester $I): void
     {
         if (!empty($this->session)) {
             $I->haveHttpHeader('X-SESSION-ID', $this->session);
         }
     }
 
-    // tests
-    public function getCode(ApiTester $I)
+    /**
+     * @psalm-suppress UndefinedClass
+     * @psalm-suppress UndefinedMagicMethod
+     */
+    public function getCode(ApiTester $I): void
     {
         $I->sendGet('/auth/code', [
             'auth_id' => 'test@local.local',
@@ -35,8 +42,11 @@ class AuthCest
 
     /**
      * @depends getCode
+     *
+     * @psalm-suppress UndefinedClass
+     * @psalm-suppress UndefinedMagicMethod
      */
-    public function sendCode(ApiTester $I)
+    public function sendCode(ApiTester $I): void
     {
         $I->sendPost('/auth/code', [
             'auth_id' => 'test@local.local',
@@ -64,8 +74,11 @@ class AuthCest
 
     /**
      * @depends sendCode
+     *
+     * @psalm-suppress UndefinedClass
+     * @psalm-suppress UndefinedMagicMethod
      */
-    public function checkSession(ApiTester $I)
+    public function checkSession(ApiTester $I): void
     {
         $I->sendGet('/auth/check');
 
@@ -76,8 +89,11 @@ class AuthCest
 
     /**
      * @depends checkSession
+     *
+     * @psalm-suppress UndefinedClass
+     * @psalm-suppress UndefinedMagicMethod
      */
-    public function getKeys(ApiTester $I)
+    public function getKeys(ApiTester $I): void
     {
         $I->sendGet('/auth/keys');
 

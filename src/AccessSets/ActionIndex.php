@@ -12,12 +12,10 @@ class ActionIndex extends Action
 {
     /**
      * Список
-     *
-     * @return array
      */
-    public function run()
+    public function run(): array
     {
-        $sets = (array)$this->dbal->fetchAllAssociative('SELECT * FROM access_sets WHERE deleted_at IS NULL');
+        $sets = $this->dbal->fetchAllAssociative('SELECT * FROM access_sets WHERE deleted_at IS NULL');
         $count = count($sets);
 
         if ($count > 0) {

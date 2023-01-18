@@ -13,15 +13,10 @@ class GatewaySMSRU implements GatewaySMS
     /**
      * Отправка sms
      *
-     * @param string $phone   Номер телефона получателя
+     * @param string $phone Номер телефона получателя
      * @param string $message Сообщение
-     *
-     * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 24.10.2019
      */
-    public function send($phone, $message)
+    public function send($phone, $message): array
     {
         $phone_number = (new Phone())->validate($phone);
 
@@ -32,7 +27,7 @@ class GatewaySMSRU implements GatewaySMS
             ];
         }
 
-        $from = (SettingsSMS::SMSRU_SENDER == '' ? '' : '&from=' . SettingsSMS::SMSRU_SENDER);
+        $from = (empty(SettingsSMS::SMSRU_SENDER) ? '' : '&from=' . SettingsSMS::SMSRU_SENDER);
         $result = file_get_contents('https://sms.ru/sms/send?api_id=' . SettingsSMS::SMSRU_API_ID . '&to=' . $phone_number . $from . '&text=' . urlencode($message) . '&json=1');
 
         if ($result != '') {

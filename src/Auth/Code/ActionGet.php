@@ -152,6 +152,7 @@ class ActionGet extends Action
             return $user;
         }
 
+        /** @psalm-suppress RedundantCondition */
         if (!SettingsAuth::CAN_REGISTRATION_USERS) {
             throw new RuntimeException('Пользователь не найден', 404);
         }
@@ -221,12 +222,13 @@ class ActionGet extends Action
      */
     private function sendCode(): array
     {
-        if (!SettingsGeneral::PRODUCTION) {
+        if (SettingsGeneral::SERVER_TYPE === SettingsGeneral::SERVER_TYPE_DEV) {
             return Response::data([
                 'message' => $this->secret,
             ]);
         }
 
+        /** @psalm-suppress TypeDoesNotContainType */
         switch (SettingsAuth::TYPE) {
             case 'email':
                 return $this->sendEmail();

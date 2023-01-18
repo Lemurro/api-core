@@ -14,9 +14,10 @@ class Checker extends Action
      *
      * @param array $checks Массив проверок
      *
-     * @return array
+     * @psalm-suppress InvalidReturnType
+     * @psalm-suppress InvalidReturnStatement
      */
-    public function run($checks)
+    public function run($checks): array
     {
         if (is_array($checks) && count($checks) > 0) {
             foreach ($checks as $check_type => $check_info) {

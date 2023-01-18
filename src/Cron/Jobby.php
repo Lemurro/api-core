@@ -47,10 +47,12 @@ class Jobby
     {
         $this->authOlderSessions();
 
+        /** @psalm-suppress RedundantCondition */
         if (SettingsCron::FILE_OLDER_FILES_ENABLED) {
             $this->fileOlderFiles();
         }
 
+        /** @psalm-suppress RedundantCondition */
         if (SettingsCron::DATA_CHANGE_LOGS_ROTATOR_ENABLED) {
             $this->dataChangeLogsRotator();
         }

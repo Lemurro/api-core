@@ -35,10 +35,10 @@ class ActionInsert extends Action
                 'created_at' => $this->dic['datetimenow'],
             ]);
             if ($cnt !== 1) {
-                return Response::error500('Произошла ошибка при добавлении информации о пользователе, попробуйте ещё раз');
+                return 0;
             }
 
-            $id = $this->dbal->lastInsertId();
+            $id = (int)$this->dbal->lastInsertId();
 
             /** @var DataChangeLog $data_change_log */
             $data_change_log = $this->dic['datachangelog'];
@@ -46,6 +46,10 @@ class ActionInsert extends Action
 
             return $id;
         });
+
+        if ($id === 0) {
+            return Response::error500('Произошла ошибка при добавлении информации о пользователе, попробуйте ещё раз');
+        }
 
         $data['id'] = $id;
 

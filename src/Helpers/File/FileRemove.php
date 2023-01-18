@@ -57,6 +57,7 @@ class FileRemove extends Action
         $this->dbal->transactional(function () use ($fileid, $info): void {
             $file_path = SettingsFile::FILE_FOLDER . $info['path'];
 
+            /** @psalm-suppress RedundantCondition */
             if (SettingsFile::FULL_REMOVE) {
                 $this->dbal->delete('files', ['id' => $fileid]);
                 @unlink($file_path);

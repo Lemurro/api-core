@@ -1,13 +1,18 @@
 <?php
 
+use ApiTester;
 use Codeception\Util\HttpCode;
 use Lemurro\AbstractCest;
 
+/**
+ * @psalm-suppress UndefinedMagicMethod
+ * @psalm-suppress UndefinedClass
+ */
 class BProfileCest extends AbstractCest
 {
     private string $session = '0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
 
-    public function getIndex(ApiTester $I)
+    public function getIndex(ApiTester $I): void
     {
         $I->sendGet('/profile');
 
@@ -21,7 +26,7 @@ class BProfileCest extends AbstractCest
     /**
      * @depends getIndex
      */
-    public function resetSession(ApiTester $I)
+    public function resetSession(ApiTester $I): void
     {
         $I->sendPost('/profile/session/reset', [
             'session' => $this->session,

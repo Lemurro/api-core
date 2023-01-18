@@ -1,14 +1,18 @@
 <?php
 
+use ApiTester;
 use Codeception\Util\HttpCode;
 use Lemurro\AbstractCest;
 
+/**
+ * @psalm-suppress UndefinedMagicMethod
+ */
 class BUsersCest extends AbstractCest
 {
     private string $auth_id = 'test@test.test';
-    private int $record_id;
+    private int $record_id = 0;
 
-    public function insertRecord(ApiTester $I)
+    public function insertRecord(ApiTester $I): void
     {
         $I->sendPost('/users', [
             'data' => [
@@ -49,7 +53,7 @@ class BUsersCest extends AbstractCest
     /**
      * @depends insertRecord
      */
-    public function filterByRole(ApiTester $I)
+    public function filterByRole(ApiTester $I): void
     {
         $I->sendPost('/users/filter', [
             'data' => [
@@ -75,7 +79,7 @@ class BUsersCest extends AbstractCest
     /**
      * @depends filterByRole
      */
-    public function getRecord(ApiTester $I)
+    public function getRecord(ApiTester $I): void
     {
         $I->sendGet('/users/' . $this->record_id);
 
@@ -110,7 +114,7 @@ class BUsersCest extends AbstractCest
     /**
      * @depends getRecord
      */
-    public function saveRecord(ApiTester $I)
+    public function saveRecord(ApiTester $I): void
     {
         $I->sendPost('/users/' . $this->record_id, [
             'data' => [
@@ -149,7 +153,7 @@ class BUsersCest extends AbstractCest
     /**
      * @depends saveRecord
      */
-    public function filterEmpty(ApiTester $I)
+    public function filterEmpty(ApiTester $I): void
     {
         $I->sendPost('/users/filter', [
             'data' => [
@@ -175,7 +179,7 @@ class BUsersCest extends AbstractCest
     /**
      * @depends saveRecord
      */
-    public function filterById(ApiTester $I)
+    public function filterById(ApiTester $I): void
     {
         $I->sendPost('/users/filter', [
             'data' => [
@@ -207,7 +211,7 @@ class BUsersCest extends AbstractCest
     /**
      * @depends saveRecord
      */
-    public function filterByName(ApiTester $I)
+    public function filterByName(ApiTester $I): void
     {
         $I->sendPost('/users/filter', [
             'data' => [
@@ -239,7 +243,7 @@ class BUsersCest extends AbstractCest
     /**
      * @depends saveRecord
      */
-    public function filterByAuthId(ApiTester $I)
+    public function filterByAuthId(ApiTester $I): void
     {
         $I->sendPost('/users/filter', [
             'data' => [
@@ -271,7 +275,7 @@ class BUsersCest extends AbstractCest
     /**
      * @depends saveRecord
      */
-    public function lockRecord(ApiTester $I)
+    public function lockRecord(ApiTester $I): void
     {
         $I->sendPost('/users/' . $this->record_id . '/lock');
 
@@ -290,7 +294,7 @@ class BUsersCest extends AbstractCest
     /**
      * @depends lockRecord
      */
-    public function filterByLocked(ApiTester $I)
+    public function filterByLocked(ApiTester $I): void
     {
         $I->sendPost('/users/filter', [
             'data' => [
@@ -316,7 +320,7 @@ class BUsersCest extends AbstractCest
     /**
      * @depends filterByLocked
      */
-    public function unlockRecord(ApiTester $I)
+    public function unlockRecord(ApiTester $I): void
     {
         $I->sendPost('/users/' . $this->record_id . '/unlock');
 
@@ -335,7 +339,7 @@ class BUsersCest extends AbstractCest
     /**
      * @depends unlockRecord
      */
-    public function filterByUnlocked(ApiTester $I)
+    public function filterByUnlocked(ApiTester $I): void
     {
         $I->sendPost('/users/filter', [
             'data' => [
@@ -361,7 +365,7 @@ class BUsersCest extends AbstractCest
     /**
      * @depends filterByUnlocked
      */
-    public function takeOffAdmin(ApiTester $I)
+    public function takeOffAdmin(ApiTester $I): void
     {
         $I->sendPost('/users/' . $this->record_id, [
             'data' => [
@@ -401,7 +405,7 @@ class BUsersCest extends AbstractCest
     /**
      * @depends takeOffAdmin
      */
-    public function loginByUser(ApiTester $I)
+    public function loginByUser(ApiTester $I): void
     {
         $I->sendPost('/users/login_by_user', [
             'user_id' => $this->record_id,
@@ -423,7 +427,7 @@ class BUsersCest extends AbstractCest
     /**
      * @depends loginByUser
      */
-    public function removeRecord(ApiTester $I)
+    public function removeRecord(ApiTester $I): void
     {
         $I->sendPost('/users/' . $this->record_id . '/remove');
 

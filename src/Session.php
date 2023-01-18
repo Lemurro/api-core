@@ -33,6 +33,7 @@ class Session
             return Response::error401('Необходимо авторизоваться [#2]');
         }
 
+        /** @psalm-suppress TypeDoesNotContainType */
         if (SettingsAuth::SESSIONS_BINDING_TO_IP) {
             $ip = $_SERVER['REMOTE_ADDR'] ?? null;
 

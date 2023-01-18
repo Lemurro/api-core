@@ -12,7 +12,8 @@
     }
   ],
   "scripts": {
-    "phpcs80": "phpcs -nsp ./src --runtime-set testVersion 8.0 --standard=PHPCompatibility --standard=PSR1 --standard=PSR12 --runtime-set installed_paths ./vendor/phpcompatibility/php-compatibility/PHPCompatibility --report=xml --report-file=./phpcs-report.xml",
+    "phpcs80": "phpcs -nsp ./src --runtime-set testVersion 8.0 --standard=PSR1,PSR12,./vendor/phpcompatibility/php-compatibility/PHPCompatibility --parallel=3 --report=xml --report-file=./phpcs-report.xml",
+    "psalm": "psalm",
     "run-before-test": "php -S 127.0.0.1:8000 -t ../api/public",
     "test": [
       "codecept clean",

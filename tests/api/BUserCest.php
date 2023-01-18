@@ -1,11 +1,16 @@
 <?php
 
+use ApiTester;
 use Codeception\Util\HttpCode;
 use Lemurro\AbstractCest;
 
+/**
+ * @psalm-suppress UndefinedMagicMethod
+ * @psalm-suppress UndefinedClass
+ */
 class BUserCest extends AbstractCest
 {
-    public function getMe(ApiTester $I)
+    public function getMe(ApiTester $I): void
     {
         $I->sendGet('/user');
 

@@ -37,6 +37,7 @@ class ActionUpload extends Action
         $orig_size = $uploaded_file->getSize();
         $orig_ext = mb_strtolower($uploaded_file->getClientOriginalExtension(), 'UTF-8');
 
+        /** @psalm-suppress TypeDoesNotContainType */
         switch (SettingsFile::CHECK_FILE_BY) {
             case 'type':
                 $type_corrected = in_array($orig_mime, SettingsFile::ALLOWED_TYPES);

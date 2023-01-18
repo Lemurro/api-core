@@ -1,23 +1,12 @@
 <?php
 
-/**
- * Генератор ответа
- *
- * @author  Дмитрий Щербаков <atomcms@ya.ru>
- * @author  Евгений Кулагин <ekulagin59@gmail.com>
- *
- * @version 19.06.2020
- */
-
 namespace Lemurro\Api\Core\Helpers;
 
 use Exception;
 use RuntimeException;
 
 /**
- * Class Response
- *
- * @package Lemurro\Api\Core\Helpers
+ * Генератор ответа
  */
 class Response
 {
@@ -25,13 +14,6 @@ class Response
      * Сгенерируем успешный ответ
      *
      * @param array $data Массив данных
-     *
-     * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @author  Евгений Кулагин <ekulagin59@gmail.com>
-     *
-     * @version 19.06.2020
      */
     public static function data($data): array
     {
@@ -52,13 +34,7 @@ class Response
      * Сгенерируем одну ошибку "400 Bad Request"
      *
      * @param string $title Краткое, понятное для человека описание проблемы
-     * @param array  $meta  Массив дополнительных данных об ошибке для приложения
-     *
-     * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 17.04.2020
+     * @param array $meta Массив дополнительных данных об ошибке для приложения
      */
     public static function error400($title, $meta = []): array
     {
@@ -69,13 +45,7 @@ class Response
      * Сгенерируем одну ошибку "401 Unauthorized"
      *
      * @param string $title Краткое, понятное для человека описание проблемы
-     * @param array  $meta  Массив дополнительных данных об ошибке для приложения
-     *
-     * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 17.04.2020
+     * @param array $meta Массив дополнительных данных об ошибке для приложения
      */
     public static function error401($title, $meta = []): array
     {
@@ -85,15 +55,9 @@ class Response
     /**
      * Сгенерируем одну ошибку "403 Forbidden"
      *
-     * @param string  $title    Краткое, понятное для человека описание проблемы
+     * @param string $title Краткое, понятное для человека описание проблемы
      * @param boolean $redirect Делать редирект на страницу 403 или нет
-     * @param array   $meta     Массив дополнительных данных об ошибке для приложения
-     *
-     * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 17.04.2020
+     * @param array $meta Массив дополнительных данных об ошибке для приложения
      */
     public static function error403($title, $redirect, $meta = []): array
     {
@@ -106,13 +70,7 @@ class Response
      * Сгенерируем одну ошибку "404 Not Found"
      *
      * @param string $title Краткое, понятное для человека описание проблемы
-     * @param array  $meta  Массив дополнительных данных об ошибке для приложения
-     *
-     * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 17.04.2020
+     * @param array $meta Массив дополнительных данных об ошибке для приложения
      */
     public static function error404($title, $meta = []): array
     {
@@ -123,13 +81,7 @@ class Response
      * Сгенерируем одну ошибку "500 Internal Server Error"
      *
      * @param string $title Краткое, понятное для человека описание проблемы
-     * @param array  $meta  Массив дополнительных данных об ошибке для приложения
-     *
-     * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 17.04.2020
+     * @param array $meta Массив дополнительных данных об ошибке для приложения
      */
     public static function error500($title, $meta = []): array
     {
@@ -140,16 +92,9 @@ class Response
      * Сгенерируем одну ошибку
      *
      * @param string $status Код состояния HTTP или массив ошибок
-     * @param string $code   Код ошибки, специфичный для приложения (danger|warning|info)
-     * @param string $title  Краткое, понятное для человека описание проблемы
-     * @param array  $meta   Массив дополнительных данных об ошибке для приложения
-     *
-     * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @author  Евгений Кулагин <ekulagin59@gmail.com>
-     *
-     * @version 19.06.2020
+     * @param string $code Код ошибки, специфичный для приложения (danger|warning|info)
+     * @param string $title Краткое, понятное для человека описание проблемы
+     * @param array $meta Массив дополнительных данных об ошибке для приложения
      */
     public static function error($status, $code, $title, $meta = []): array
     {
@@ -177,12 +122,6 @@ class Response
      * @deprecated Метод будет удалён в v2.0
      *
      * @param array $errors Массив ошибок
-     *
-     * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 19.06.2019
      */
     public static function errors($errors): array
     {
@@ -220,12 +159,6 @@ class Response
      * Сгенерируем ошибку на основании Exception
      *
      * @param Exception $e Объект ошибки (используются поля: code и message)
-     *
-     * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 17.04.2020
      */
     public static function exception($e): array
     {
@@ -250,13 +183,7 @@ class Response
      * Сгенерируем ошибку некорректных данных
      *
      * @param string $title Краткое, понятное для человека описание проблемы
-     * @param array  $meta  Массив дополнительных данных об ошибке для приложения
-     *
-     * @return array
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 27.05.2020
+     * @param array $meta Массив дополнительных данных об ошибке для приложения
      */
     public static function invalidData($title = 'Некорректные входные данные', $meta = []): array
     {
@@ -269,10 +196,6 @@ class Response
      * @param array $errors Результат от методов error*
      *
      * @throws RuntimeException
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     *
-     * @version 19.06.2020
      */
     public static function errorToException($errors): void
     {
@@ -284,8 +207,8 @@ class Response
 
         preg_match_all('/^\d{3}/', $one_error['status'], $matches);
 
-        if (is_array($matches) && isset($matches[0]) && isset($matches[0][0])) {
-            $code = $matches[0][0];
+        if (isset($matches[0]) && isset($matches[0][0])) {
+            $code = (int)$matches[0][0];
         } else {
             $code = 500;
         }

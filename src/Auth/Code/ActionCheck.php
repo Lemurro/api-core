@@ -37,6 +37,7 @@ class ActionCheck extends Action
         if ($auth['code'] === $auth_code) {
             $session = $this->dbal->transactional(function (Connection $dbal) use ($auth, $device_info, $geoip, $cleaner, $auth_id): string {
                 $ip = null;
+                /** @psalm-suppress TypeDoesNotContainType */
                 if (SettingsAuth::SESSIONS_BINDING_TO_IP) {
                     $ip = $_SERVER['REMOTE_ADDR'] ?? null;
                 }

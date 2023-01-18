@@ -14,15 +14,13 @@ class ActionDownloadPrepare extends Action
     /**
      * Подготовка файла к скачиванию
      *
-     * @param integer|string $fileid   ИД постоянного файла или имя временого файла
-     * @param string         $filename Имя файла (для браузера)
-     *
-     * @return array
+     * @param string $fileid ИД постоянного файла или имя временого файла
+     * @param string $filename Имя файла (для браузера)
      */
-    public function run($fileid, $filename = '')
+    public function run($fileid, $filename = ''): array
     {
         if (preg_match('/^\d+$/', $fileid)) {
-            return $this->permanentFile($fileid, $filename);
+            return $this->permanentFile((int)$fileid, $filename);
         }
 
         return $this->temporaryFile($fileid, $filename);

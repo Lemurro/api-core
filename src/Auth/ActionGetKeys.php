@@ -29,8 +29,6 @@ class ActionGetKeys extends Action
 
     /**
      * Просмотр ключей доступа
-     *
-     * @return array
      */
     public function run(): array
     {
@@ -45,6 +43,6 @@ class ActionGetKeys extends Action
             ORDER BY auth_id ASC
             SQL;
 
-        return Response::data((array)$this->dbal->fetchAllAssociative($sql));
+        return Response::data($this->dbal->fetchAllAssociative($sql));
     }
 }

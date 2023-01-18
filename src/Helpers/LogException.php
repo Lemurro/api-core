@@ -11,18 +11,13 @@ use Monolog\Logger;
 class LogException
 {
     /**
-     * Выполним действие
+     * Добавление в лог информации о пойманном исключении
      *
-     * @param Logger    $log Класс лога
-     * @param Exception $e   Информация об исключении
-     *
-     * @return boolean
-     *
-     * @version 28.05.2019
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
+     * @param Logger $log Класс лога
+     * @param Exception $e Информация об исключении
      */
-    public static function write($log, $e)
+    public static function write($log, $e): void
     {
-        return $log->error($e->getFile() . ' (line: ' . $e->getLine() . ') - ' . $e->getMessage(), $e->getTrace());
+        $log->error($e->getFile() . ' (line: ' . $e->getLine() . ') - ' . $e->getMessage(), $e->getTrace());
     }
 }

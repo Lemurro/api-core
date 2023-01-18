@@ -1,15 +1,19 @@
 <?php
 
+use ApiTester;
 use Codeception\Util\HttpCode;
 use Lemurro\AbstractCest;
 
+/**
+ * @psalm-suppress UndefinedMagicMethod
+ */
 class BAccessSetsCest extends AbstractCest
 {
     private string $default_name = 'test access set';
     private string $modified_name = 'test access set modified';
-    private int $record_id;
+    private int $record_id = 0;
 
-    public function getIndex(ApiTester $I)
+    public function getIndex(ApiTester $I): void
     {
         $I->sendGet('/access_sets');
 
@@ -21,7 +25,7 @@ class BAccessSetsCest extends AbstractCest
     /**
      * @depends getIndex
      */
-    public function insertRecord(ApiTester $I)
+    public function insertRecord(ApiTester $I): void
     {
         $I->sendPost('/access_sets', [
             'data' => [
@@ -61,7 +65,7 @@ class BAccessSetsCest extends AbstractCest
     /**
      * @depends insertRecord
      */
-    public function getRecord(ApiTester $I)
+    public function getRecord(ApiTester $I): void
     {
         $I->sendGet('/access_sets/' . $this->record_id);
 
@@ -89,7 +93,7 @@ class BAccessSetsCest extends AbstractCest
     /**
      * @depends getRecord
      */
-    public function saveRecord(ApiTester $I)
+    public function saveRecord(ApiTester $I): void
     {
         $I->sendPost('/access_sets/' . $this->record_id, [
             'data' => [
@@ -123,7 +127,7 @@ class BAccessSetsCest extends AbstractCest
     /**
      * @depends saveRecord
      */
-    public function removeRecord(ApiTester $I)
+    public function removeRecord(ApiTester $I): void
     {
         $I->sendPost('/access_sets/' . $this->record_id . '/remove');
 

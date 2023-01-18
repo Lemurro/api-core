@@ -169,7 +169,7 @@ class FileAdd extends AbstractFileAction
             ]);
         }
 
-        $id = $this->dbal->lastInsertId();
+        $id = (int)$this->dbal->lastInsertId();
 
         /** @var DataChangeLog $datachangelog */
         $datachangelog = $this->dic['datachangelog'];

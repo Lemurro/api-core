@@ -1,10 +1,15 @@
 <?php
 
+use ApiTester;
 use Codeception\Util\HttpCode;
 
 class BIndexCest
 {
-    public function getIndex(ApiTester $I)
+    /**
+     * @psalm-suppress UndefinedClass
+     * @psalm-suppress UndefinedMagicMethod
+     */
+    public function getIndex(ApiTester $I): void
     {
         $I->sendGet('/');
 

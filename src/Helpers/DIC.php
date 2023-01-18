@@ -40,6 +40,7 @@ class DIC
             $phpmailer->From = SettingsMail::APP_EMAIL;
             $phpmailer->FromName = iconv('utf-8', 'windows-1251', SettingsGeneral::APP_NAME);
 
+            /** @psalm-suppress RedundantCondition */
             if (SettingsMail::SMTP) {
                 $phpmailer->isSMTP();
                 $phpmailer->SMTPDebug = 0;
@@ -55,6 +56,7 @@ class DIC
             return $phpmailer;
         };
 
+        /** @psalm-suppress TypeDoesNotContainType */
         if (SettingsMail::RESERVE) {
             $dic['phpmailer_reserve'] = function () {
                 $phpmailer = new PHPMailer();

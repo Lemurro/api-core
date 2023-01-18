@@ -3,6 +3,7 @@
 namespace Lemurro\Api\Core;
 
 use Doctrine\DBAL\Connection;
+use Exception;
 use Lemurro\Api\App\Configs\SettingsMaintenance;
 use Lemurro\Api\App\Configs\SettingsPath;
 use Lemurro\Api\App\Overrides\DIC as AppDIC;
@@ -12,9 +13,11 @@ use Lemurro\Api\Core\Helpers\DIC;
 use Lemurro\Api\Core\Helpers\LogException;
 use Lemurro\Api\Core\Helpers\LoggerFactory;
 use Lemurro\Api\Core\Helpers\Response;
+use Lemurro\Api\Core\ResponseException;
 use Lemurro\Api\Core\Users\ActionGet as GetUser;
 use Monolog\Logger;
 use Pimple\Container;
+use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -63,10 +66,13 @@ class Core
 
         try {
             $dbal = DB::init();
+            if ($dbal === null) {
+                throw new RuntimeException('Не удалось подключиться к БД', 500);
+            }
 
             $this->initRoutes();
             $this->initDIC($dbal);
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             LogException::write($this->core_log, $e);
 
             throw $e;
@@ -101,6 +107,7 @@ class Core
                     $this->response->send();
                 } else {
                     $class_name = 'Lemurro\\Api\\App\\Middlewares\\MiddlewareForAll';
+                    /** @psalm-suppress TypeDoesNotContainType */
                     if (class_exists($class_name)) {
                         $middleware = new $class_name($this->request, $this->response, $this->dic);
                         $this->response = call_user_func([$middleware, 'execute']);
@@ -133,6 +140,7 @@ class Core
             $this->response->setData(Response::error400('Неверный метод маршрута'));
             $this->response->send();
         } catch (Throwable $e) {
+            /** @psalm-suppress ArgumentTypeCoercion */
             LogException::write($this->core_log, $e);
 
             $this->response->setData(Response::error500('Непредвиденная ошибка,<br>подробности в лог-файле'));
@@ -142,9 +150,6 @@ class Core
 
     /**
      * Инициализация маршрутов
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 29.12.2018
      */
     protected function initRoutes()
     {
@@ -152,18 +157,10 @@ class Core
         $loader = new YamlFileLoader($fileLocator);
         $routes = $loader->load('coreroutes.yaml');
 
-        $headers = [
-            'X-SESSION-ID',
-            'X-UTC-OFFSET',
-            'X-Requested-With',
-            'X-File-Name',
-        ];
-
         $this->request = Request::createFromGlobals();
         $this->response = new JsonResponse();
 
         $this->response->headers->set('Access-Control-Allow-Origin', '*');
-        $this->response->headers->set('Access-Control-Allow-Headers', implode(',', $headers));
 
         $context = new RequestContext();
         $context->fromRequest($this->request);
@@ -200,22 +197,13 @@ class Core
 
     /**
      * Проверка на обслуживание проекта
-     *
-     * @return boolean
-     *
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     * @version 21.11.2019
      */
-    protected function maintenance()
+    protected function maintenance(): bool
     {
         if (isset($this->dic['user']['admin']) && $this->dic['user']['admin']) {
             return false;
         }
 
-        if (SettingsMaintenance::ACTIVE) {
-            return true;
-        }
-
-        return false;
+        return SettingsMaintenance::ACTIVE;
     }
 }

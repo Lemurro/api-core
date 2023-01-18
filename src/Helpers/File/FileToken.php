@@ -46,7 +46,7 @@ class FileToken extends Action
      */
     public function getFileInfo(string $jwt_token): array
     {
-        $payload = JWT::decode($jwt_token, new Key(SettingsFile::SECRET_KEY_FOR_TOKENS, self::$alg), [self::$alg]);
+        $payload = JWT::decode($jwt_token, new Key(SettingsFile::SECRET_KEY_FOR_TOKENS, self::$alg));
 
         return Response::data([
             'type' => $payload->ltp,

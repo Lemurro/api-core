@@ -15,6 +15,8 @@
  * @method void pause()
  *
  * @SuppressWarnings(PHPMD)
+ *
+ * @psalm-suppress UndefinedTrait
 */
 class ApiTester extends \Codeception\Actor
 {
