@@ -95,26 +95,22 @@ class ActionFilter extends Action
 
                     case 'lemurro_roles':
                         // $value = 'example|read'
-                        $role = explode('|', $value);
+                        [$role, $access] = explode('|', $value);
 
-                        if (is_array($role) && count($role) === 2) {
-                            if ($roles_type == 0) {
-                                $where_roles_type = 'IS NULL';
-                            } else {
-                                $where_roles_type = 'IS NOT NULL';
-                            }
+                        if (!empty($role) and !empty($access)) {
+                            $where_roles_type = $roles_type === 0 ? 'IS NULL' : 'IS NOT NULL';
 
-                            if ($role[1] === '!any!') {
+                            if ($access === '!any!') {
                                 // iu.roles = {"guide":["read"],"example":["read","create-update","delete"]}
                                 // JSON_SEARCH(JSON_KEYS(roles), 'one', 'example') IS NOT NULL
                                 $query[] = "JSON_SEARCH(JSON_KEYS(roles), 'one', ?) $where_roles_type";
-                                $params[] = $role[0]; // example
+                                $params[] = '$.' . $role; // example
                             } else {
                                 // iu.roles = {"guide":["read"],"example":["read","create-update","delete"]}
-                                // JSON_SEARCH(roles->>'$.example', 'one', 'read') IS NOT NULL
-                                $query[] = "JSON_SEARCH(roles->>?, 'one', ?) $where_roles_type";
-                                $params[] = '$.' . $role[0]; // example
-                                $params[] = $role[1]; // read
+                                // JSON_SEARCH(JSON_EXTRACT(`iu`.`roles`, '$.example'), 'one', 'read') IS NOT NULL
+                                $query[] = "JSON_SEARCH(JSON_EXTRACT(`iu`.`roles`, ?), 'one', ?) $where_roles_type";
+                                $params[] = '$.' . $role; // example
+                                $params[] = $access; // read
                             }
                         }
                         break;
