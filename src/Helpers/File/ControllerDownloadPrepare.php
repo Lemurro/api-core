@@ -17,6 +17,8 @@ class ControllerDownloadPrepare extends Controller
         ]);
         if (count($checker_result) > 0) {
             $this->response->setData($checker_result)->send();
+
+            return;
         }
 
         $this->response->setData(

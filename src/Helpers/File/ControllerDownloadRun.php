@@ -20,6 +20,8 @@ class ControllerDownloadRun extends Controller
         if (isset($file_info['errors'])) {
             $this->response->setData($file_info);
             $this->response->send();
+
+            return;
         }
 
         $filepath = $file_info['data']['filepath'];
