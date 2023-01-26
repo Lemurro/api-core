@@ -24,6 +24,10 @@ class ContainerType
      */
     public function validate(string $container_type): void
     {
+        if (strtolower($container_type) === 'default') {
+            return;
+        }
+
         if (mb_strlen($container_type, 'UTF-8') > 255) {
             throw new RuntimeException('The maximum length of the container_type option should be less than 255 characters', 400);
         }
