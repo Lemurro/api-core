@@ -6,36 +6,41 @@ use Lemurro\Api\App\Configs\SettingsPath;
 use Lemurro\Api\Core\Helpers\Response;
 
 /**
- * Получим номер последней версии приложения
+ * Получим номер версии приложения
  */
 class ActionGet
 {
-    /**
-     * Выполним действие
-     *
-     * @return array
-     *
-     * @version 24.12.2018
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     */
-    public function run()
-    {
-        $version_android = file_get_contents(SettingsPath::FULL_ROOT . 'version.android');
-        $version_ios = file_get_contents(SettingsPath::FULL_ROOT . 'version.ios');
+    protected string $default = '0';
 
-        if ($version_android === false) {
-            $version_android = -1;
+    /**
+     * Получим номер версии приложения
+     */
+    public function run(): array
+    {
+        $file_path = SettingsPath::FULL_ROOT . 'version.last';
+
+        if (!is_file($file_path) or !is_readable($file_path)) {
+            return Response::data([
+                'version' => $this->default,
+            ]);
         }
 
-        if ($version_ios === false) {
-            $version_ios = -1;
+        $content = file_get_contents($file_path);
+        if ($content === false) {
+            return Response::data([
+                'version' => $this->default,
+            ]);
+        }
+
+        $content = trim($content);
+        if (empty($content)) {
+            return Response::data([
+                'version' => $this->default,
+            ]);
         }
 
         return Response::data([
-            'version' => [
-                'android' => (string) $version_android,
-                'ios'     => (string) $version_ios,
-            ],
+            'version' => $content,
         ]);
     }
 }

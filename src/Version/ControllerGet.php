@@ -5,19 +5,14 @@ namespace Lemurro\Api\Core\Version;
 use Lemurro\Api\Core\Abstracts\Controller;
 
 /**
- * Получим номер последней версии приложения
+ * Получим номер версии приложения
  */
 class ControllerGet extends Controller
 {
-    /**
-     * Стартовый метод
-     *
-     * @version 13.07.2018
-     * @author  Дмитрий Щербаков <atomcms@ya.ru>
-     */
     public function start()
     {
-        $this->response->setData((new ActionGet())->run());
-        $this->response->send();
+        $this->response->setData(
+            (new ActionGet())->run()
+        )->send();
     }
 }
