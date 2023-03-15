@@ -91,9 +91,11 @@ class Core
             (new AppResponse())->run($this->response);
 
             if ($this->request->getMethod() == 'OPTIONS') {
-                $allow_methods = 'OPTIONS, ' . $this->request->headers->get('access-control-request-method');
-
-                $this->response->headers->set('Access-Control-Allow-Methods', $allow_methods);
+                $this->response->setData(Response::error(
+                    '405 Method Not Allowed',
+                    'warning',
+                    'https://lemurro.github.io/docs/v3.0/API_Server_(api)/Nastrojka/Nastrojka.html'
+                ));
                 $this->response->send();
             } else {
                 (new AppDIC())->run($this->dic);
