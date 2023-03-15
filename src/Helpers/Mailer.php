@@ -147,7 +147,7 @@ class Mailer
         }
 
         // Связываем данные с шаблоном
-        $header_content = strtr($this->header, ['[LOGO_BASE64]' => EmailTemplates::LOGO_BASE64]);
+        $header_content = strtr($this->header, ['[LOGO_BASE64]' => $this->getBase64Logo()]);
         $body_content = strtr($template, $template_data);
         $footer_content = $this->footer;
         $message = $header_content . $body_content . $footer_content;
@@ -200,5 +200,22 @@ class Mailer
         }
 
         return false;
+    }
+
+    protected function getBase64Logo(): string
+    {
+        $path = SettingsPath::FULL_ROOT . 'public/logo.png';
+        if (is_file($path) and is_readable($path)) {
+            return sprintf(
+                "data:image/%s;base64,%s",
+                pathinfo($path, PATHINFO_EXTENSION),
+                base64_encode(
+                    file_get_contents($path)
+                ),
+            );
+        }
+
+        // 1pixel.png
+        return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAC0lEQVQI12NgAAIAAAUAAeImBZsAAAAASUVORK5CYII=';
     }
 }
