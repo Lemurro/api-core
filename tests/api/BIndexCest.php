@@ -15,6 +15,6 @@ class BIndexCest
 
         $I->seeResponseCodeIs(HttpCode::OK); // 200
         $I->seeResponseIsJson();
-        $I->seeResponseContains('{"success":true,"data":{"version":{"android":"1","ios":"1"}}}');
+        $I->seeResponseContains('{"success":true,"data":{"version":"1.0.0"}}');
     }
 }
