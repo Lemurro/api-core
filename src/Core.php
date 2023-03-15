@@ -160,6 +160,8 @@ class Core
         $this->request = Request::createFromGlobals();
         $this->response = new JsonResponse();
 
+        $this->response->setEncodingOptions(JsonResponse::DEFAULT_ENCODING_OPTIONS | \JSON_UNESCAPED_UNICODE);
+
         $this->response->headers->set('Access-Control-Allow-Origin', '*');
 
         $context = new RequestContext();
