@@ -3,15 +3,16 @@
 namespace Lemurro\Api\Core\Helpers\File;
 
 use Lemurro\Api\App\Configs\SettingsFile;
-use Lemurro\Api\Core\Abstracts\Action;
 use Lemurro\Api\Core\Helpers\DataChangeLog;
+use Lemurro\Api\Core\Helpers\LogException;
 use Lemurro\Api\Core\Helpers\Response;
 use Pimple\Container;
+use Throwable;
 
 /**
  * Удаление файла
  */
-class FileRemove extends Action
+class FileRemove extends AbstractFileAction
 {
     /**
      * @var FileInfo
@@ -54,24 +55,27 @@ class FileRemove extends Action
             ]);
         }
 
-        $this->dbal->transactional(function () use ($fileid, $info): void {
-            $file_path = SettingsFile::FILE_FOLDER . $info['path'];
+        $file_path = SettingsFile::FILE_FOLDER . $info['path'];
 
-            if (SettingsFile::FULL_REMOVE) {
-                $this->dbal->delete('files', ['id' => $fileid]);
-                @unlink($file_path);
-            } else {
-                $this->dbal->update('files', [
-                    'deleted_at' => $this->dic['datetimenow'],
-                ], [
-                    'id' => $fileid
-                ]);
-            }
+        /** @psalm-suppress RedundantCondition */
+        if (SettingsFile::FULL_REMOVE) {
+            $this->dbal->delete('files', ['id' => $fileid]);
+            @unlink($file_path);
+        } else {
+            $this->dbal->update('files', [
+                'deleted_at' => $this->dic['datetimenow'],
+            ], [
+                'id' => $fileid
+            ]);
+        }
 
+        try {
             /** @var DataChangeLog $datachangelog */
             $datachangelog = $this->dic['datachangelog'];
             $datachangelog->insert('files', 'delete', $fileid, $info);
-        });
+        } catch (Throwable $th) {
+            LogException::write($this->log, $th);
+        }
 
         return Response::data([
             'id' => $fileid,
