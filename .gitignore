@@ -1,3 +1,4 @@
+.idea
 .vscode
 stubs
 tests/api.suite.yml
