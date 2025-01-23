@@ -55,11 +55,17 @@ class Core
      */
     protected $core_log;
 
+    /**
+     * @var Logger
+     */
+    protected $routes_log;
+
     public function __construct()
     {
         date_default_timezone_set('UTC');
 
         $this->core_log = LoggerFactory::create('Core');
+        $this->routes_log = LoggerFactory::create('Routes');
 
         try {
             $dbal = DB::init();
@@ -123,7 +129,7 @@ class Core
             $this->response->setData(Response::exception($e));
             $this->response->send();
         } catch (ResourceNotFoundException $e) {
-            LogException::write($this->core_log, $e);
+            LogException::write($this->routes_log, $e);
 
             $this->response->setData(Response::error404('Маршрут отсутствует'));
             $this->response->send();
