@@ -7,12 +7,17 @@
     {
       "name": "Dmitrii Shcherbakov",
       "email": "info@bestion.ru",
-      "homepage": "http://bestion.ru",
+      "homepage": "https://bestion.ru",
+      "role": "Developer"
+    },
+    {
+      "name": "Ignatiy Cheurin",
+      "email": "info@egnotka.ru",
       "role": "Developer"
     }
   ],
   "scripts": {
-    "phpcs74": "phpcs -nsp ./src --runtime-set testVersion 7.4 --standard=PHPCompatibility --standard=PSR1 --standard=PSR12 --runtime-set installed_paths ./vendor/phpcompatibility/php-compatibility/PHPCompatibility --report=xml --report-file=./phpcs-report.xml",
+    "phpcs": "phpcs -nsp ./src --runtime-set testVersion 8.2 --standard=PHPCompatibility --standard=PSR1 --standard=PSR12 --runtime-set installed_paths ./vendor/phpcompatibility/php-compatibility/PHPCompatibility --report=xml --report-file=./phpcs-report.xml",
     "test": [
       "codecept clean",
       "codecept run api"
@@ -42,8 +47,8 @@
     "hellogerard/jobby": "3.5.0",
     "j4mie/idiorm": "1.5.7",
     "monolog/monolog": "2.3.5",
-    "nesbot/carbon": "2.57.0",
-    "php": "7.4.*",
+    "nesbot/carbon": "2.72.*",
+    "php": "^8.2",
     "phpmailer/phpmailer": "6.5.4",
     "pimple/pimple": "3.5.0",
     "symfony/http-foundation": "5.4.*",
@@ -53,11 +58,11 @@
     "symfony/yaml": "5.4.*"
   },
   "require-dev": {
-    "codeception/codeception": "4.1.29",
-    "codeception/module-asserts": "2.0.1",
-    "codeception/module-db": "2.0.1",
-    "codeception/module-phpbrowser": "2.0.1",
-    "codeception/module-rest": "2.0.1",
+    "codeception/codeception": "5.0.*",
+    "codeception/module-asserts": "3.2.*",
+    "codeception/module-db": "3.2.*",
+    "codeception/module-phpbrowser": "3.0.*",
+    "codeception/module-rest": "3.4.*",
     "phpcompatibility/php-compatibility": "9.3.5"
   },
   "replace": {
