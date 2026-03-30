@@ -45,7 +45,7 @@
     "firebase/php-jwt": "6.1.0",
     "giggsey/libphonenumber-for-php": "8.12.43",
     "hellogerard/jobby": "3.5.0",
-    "j4mie/idiorm": "1.5.7",
+    "j4mie/idiorm": "1.5.*",
     "monolog/monolog": "2.3.5",
     "nesbot/carbon": "2.72.*",
     "php": "^8.2",
