@@ -42,7 +42,7 @@
     "ext-iconv": "*",
     "ext-pdo": "*",
     "ext-fileinfo": "*",
-    "firebase/php-jwt": "6.1.0",
+    "firebase/php-jwt": "7.0.*",
     "giggsey/libphonenumber-for-php": "8.12.43",
     "hellogerard/jobby": "3.5.0",
     "j4mie/idiorm": "1.5.*",
