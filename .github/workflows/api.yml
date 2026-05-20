@@ -2,7 +2,9 @@ name: API tests
 
 on:
   push:
-    branches: [ master, v1.10 ]
+    branches: [ master, v1.12 ]
+  pull_request:
+    branches: [ master, v1.12 ]
 
 jobs:
   test:
@@ -11,14 +13,14 @@ jobs:
     strategy:
       matrix:
         include:
-          - lemurro_version: "1.10"
+          - lemurro_version: "1.12"
             sql_file: "database.sql"
-            php_version: "7.4"
-            operating-system: ubuntu-20.04
+            php_version: "8.2"
+            operating-system: ubuntu-22.04
 
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: "Set environment variables"
         run: |
@@ -40,6 +42,7 @@ jobs:
           lsb_release -a
           mysql -V
           php -v
+          composer -V
 
       - name: "Install Lemurro"
         run: |
@@ -101,4 +104,4 @@ jobs:
       - name: "Debug"
         if: failure()
         run: |
-          cat $GITHUB_WORKSPACE/php_errors.log
+          cat $GITHUB_WORKSPACE/php_errors.log || true
